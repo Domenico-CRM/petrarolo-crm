@@ -475,6 +475,162 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   </div>
 </div>
 
+<!-- MODAL NUOVO CLIENTE CON FLOTTA -->
+<div class="modal-overlay" id="modal-nuovo-cliente-flotta">
+  <div class="modal" style="width:620px">
+    <div class="modal-head"><span class="modal-title"><i class="ti ti-user-plus" style="color:var(--orange);margin-right:7px"></i>Nuovo cliente</span><button class="modal-close" onclick="closeModal('modal-nuovo-cliente-flotta')"><i class="ti ti-x"></i></button></div>
+    <div class="form-grid">
+      <div class="form-group"><div class="form-label">Ragione sociale / Nome <span class="form-req">*</span></div><input id="nc-nome" type="text" placeholder="es. Ferrari Srl"></div>
+      <div class="form-group"><div class="form-label">Tipo cliente</div><select id="nc-tipo"><option>Privato</option><option>Azienda</option><option>PA</option><option>Libero professionista</option></select></div>
+      <div class="form-group"><div class="form-label">Telefono <span class="form-req">*</span></div><input id="nc-tel" type="tel" placeholder="+39 080 000 0000"></div>
+      <div class="form-group"><div class="form-label">Email</div><input id="nc-email" type="email" placeholder="nome@email.it"></div>
+      <div class="form-group"><div class="form-label">Città / Provincia</div><input id="nc-citta" type="text" placeholder="es. Corato (BA)"></div>
+      <div class="form-group"><div class="form-label">Venditore assegnato</div><select id="nc-venditore"><option>Marco Rossi</option><option>Luca Verde</option><option>Alberto Garbetta</option><option>Loris De Gioia</option><option>Domenico Monopoli</option><option>Riccardo Regano</option><option>Michele Merra</option></select></div>
+      <div class="form-group form-full"><div class="form-label">Note</div><textarea id="nc-note" placeholder="Note sul cliente..."></textarea></div>
+    </div>
+    <div style="padding:10px 17px 6px;font-size:11px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;border-top:1px solid var(--border)">Primo veicolo (opzionale)</div>
+    <div class="form-grid">
+      <div class="form-group"><div class="form-label">Modello veicolo</div><input id="nc-modello" type="text" placeholder="es. BMW X5 xDrive30d"></div>
+      <div class="form-group"><div class="form-label">Targa</div><input id="nc-targa" type="text" placeholder="es. AB 123 CD" style="text-transform:uppercase"></div>
+      <div class="form-group"><div class="form-label">Categoria</div>
+        <select id="nc-categoria" onchange="toggleAltroNc(this.value)">
+          <option value="">— Seleziona —</option>
+          <option>Auto / SUV</option>
+          <option>Veicolo Commerciale</option>
+          <option>Truck / Industriale</option>
+          <option>Semirimorchio</option>
+          <option value="altro">Altro (specifica)</option>
+        </select>
+      </div>
+      <div class="form-group" id="nc-cat-altro" style="display:none"><div class="form-label">Specifica categoria</div><input id="nc-cat-custom" type="text" placeholder="Descrivi la tipologia..."></div>
+      <div class="form-group"><div class="form-label">Tipo contratto</div><select id="nc-contratto"><option>NLT — Noleggio Lungo Termine</option><option>Leasing</option><option>Acquisto diretto</option><option>Noleggio Breve Termine</option></select></div>
+      <div class="form-group"><div class="form-label">Data scadenza contratto</div><input id="nc-scadenza" type="date"></div>
+    </div>
+    <div class="err" id="nc-err"></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-nuovo-cliente-flotta')">Annulla</button>
+      <button class="btn btn-orange" id="save-nc-btn" onclick="salvaNuovoCliente()"><i class="ti ti-check"></i> Salva cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGGIUNGI VEICOLO -->
+<div class="modal-overlay" id="modal-veicolo">
+  <div class="modal" style="width:580px">
+    <div class="modal-head"><span class="modal-title"><i class="ti ti-car" style="color:var(--orange);margin-right:7px"></i>Aggiungi veicolo</span><button class="modal-close" onclick="closeModal('modal-veicolo')"><i class="ti ti-x"></i></button></div>
+    <div class="form-grid">
+      <div class="form-group form-full"><div class="form-label">Cliente <span class="form-req">*</span></div><select id="v-cliente"><option value="">— Seleziona cliente —</option></select></div>
+      <div class="form-group form-full"><div class="form-label">Modello veicolo <span class="form-req">*</span></div><input id="v-modello" type="text" placeholder="es. Mercedes Sprinter 319 CDI L3H2"></div>
+      <div class="form-group"><div class="form-label">Targa <span class="form-req">*</span></div><input id="v-targa" type="text" placeholder="es. AB 123 CD" style="text-transform:uppercase"></div>
+      <div class="form-group"><div class="form-label">Categoria <span class="form-req">*</span></div>
+        <select id="v-categoria" onchange="toggleAltroV(this.value)">
+          <option value="">— Seleziona —</option>
+          <option>Auto / SUV</option>
+          <option>Veicolo Commerciale</option>
+          <option>Truck / Industriale</option>
+          <option>Semirimorchio</option>
+          <option value="altro">Altro (specifica)</option>
+        </select>
+      </div>
+      <div class="form-group" id="v-cat-altro" style="display:none"><div class="form-label">Specifica categoria</div><input id="v-cat-custom" type="text" placeholder="Descrivi la tipologia..."></div>
+      <div class="form-group"><div class="form-label">Tipo contratto <span class="form-req">*</span></div>
+        <select id="v-contratto">
+          <option>NLT — Noleggio Lungo Termine</option>
+          <option>Leasing</option>
+          <option>Acquisto diretto</option>
+          <option>Noleggio Breve Termine</option>
+          <option>Fleet Management</option>
+        </select>
+      </div>
+      <div class="form-group"><div class="form-label">Data inizio contratto</div><input id="v-inizio" type="date"></div>
+      <div class="form-group"><div class="form-label">Data scadenza <span class="form-req">*</span></div><input id="v-scadenza" type="date"></div>
+      <div class="form-group"><div class="form-label">Durata (mesi)</div><input id="v-durata" type="number" placeholder="es. 36" min="1"></div>
+      <div class="form-group form-full"><div class="form-label">Note</div><textarea id="v-note" placeholder="Note specifiche sul veicolo o contratto..."></textarea></div>
+    </div>
+    <div class="err" id="v-err"></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-veicolo')">Annulla</button>
+      <button class="btn btn-orange" id="save-v-btn" onclick="salvaVeicolo()"><i class="ti ti-check"></i> Salva veicolo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUOVO CONTRATTO -->
+<div class="modal-overlay" id="modal-contratto">
+  <div class="modal" style="width:600px">
+    <div class="modal-head"><span class="modal-title"><i class="ti ti-file-invoice" style="color:var(--orange);margin-right:7px"></i>Nuovo contratto chiuso</span><button class="modal-close" onclick="closeModal('modal-contratto')"><i class="ti ti-x"></i></button></div>
+    <div class="form-grid">
+      <div class="form-group"><div class="form-label">Mese di riferimento <span class="form-req">*</span></div><input id="c-mese" type="month" value="2026-05"></div>
+      <div class="form-group"><div class="form-label">Cliente / Contratto <span class="form-req">*</span></div><input id="c-cliente" type="text" placeholder="es. Rossi Mario"></div>
+      <div class="form-group"><div class="form-label">Città / Luogo cliente</div><input id="c-citta" type="text" placeholder="es. Bari, Corato, Andria..."></div>
+      <div class="form-group"><div class="form-label">Tipo prodotto <span class="form-req">*</span></div>
+        <select id="c-prodotto-tipo" onchange="toggleProdottoCustom(this.value)">
+          <option value="">— Seleziona tipo prodotto —</option>
+          <option value="NLT — Noleggio Lungo Termine">NLT — Noleggio Lungo Termine</option>
+          <option value="Leasing">Leasing</option>
+          <option value="Acquisto diretto">Acquisto diretto</option>
+          <option value="Noleggio Breve Termine">Noleggio Breve Termine</option>
+          <option value="Fleet Management">Fleet Management</option>
+          <option value="altro">Altro (specifica)</option>
+        </select>
+      </div>
+      <div class="form-group" id="c-prodotto-custom-grp" style="display:none"><div class="form-label">Specifica prodotto</div><input id="c-prodotto-custom" type="text" placeholder="Descrivi il tipo di prodotto..."></div>
+      <div class="form-group form-full"><div class="form-label">Veicolo / Descrizione contratto <span class="form-req">*</span></div><input id="c-veicolo" type="text" placeholder="es. BMW X5 xDrive30d, Sprinter 319 x3, Flotta mista..."></div>
+      <div class="form-group"><div class="form-label">Partner Petrarolo</div>
+        <select id="c-partner" onchange="togglePartnerAltro(this.value)">
+          <option value="">— Nessun partner —</option>
+          <option value="VRENT SPA">VRENT SPA</option>
+          <option value="FORD TRUCKS ITALIA">FORD TRUCKS ITALIA</option>
+          <option value="TIP">TIP</option>
+          <optgroup label="HORIZON AUTOMOTIVE">
+            <option value="HORIZON AUTOMOTIVE — ARVAL">↳ ARVAL</option>
+            <option value="HORIZON AUTOMOTIVE — AYVENS">↳ AYVENS</option>
+            <option value="HORIZON AUTOMOTIVE — VOLKSWAGEN LEASING SCARABEL">↳ VOLKSWAGEN LEASING SCARABEL</option>
+            <option value="HORIZON AUTOMOTIVE — DRIVALIA">↳ DRIVALIA</option>
+            <option value="HORIZON AUTOMOTIVE — LEASYS">↳ LEASYS</option>
+            <option value="HORIZON AUTOMOTIVE — ALPHABET">↳ ALPHABET</option>
+            <option value="HORIZON AUTOMOTIVE — RENT2GO">↳ RENT2GO</option>
+          </optgroup>
+          <option value="DRIVALIA DIRETTO BY PETRAROLO">DRIVALIA DIRETTO BY PETRAROLO</option>
+          <option value="SANTANDER RENTING DIRETTO BY PETRAROLO">SANTANDER RENTING DIRETTO BY PETRAROLO</option>
+          <option value="ITALRENT DIRETTO BY PETRAROLO">ITALRENT DIRETTO BY PETRAROLO</option>
+          <option value="ALTRO">ALTRO (specifica)</option>
+        </select>
+      </div>
+      <div class="form-group" id="c-partner-altro-grp" style="display:none">
+        <div class="form-label">Specifica partner <span class="form-req">*</span></div>
+        <input id="c-partner-altro" type="text" placeholder="Nome del partner...">
+      </div>
+      <div class="form-group"><div class="form-label">Provenienza lead</div>
+        <select id="c-provenienza" onchange="toggleSegnalatoreCont(this.value)">
+          <option value="">— Nessuna / Contatto diretto —</option>
+          <option value="LEAD DA CONTATTO DIRETTO">LEAD DA CONTATTO DIRETTO</option>
+          <option value="LEAD DA FACILE.IT">LEAD DA FACILE.IT</option>
+          <option value="LEAD DA DIALOGO">LEAD DA DIALOGO</option>
+          <option value="LEAD DA SEGNALATORE">LEAD DA SEGNALATORE</option>
+        </select>
+      </div>
+      <div class="form-group"><div class="form-label">Collega collaboratore</div>
+        <select id="c-collega">
+          <option value="">— Nessun collega —</option>
+          <option>Anita Petrarolo</option><option>Domenico Monopoli</option><option>Giuseppe Monopoli</option><option>Alberto Garbetta</option><option>Loris De Gioia</option><option>Riccardo Regano</option><option>Michele Merra</option>
+        </select>
+      </div>
+      <div class="form-group"><div class="form-label">Margine contrattualizzato (€) <span class="form-req">*</span></div><input id="c-margine" type="number" placeholder="es. 1500" min="0" step="0.01"></div>
+      <div class="form-group"><div class="form-label">Bonus economico riconosciuto (€)</div><input id="c-bonus" type="number" placeholder="es. 200" min="0" step="0.01"></div>
+      <div class="form-group"><div class="form-label">Margine segnalazione da dare (€)</div><input id="c-segnalazione" type="number" placeholder="es. 100" min="0" step="0.01"></div>
+      <div class="form-group" id="c-segnalatore-group"><div class="form-label">Nome segnalatore</div><input id="c-segnalatore" type="text" placeholder="es. Mario Verdi"></div>
+      <div class="form-group form-full"><div class="form-label">Allega PDF contratto (max 2MB, opzionale)</div><input id="c-pdf" type="file" accept=".pdf" style="font-size:12px;padding:6px;border:1px solid var(--border2);border-radius:7px;width:100%"></div>
+      <div class="form-group form-full"><div class="form-label">Note aggiuntive</div><textarea id="c-note" placeholder="Note sul contratto..."></textarea></div>
+    </div>
+    <div class="err" id="contratto-err"></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-contratto')">Annulla</button>
+      <button class="btn btn-orange" id="save-contratto-btn" onclick="salvaContratto()"><i class="ti ti-check"></i> Salva contratto</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
 
@@ -489,11 +645,13 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
       <div class="ni active" data-sec="dashboard"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
       <div class="ni" data-sec="clienti"><i class="ti ti-users"></i> Clienti</div>
       <div class="ni" data-sec="scheda"><i class="ti ti-user-circle"></i> Scheda cliente</div>
+      <div class="ni" data-sec="flotta"><i class="ti ti-car"></i> Flotta & Scadenze</div>
       <div class="ni" data-sec="lead"><i class="ti ti-user-plus"></i> Nuovo lead</div>
       <div class="ni" data-sec="veicoli"><i class="ti ti-car"></i> Veicoli</div>
       <div class="ni" data-sec="trattative"><i class="ti ti-chart-bar"></i> Trattative</div>
       <div class="sb-sec">Analisi</div>
       <div class="ni" data-sec="report"><i class="ti ti-report-analytics"></i> Report &amp; KPI</div>
+      <div class="ni" data-sec="contratti"><i class="ti ti-file-invoice"></i> Report Contratti</div>
       <div class="ni dir-only" data-sec="dir-overview"><i class="ti ti-eye"></i> Vista Direzione <span class="bnew">DIR</span></div>
       <div class="sb-sec">AI &amp; Strumenti</div>
       <div class="ni" data-sec="ai"><i class="ti ti-sparkles"></i> AI Assistant <span class="bnew">AI</span></div>
@@ -664,7 +822,7 @@ function setupNav() {
       document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
       el.classList.add('active');
       currentSec=sec;
-      const titles={dashboard:'Dashboard',clienti:'Clienti',scheda:'Scheda cliente',veicoli:'Veicoli',trattative:'Trattative',report:'Report & KPI','dir-overview':'Vista Direzione',ai:'AI Assistant',agenda:'Agenda',attivita:'Attività',utenti:'Gestione utenti',impostazioni:'Impostazioni'};
+      const titles={dashboard:'Dashboard',clienti:'Clienti',scheda:'Scheda cliente',veicoli:'Veicoli',trattative:'Trattative',report:'Report & KPI',contratti:'Report Contratti',flotta:'Flotta & Scadenze','dir-overview':'Vista Direzione',ai:'AI Assistant',agenda:'Agenda',attivita:'Attività',utenti:'Gestione utenti',impostazioni:'Impostazioni'};
       document.getElementById('page-title').textContent=titles[sec]||sec;
       renderSec(sec);
     });
@@ -675,7 +833,7 @@ function navTo(sec) {
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   const el=document.querySelector(`.ni[data-sec="${sec}"]`);
   if(el)el.classList.add('active');
-  const titles={dashboard:'Dashboard',clienti:'Clienti',scheda:'Scheda cliente',veicoli:'Veicoli',trattative:'Trattative',report:'Report & KPI','dir-overview':'Vista Direzione',ai:'AI Assistant',agenda:'Agenda',attivita:'Attività',utenti:'Gestione utenti',impostazioni:'Impostazioni'};
+  const titles={dashboard:'Dashboard',clienti:'Clienti',scheda:'Scheda cliente',veicoli:'Veicoli',trattative:'Trattative',report:'Report & KPI',contratti:'Report Contratti',flotta:'Flotta & Scadenze','dir-overview':'Vista Direzione',ai:'AI Assistant',agenda:'Agenda',attivita:'Attività',utenti:'Gestione utenti',impostazioni:'Impostazioni'};
   document.getElementById('page-title').textContent=titles[sec]||sec;
   currentSec=sec;
   renderSec(sec);
@@ -684,7 +842,7 @@ function navTo(sec) {
 async function renderSec(sec) {
   const c=document.getElementById('content');
   c.innerHTML='<div class="spinner"></div>';
-  const map={dashboard:rDash,clienti:rClienti,scheda:rScheda,veicoli:rVeicoli,trattative:rTrattative,report:rReport,'dir-overview':rDirOverview,ai:rAI,agenda:rAgenda,attivita:rAttivita,utenti:rUtenti,impostazioni:rImpostazioni};
+  const map={dashboard:rDash,clienti:rClienti,scheda:rScheda,veicoli:rVeicoli,trattative:rTrattative,report:rReport,contratti:rContratti,flotta:rFlotta,'dir-overview':rDirOverview,ai:rAI,agenda:rAgenda,attivita:rAttivita,utenti:rUtenti,impostazioni:rImpostazioni};
   if(map[sec])await map[sec]();
   if(sec==='ai'){setTimeout(()=>{const b=document.getElementById('ai-msgs');if(b)b.scrollTop=b.scrollHeight;},60);bindAI();}
 }
@@ -809,6 +967,7 @@ async function rScheda(){
       <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end">
         <button class="btn btn-sm"><i class="ti ti-phone"></i> Chiama</button>
         <button class="btn btn-sm"><i class="ti ti-mail"></i> Email</button>
+        ${c.stato==='Lead'?`<button class="btn btn-sm" style="background:var(--green-bg);color:var(--green);border-color:#9FE1CB" onclick="convertiCliente(${c.id})"><i class="ti ti-user-check"></i> Converti in cliente</button>`:''}
         <button class="btn btn-sm btn-orange" onclick="aiAnal('${c.nome}')"><i class="ti ti-sparkles"></i> AI</button>
       </div>
     </div>
@@ -1346,6 +1505,492 @@ async function handleResetToken(token, uid) {
   }
 }
 
+// ═══════════════════════════════════════════
+// REPORT CONTRATTI
+// ═══════════════════════════════════════════
+async function rContratti(){
+  let contratti=[];
+  try{
+    let q=sb.from('contratti_chiusi').select('*').order('created_at',{ascending:false});
+    if(!isDir()) q=q.eq('venditore_id',CU.id);
+    const r=await q;
+    contratti=r.data||[];
+  }catch(e){}
+
+  // Calcola statistiche
+  const meseCorrente=new Date().toISOString().slice(0,7);
+  const mesePrecedente=new Date(new Date().setMonth(new Date().getMonth()-1)).toISOString().slice(0,7);
+  const thisMonth=contratti.filter(c=>c.mese===meseCorrente);
+  const lastMonth=contratti.filter(c=>c.mese===mesePrecedente);
+  const totMargine=thisMonth.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
+  const totMarginePrec=lastMonth.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
+  const diffContratti=thisMonth.length-lastMonth.length;
+  const diffMargine=totMargine-totMarginePrec;
+
+  // Raggruppa per mese per il venditore corrente
+  const mesi={};
+  contratti.forEach(c=>{
+    if(!mesi[c.mese])mesi[c.mese]={contratti:[],totMargine:0,totBonus:0,totSegnalazione:0};
+    mesi[c.mese].contratti.push(c);
+    mesi[c.mese].totMargine+=(parseFloat(c.margine)||0);
+    mesi[c.mese].totBonus+=(parseFloat(c.bonus)||0);
+    mesi[c.mese].totSegnalazione+=(parseFloat(c.margine_segnalazione)||0);
+  });
+
+  const mesiOrdinati=Object.keys(mesi).sort().reverse();
+
+  // Filtro mese per export
+  const mesiDisp=[...new Set(contratti.map(c=>c.mese))].sort().reverse();
+
+  document.getElementById('content').innerHTML=`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Contratti mese corrente</div><div class="kpi-v">${thisMonth.length}</div><div class="kpi-d ${diffContratti>=0?'du':'dd'}">${diffContratti>=0?'↑':'↓'} ${Math.abs(diffContratti)} vs mese prec.</div></div>
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Margine mese corrente</div><div class="kpi-v">€ ${totMargine.toLocaleString('it-IT',{minimumFractionDigits:0})}</div><div class="kpi-d ${diffMargine>=0?'du':'dd'}">${diffMargine>=0?'↑':'↓'} € ${Math.abs(diffMargine).toLocaleString('it-IT')} vs prec.</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Contratti totali</div><div class="kpi-v">${contratti.length}</div><div class="kpi-d" style="color:var(--text3)">Tutti i periodi</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine totale</div><div class="kpi-v">€ ${contratti.reduce((s,c)=>s+(parseFloat(c.margine)||0),0).toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Storico completo</div></div>
+  </div>
+
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-file-invoice" style="color:var(--orange);margin-right:6px"></i>Contratti chiusi${isDir()?' — tutti i venditori':' — '+CU.nome}</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="filtro-mese" class="btn btn-sm" style="cursor:pointer" onchange="filtraContratti()">
+          <option value="">Tutti i mesi</option>
+          ${mesiDisp.map(m=>`<option value="${m}">${formatMese(m)}</option>`).join('')}
+        </select>
+        ${isDir()?`<select id="filtro-venditore" class="btn btn-sm" style="cursor:pointer" onchange="filtraContratti()"><option value="">Tutti i venditori</option></select>`:''}
+        <button class="btn btn-sm" onclick="esportaReport()"><i class="ti ti-download"></i> Scarica report</button>
+        <button class="btn btn-sm btn-orange" onclick="openModal('modal-contratto')"><i class="ti ti-plus"></i> Nuovo contratto</button>
+      </div>
+    </div>
+
+    ${mesiOrdinati.length===0?`<div style="padding:40px;text-align:center;color:var(--text3)">Nessun contratto inserito. Clicca "Nuovo contratto" per iniziare.</div>`:''}
+
+    ${mesiOrdinati.map(mese=>{
+      const m=mesi[mese];
+      return `
+      <div style="border-bottom:2px solid var(--border)">
+        <div style="padding:12px 18px;background:var(--gray);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">${formatMese(mese)}</div>
+          <div style="display:flex;gap:16px;font-size:12px">
+            <span><strong>${m.contratti.length}</strong> contratti</span>
+            <span>Margine: <strong style="color:var(--orange)">€ ${m.totMargine.toLocaleString('it-IT')}</strong></span>
+            ${m.totBonus>0?`<span>Bonus: <strong style="color:var(--green)">€ ${m.totBonus.toLocaleString('it-IT')}</strong></span>`:''}
+            ${m.totSegnalazione>0?`<span>Segnalazione: <strong style="color:var(--gold)">€ ${m.totSegnalazione.toLocaleString('it-IT')}</strong></span>`:''}
+            <button class="btn btn-sm" onclick="stampaMese('${mese}')" style="padding:3px 9px;font-size:11px"><i class="ti ti-printer"></i> Stampa</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr>
+            <th>Cliente</th>
+            <th>Città</th>
+            <th>Prodotto</th>
+            <th>Veicolo / Contratto</th>
+            <th>Provenienza</th>
+            <th>Partner</th>
+            ${isDir()?'<th>Venditore</th>':''}
+            <th>Collega</th>
+            <th>Margine</th>
+            <th>Bonus</th>
+            <th>Segnalazione</th>
+            <th>Segnalatore</th>
+            <th>PDF</th>
+            <th>Azioni</th>
+          </tr></thead>
+          <tbody>
+          ${m.contratti.map(c=>`<tr>
+            <td style="font-weight:600">${c.cliente||'—'}</td>
+            <td style="color:var(--text2)">${c.citta||'—'}</td>
+            <td><span style="font-size:11px;font-weight:600;color:var(--navy)">${c.prodotto||'—'}</span></td>
+            <td style="color:var(--text2)">${c.veicolo||'—'}</td>
+            <td>${c.provenienza?`<span class="badge ${c.provenienza==='LEAD DA FACILE.IT'?'bg-b':c.provenienza==='LEAD DA DIALOGO'?'bg-n':c.provenienza==='LEAD DA SEGNALATORE'?'bg-go':'bg-gr'}" style="font-size:10px">${c.provenienza.replace('LEAD DA ','')}</span>`:'<span style="color:var(--text3);font-size:11px">Diretto</span>'}</td>
+            <td style="color:var(--text2)">${c.partner||'—'}</td>
+            ${isDir()?`<td style="font-size:11.5px;font-weight:600;color:var(--navy)">${c.venditore_nome||'—'}</td>`:''}
+            <td style="color:var(--text2)">${c.collega||'—'}</td>
+            <td style="font-weight:700;color:var(--orange)">€ ${(parseFloat(c.margine)||0).toLocaleString('it-IT')}</td>
+            <td style="color:var(--green)">${c.bonus?'€ '+parseFloat(c.bonus).toLocaleString('it-IT'):'—'}</td>
+            <td style="color:var(--gold)">${c.margine_segnalazione?'€ '+parseFloat(c.margine_segnalazione).toLocaleString('it-IT'):'—'}</td>
+            <td style="color:var(--text2);font-size:11.5px">${c.segnalatore||'—'}</td>
+            <td>${c.pdf_url?`<a href="${c.pdf_url}" target="_blank" class="btn btn-sm" style="padding:3px 8px;font-size:10px"><i class="ti ti-file-type-pdf"></i> PDF</a>`:'—'}</td>
+            <td><button class="btn btn-sm btn-red" style="padding:3px 8px;font-size:10px" onclick="eliminaContratto(${c.id})"><i class="ti ti-trash"></i></button></td>
+          </tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// FLOTTA & SCADENZE
+// ═══════════════════════════════════════════
+async function convertiCliente(id){
+  if(!confirm('Convertire questo lead in cliente confermato?'))return;
+  try{
+    const{error}=await sb.from('clienti').update({stato:'Attivo'}).eq('id',id);
+    if(error)throw error;
+    showToast('Lead convertito in cliente!');
+    renderSec('scheda');
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+async function rFlotta(){
+  let clienti=[],veicoli=[];
+  try{
+    let qc=sb.from('clienti').select('*').order('nome');
+    if(!isDir()) qc=qc.eq('venditore_id',CU.id);
+    const rc=await qc;
+    clienti=rc.data||[];
+
+    let qv=sb.from('flotta_veicoli').select('*').order('data_scadenza');
+    if(!isDir()) qv=qv.eq('venditore_id',CU.id);
+    const rv=await qv;
+    veicoli=rv.data||[];
+  }catch(e){}
+
+  const oggi=new Date();
+  const tra4mesi=new Date(oggi);
+  tra4mesi.setMonth(tra4mesi.getMonth()+4);
+
+  const scadenze=veicoli.filter(v=>{
+    if(!v.data_scadenza)return false;
+    const d=new Date(v.data_scadenza);
+    return d<=tra4mesi;
+  }).sort((a,b)=>new Date(a.data_scadenza)-new Date(b.data_scadenza));
+
+  const urgenti=scadenze.filter(v=>gg(v.data_scadenza)<=30);
+  const prossime=scadenze.filter(v=>gg(v.data_scadenza)>30&&gg(v.data_scadenza)<=120);
+
+  function gg(d){
+    return Math.ceil((new Date(d)-oggi)/(1000*60*60*24));
+  }
+  function fData(d){
+    if(!d)return'—';
+    return new Date(d).toLocaleDateString('it-IT');
+  }
+  function urgBadge(d){
+    const g=gg(d);
+    if(g<=30)return'<span class="badge bg-r">Urgente</span>';
+    if(g<=60)return'<span class="badge bg-o">Prossimo</span>';
+    return'<span class="badge bg-go">Pianifica</span>';
+  }
+
+  document.getElementById('content').innerHTML=`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--red-bg)"><div class="kpi-l">Scadenze urgenti ≤30gg</div><div class="kpi-v" style="color:#991B1B">${urgenti.length}</div><div class="kpi-d dd">Contattare subito</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Scadenze entro 4 mesi</div><div class="kpi-v">${scadenze.length}</div><div class="kpi-d du">Da pianificare</div></div>
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Veicoli in flotta</div><div class="kpi-v">${veicoli.length}</div><div class="kpi-d" style="color:var(--text3)">Totale gestiti</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Clienti attivi</div><div class="kpi-v">${clienti.filter(c=>c.stato==='Attivo'||c.stato==='VIP').length}</div><div class="kpi-d du">Database live</div></div>
+  </div>
+
+  ${urgenti.length>0?`<div style="background:var(--red-bg);border:1px solid #F09595;border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:10px">
+    <i class="ti ti-alert-triangle" style="font-size:20px;color:#991B1B;flex-shrink:0"></i>
+    <div><div style="font-size:13px;font-weight:600;color:#991B1B">${urgenti.length} contratt${urgenti.length===1?'o':'i'} in scadenza entro 30 giorni</div><div style="font-size:12px;color:#991B1B;margin-top:2px">Contatta subito i clienti per avviare il rinnovo</div></div>
+  </div>`:''}
+
+  ${prossime.length>0?`<div style="background:var(--orange-light);border:1px solid #F0997B;border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:10px">
+    <i class="ti ti-clock" style="font-size:20px;color:var(--orange);flex-shrink:0"></i>
+    <div><div style="font-size:13px;font-weight:600;color:var(--orange)">${prossime.length} contratt${prossime.length===1?'o':'i'} in scadenza entro 30-120 giorni</div><div style="font-size:12px;color:var(--orange);margin-top:2px">Pianifica i contatti per i rinnovi</div></div>
+  </div>`:''}
+
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-calendar-event" style="color:var(--orange);margin-right:6px"></i>Scadenze contratti — prossimi 4 mesi</span>
+      <div style="display:flex;gap:7px">
+        ${isDir()?`<select class="btn btn-sm" style="cursor:pointer"><option>Tutti i venditori</option></select>`:''}
+        <button class="btn btn-sm btn-orange" onclick="openModal('modal-veicolo')"><i class="ti ti-plus"></i> Aggiungi veicolo</button>
+      </div>
+    </div>
+    ${scadenze.length===0?`<div style="padding:40px;text-align:center;color:var(--text3)">Nessuna scadenza nei prossimi 4 mesi.</div>`:''}
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>Cliente</th><th>Modello</th><th>Targa</th><th>Categoria</th><th>Contratto</th><th>Scadenza</th><th>Giorni</th>${isDir()?'<th>Venditore</th>':''}<th>Urgenza</th><th>Azioni</th>
+    </tr></thead><tbody>
+    ${scadenze.map(v=>`<tr>
+      <td style="font-weight:600">${v.cliente_nome||'—'}</td>
+      <td style="color:var(--text2)">${v.modello||'—'}</td>
+      <td><span style="font-family:monospace;font-size:11px;background:var(--gray);padding:2px 7px;border-radius:4px">${v.targa||'—'}</span></td>
+      <td><span class="badge ${v.categoria==='Auto / SUV'?'bg-n':v.categoria==='Commerciale'?'bg-o':v.categoria==='Truck / Industriale'?'bg-r':'bg-gr'}">${v.categoria||'—'}</span></td>
+      <td><span class="badge bg-n">${v.tipo_contratto||'—'}</span></td>
+      <td style="font-weight:600">${fData(v.data_scadenza)}</td>
+      <td><div style="display:flex;align-items:center;gap:7px">
+        <div class="prog" style="width:55px"><div class="prog-fill" style="width:${Math.min(100,gg(v.data_scadenza))}%;background:${gg(v.data_scadenza)<=30?'#E24B4A':gg(v.data_scadenza)<=60?'var(--orange)':'#639922'}"></div></div>
+        <span style="font-size:11.5px;font-weight:600;color:${gg(v.data_scadenza)<=30?'#991B1B':gg(v.data_scadenza)<=60?'var(--orange)':'var(--green)'}">${gg(v.data_scadenza)} gg</span>
+      </div></td>
+      ${isDir()?`<td style="font-size:11.5px;color:var(--text2)">${v.venditore_nome||'—'}</td>`:''}
+      <td>${urgBadge(v.data_scadenza)}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-sm"><i class="ti ti-phone"></i></button>
+        <button class="btn btn-sm"><i class="ti ti-mail"></i></button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody></table></div>
+  </div>
+
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-users" style="color:var(--orange);margin-right:6px"></i>Clienti & flotta completa</span>
+      <div style="display:flex;gap:7px">
+        <select class="btn btn-sm" style="cursor:pointer"><option>Tutti</option><option>Clienti</option><option>Lead</option></select>
+        <button class="btn btn-sm btn-navy" onclick="openModal('modal-nuovo-cliente-flotta')"><i class="ti ti-user-plus"></i> Nuovo cliente</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>Cliente</th><th>Città</th><th>Tipo</th><th>Veicoli</th>${isDir()?'<th>Venditore</th>':''}<th>Stato</th><th>Azioni</th>
+    </tr></thead><tbody>
+    ${clienti.map(c=>{
+      const cv=veicoli.filter(v=>v.cliente_id===c.id);
+      const haScad=cv.some(v=>v.data_scadenza&&gg(v.data_scadenza)<=120);
+      return`<tr onclick="openClient(${c.id})">
+        <td><div style="display:flex;align-items:center;gap:8px">${mav((c.nome||'').slice(0,2).toUpperCase())}<div><div style="font-weight:600">${c.nome}</div><div style="font-size:10.5px;color:var(--text3)">${c.email||''}</div></div></div></td>
+        <td style="color:var(--text2)">${c.citta||'—'}</td>
+        <td>${badge(c.tipo||'Privato',c.tipo==='Azienda'?'bg-n':'bg-gr')}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><span style="font-weight:600">${cv.length}</span>${haScad?'<span class="badge bg-r" style="font-size:9px">Scad.</span>':''}</div></td>
+        ${isDir()?`<td style="font-size:11.5px;color:var(--text2)">${c.venditore_nome||'—'}</td>`:''}
+        <td>${stBadge(c.stato||'Lead')}</td>
+        <td><div style="display:flex;gap:5px">
+          ${c.stato==='Lead'?`<button class="btn btn-sm" style="background:var(--green-bg);color:var(--green);border-color:#9FE1CB" onclick="event.stopPropagation();convertiCliente(${c.id})"><i class="ti ti-user-check"></i> Converti</button>`:''}
+          <button class="btn btn-sm" onclick="event.stopPropagation();openClient(${c.id})"><i class="ti ti-edit"></i></button>
+        </div></td>
+      </tr>`;
+    }).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function toggleProdottoCustom(val){
+  const grp=document.getElementById('c-prodotto-custom-grp');
+  if(grp){
+    grp.style.display=val==='altro'?'flex':'none';
+    grp.style.flexDirection='column';
+    grp.style.gap='4px';
+    if(val!=='altro'){const s=document.getElementById('c-prodotto-custom');if(s)s.value='';}
+  }
+}
+function toggleSegnalatoreCont(val){
+  const grp=document.getElementById('c-segnalatore-group');
+  if(grp){
+    grp.style.display=val==='LEAD DA SEGNALATORE'?'flex':'none';
+    grp.style.flexDirection='column';
+    grp.style.gap='4px';
+    if(val!=='LEAD DA SEGNALATORE'){const s=document.getElementById('c-segnalatore');if(s)s.value='';}
+  }
+}
+function formatMese(m){
+  if(!m)return'—';
+  const [y,mo]=m.split('-');
+  const nomi=['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  return `${nomi[parseInt(mo)]} ${y}`;
+}
+
+function filtraContratti(){
+  renderSec('contratti');
+}
+
+async function eliminaContratto(id){
+  if(!confirm('Eliminare questo contratto?'))return;
+  try{
+    await sb.from('contratti_chiusi').delete().eq('id',id);
+    showToast('Contratto eliminato');
+    renderSec('contratti');
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+function stampaMese(mese){
+  window.print();
+}
+
+function esportaReport(){
+  // Crea CSV dei contratti
+  const rows=[['Mese','Cliente','Partner','Venditore','Collega','Margine','Bonus','Margine Segnalazione','Segnalatore']];
+  // I dati vengono da un re-fetch — per ora apriamo finestra di stampa
+  window.print();
+}
+
+async function salvaContratto(){
+  const btn=document.getElementById('save-contratto-btn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';
+  const err=document.getElementById('contratto-err');
+  err.style.display='none';
+
+  const cliente=document.getElementById('c-cliente').value.trim();
+  const mese=document.getElementById('c-mese').value;
+  const margine=document.getElementById('c-margine').value;
+  if(!cliente||!mese||!margine){
+    showErr(err,'Compila i campi obbligatori: Cliente, Mese, Margine.');
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';
+    return;
+  }
+
+  // Gestione PDF (base64)
+  let pdfUrl=null;
+  const pdfFile=document.getElementById('c-pdf').files[0];
+  if(pdfFile){
+    if(pdfFile.size>2*1024*1024){
+      showErr(err,'Il PDF non può superare 2MB.');
+      btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';
+      return;
+    }
+    const reader=new FileReader();
+    pdfUrl=await new Promise(res=>{
+      reader.onload=e=>res(e.target.result);
+      reader.readAsDataURL(pdfFile);
+    });
+  }
+
+  try{
+    const {error}=await sb.from('contratti_chiusi').insert({
+      mese,
+      cliente,
+      citta:document.getElementById('c-citta').value.trim()||null,
+      prodotto:(document.getElementById('c-prodotto-tipo').value==='altro'?document.getElementById('c-prodotto-custom').value.trim():document.getElementById('c-prodotto-tipo').value)||null,
+      veicolo:document.getElementById('c-veicolo').value.trim()||null,
+      partner:document.getElementById('c-partner').value.trim()||null,
+      venditore_id:CU.id,
+      venditore_nome:CU.nome,
+      collega:document.getElementById('c-collega').value||null,
+      margine:parseFloat(margine)||0,
+      bonus:parseFloat(document.getElementById('c-bonus').value)||null,
+      margine_segnalazione:parseFloat(document.getElementById('c-segnalazione').value)||null,
+      segnalatore:document.getElementById('c-segnalatore').value.trim()||null,
+      provenienza:document.getElementById('c-provenienza').value||null,
+      note:document.getElementById('c-note').value.trim()||null,
+      pdf_url:pdfUrl,
+      created_by:CU.nome
+    });
+    if(error)throw error;
+    closeModal('modal-contratto');
+    showToast('Contratto salvato con successo!');
+    // Reset form
+    ['c-cliente','c-citta','c-veicolo','c-prodotto-custom','c-partner','c-margine','c-bonus','c-segnalazione','c-segnalatore','c-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('c-prodotto-tipo').value='';
+    toggleProdottoCustom('');
+    document.getElementById('c-collega').value='';
+    document.getElementById('c-provenienza').value='';
+    toggleSegnalatoreCont('');
+    document.getElementById('c-partner').value='';
+    togglePartnerAltro('');
+    document.getElementById('c-pdf').value='';
+    renderSec('contratti');
+  }catch(e){
+    showErr(err,'Errore: '+e.message);
+  }
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';
+}
+
+function togglePartnerAltro(v){
+  const grp=document.getElementById('c-partner-altro-grp');
+  if(grp){
+    grp.style.display=v==='ALTRO'?'flex':'none';
+    grp.style.flexDirection='column';
+    grp.style.gap='4px';
+    if(v!=='ALTRO'){const s=document.getElementById('c-partner-altro');if(s)s.value='';}
+  }
+}
+function toggleAltroNc(v){
+  const g=document.getElementById('nc-cat-altro');
+  if(g){g.style.display=v==='altro'?'flex':'none';g.style.flexDirection='column';g.style.gap='4px';}
+}
+function toggleAltroV(v){
+  const g=document.getElementById('v-cat-altro');
+  if(g){g.style.display=v==='altro'?'flex':'none';g.style.flexDirection='column';g.style.gap='4px';}
+}
+
+async function popolaSelectClienti(){
+  try{
+    let q=sb.from('clienti').select('id,nome').order('nome');
+    if(!isDir())q=q.eq('venditore_id',CU.id);
+    const{data}=await q;
+    const sel=document.getElementById('v-cliente');
+    if(sel&&data){
+      data.forEach(c=>{
+        const o=document.createElement('option');
+        o.value=c.id;o.textContent=c.nome;
+        sel.appendChild(o);
+      });
+    }
+  }catch(e){}
+}
+
+async function salvaNuovoCliente(){
+  const nome=document.getElementById('nc-nome').value.trim();
+  const tel=document.getElementById('nc-tel').value.trim();
+  const err=document.getElementById('nc-err');
+  const btn=document.getElementById('save-nc-btn');
+  err.style.display='none';
+  if(!nome||!tel){showErr(err,'Inserisci nome e telefono.');return;}
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';
+  try{
+    const{data,error}=await sb.from('clienti').insert({
+      nome,tipo:document.getElementById('nc-tipo').value,
+      tel,email:document.getElementById('nc-email').value,
+      citta:document.getElementById('nc-citta').value,
+      venditore_id:CU.id,venditore_nome:CU.nome,
+      stato:'Attivo',score:70,
+      note:document.getElementById('nc-note').value,
+      created_by:CU.nome
+    });
+    if(error)throw error;
+    // Salva veicolo se inserito
+    const modello=document.getElementById('nc-modello').value.trim();
+    const targa=document.getElementById('nc-targa').value.trim();
+    const scadenza=document.getElementById('nc-scadenza').value;
+    if(modello&&data&&data[0]){
+      let cat=document.getElementById('nc-categoria').value;
+      if(cat==='altro')cat=document.getElementById('nc-cat-custom').value;
+      await sb.from('flotta_veicoli').insert({
+        cliente_id:data[0].id,cliente_nome:nome,
+        modello,targa:targa.toUpperCase(),
+        categoria:cat,
+        tipo_contratto:document.getElementById('nc-contratto').value,
+        data_scadenza:scadenza||null,
+        venditore_id:CU.id,venditore_nome:CU.nome
+      });
+    }
+    closeModal('modal-nuovo-cliente-flotta');
+    showToast('Cliente salvato con successo!');
+    renderSec('flotta');
+  }catch(e){showErr(err,'Errore: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva cliente';
+}
+
+async function salvaVeicolo(){
+  const clienteId=document.getElementById('v-cliente').value;
+  const modello=document.getElementById('v-modello').value.trim();
+  const targa=document.getElementById('v-targa').value.trim();
+  const scadenza=document.getElementById('v-scadenza').value;
+  const err=document.getElementById('v-err');
+  const btn=document.getElementById('save-v-btn');
+  err.style.display='none';
+  if(!clienteId||!modello||!targa||!scadenza){showErr(err,'Compila i campi obbligatori: Cliente, Modello, Targa, Scadenza.');return;}
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';
+  try{
+    // Recupera nome cliente
+    const{data:cd}=await sb.from('clienti').select('nome').eq('id',clienteId).single();
+    let cat=document.getElementById('v-categoria').value;
+    if(cat==='altro')cat=document.getElementById('v-cat-custom').value;
+    const{error}=await sb.from('flotta_veicoli').insert({
+      cliente_id:parseInt(clienteId),
+      cliente_nome:cd?.nome||'—',
+      modello,targa:targa.toUpperCase(),
+      categoria:cat,
+      tipo_contratto:document.getElementById('v-contratto').value,
+      data_inizio:document.getElementById('v-inizio').value||null,
+      data_scadenza:scadenza,
+      durata_mesi:parseInt(document.getElementById('v-durata').value)||null,
+      note:document.getElementById('v-note').value||null,
+      venditore_id:CU.id,venditore_nome:CU.nome
+    });
+    if(error)throw error;
+    closeModal('modal-veicolo');
+    showToast('Veicolo aggiunto con successo!');
+    ['v-modello','v-targa','v-durata','v-note','v-inizio','v-scadenza'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('v-cliente').value='';
+    document.getElementById('v-categoria').value='';
+    renderSec('flotta');
+  }catch(e){showErr(err,'Errore: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva veicolo';
+}
+
 async function selfChangePassword() {
   const oldPwd = document.getElementById('cp-old').value;
   const newPwd1 = document.getElementById('cp-new1').value;
@@ -1415,7 +2060,10 @@ async function salvaLead(){
 // ═══════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════
-function openModal(id){document.getElementById(id).classList.add('open');}
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='modal-veicolo') setTimeout(popolaSelectClienti,100);
+}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function showToast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===e.currentTarget)o.classList.remove('open');}));
