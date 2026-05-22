@@ -879,7 +879,7 @@ function togglePwd(id,btn){const i=document.getElementById(id);i.type=i.type==='
 // ═══════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════
-async function rDash(){
+async async function rDash(){
   let cl=[],tr=[];
   try{
     const[r1,r2]=await Promise.all([queryClienti().limit(20),queryTrattative().limit(10)]);
