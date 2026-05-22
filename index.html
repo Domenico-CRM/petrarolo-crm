@@ -1567,6 +1567,29 @@ async function salvaContratto(){
   btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';
 }
 
+function rAI(){
+  document.getElementById('content').innerHTML=`
+  <div class="card" style="flex:1">
+    <div class="card-head" style="background:linear-gradient(135deg,var(--navy),var(--navy2))">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:38px;height:38px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-sparkles" style="font-size:20px;color:#fff"></i></div>
+        <div><div class="card-title" style="color:#fff">AI Assistant — Petrarolo &amp; Co. SRL SB</div><div style="font-size:10.5px;color:rgba(255,255,255,.45)">Powered by Claude · Consulenza, fleet, email, analisi</div></div>
+      </div>
+    </div>
+    <div class="ai-msgs" id="ai-msgs">${aiMsgs.map(m=>msgH(m)).join('')}</div>
+    <div class="ai-sugg">
+      <div class="ai-chip" data-q="Analizza le trattative in chiusura e suggerisci le azioni prioritarie per questo mese">Trattative prioritarie ↗</div>
+      <div class="ai-chip" data-q="Scrivi una email professionale per un cliente VIP per proporre il rinnovo NLT della flotta aziendale">Email rinnovo NLT ↗</div>
+      <div class="ai-chip" data-q="Suggerisci una strategia per aumentare le conversioni lead nel prossimo trimestre">Strategia conversioni ↗</div>
+      <div class="ai-chip" data-q="Dammi un executive summary delle performance commerciali per Petrarolo & Co. SRL SB Moving Solutions">Report executive ↗</div>
+    </div>
+    <div class="ai-input-bar">
+      <input class="ai-input" id="ai-in" type="text" placeholder="Chiedi all'AI...">
+      <button class="btn btn-orange" id="ai-send"><i class="ti ti-send"></i> Invia</button>
+    </div>
+  </div>`;
+}
+
 function togglePartnerAltro(v){
   const grp=document.getElementById('c-partner-altro-grp');
   if(grp){
