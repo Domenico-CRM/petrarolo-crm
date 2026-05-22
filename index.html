@@ -896,7 +896,7 @@ async function rDash(){
     <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">${isDir()?'Clienti totali':'Miei clienti'}</div><div class="kpi-v">${cl.length}</div><div class="kpi-d du">Database live</div></div>
     <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">${isDir()?'Trattative totali':'Mie trattative'}</div><div class="kpi-v">${tr.length}</div><div class="kpi-d du">Aggiornato ora</div></div>
     <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">In chiusura</div><div class="kpi-v">${tr.filter(t=>t.fase==='In chiusura').length}</div><div class="kpi-d du">Alta probabilità</div></div>
-    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Valore pipeline</div><div class="kpi-v">${tr.length*40}K</div><div class="kpi-d" style="color:var(--text3)">Stimato</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Contratti inseriti</div><div class="kpi-v" id="kpi-contratti-dash">—</div><div class="kpi-d" style="color:var(--text3)">Database live</div></div>
   </div>
   <div class="row2">
     <div class="card">
@@ -1140,373 +1140,56 @@ async function rDirOverview(){
 // REPORT
 // ═══════════════════════════════════════════
 async function rReport(){
-  let cl=0,tr=0;
+  let cl=0,tr=0,vei=0,contratti=[];
   try{
-    const[r1,r2]=await Promise.all([queryClienti().select('id',{count:'exact'}),queryTrattative().select('id',{count:'exact'})]);
-    cl=r1.count||0;tr=r2.count||0;
+    const[r1,r2,r3,r4]=await Promise.all([
+      queryClienti().select('id',{count:'exact'}),
+      queryTrattative().select('id',{count:'exact'}),
+      sb.from('flotta_veicoli').select('id',{count:'exact'}),
+      (()=>{let q=sb.from('contratti_chiusi').select('margine,pezzi');if(!isDir())q=q.eq('venditore_id',CU.id);return q;})()
+    ]);
+    cl=r1.count||0; tr=r2.count||0; vei=r3.count||0;
+    contratti=r4.data||[];
   }catch(e){}
+
+  const totMargine=contratti.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
+  const totPezzi=contratti.reduce((s,c)=>s+(parseInt(c.pezzi)||0),0);
+
+  let fasi={Contatto:0,Proposta:0,'Test drive':0,'In chiusura':0,Chiuso:0};
+  try{ const{data:td}=await queryTrattative().select('fase'); (td||[]).forEach(t=>{if(fasi[t.fase]!==undefined)fasi[t.fase]++;}); }catch(e){}
+  const maxFase=Math.max(...Object.values(fasi),1);
+
+  let fonti={};
+  try{ const{data:fd}=await queryClienti().select('fonte'); (fd||[]).forEach(c=>{if(c.fonte)fonti[c.fonte]=(fonti[c.fonte]||0)+1;}); }catch(e){}
+  const totFonti=Object.values(fonti).reduce((s,v)=>s+v,0)||1;
+  const fontiSorted=Object.entries(fonti).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
   document.getElementById('content').innerHTML=`
   <div class="kpi-g">
-    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">${isDir()?'Clienti totali':'Miei clienti'}</div><div class="kpi-v">${cl}</div><div class="kpi-d du">Database live</div></div>
-    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">${isDir()?'Trattative totali':'Mie trattative'}</div><div class="kpi-v">${tr}</div><div class="kpi-d du">Pipeline attivo</div></div>
-    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Fatturato MTD</div><div class="kpi-v">€ 284K</div><div class="kpi-d du">↑ 8% vs obiettivo</div></div>
-    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">NPS clienti</div><div class="kpi-v">74</div><div class="kpi-d du">↑ 8 vs Q1</div></div>
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">${isDir()?'Clienti totali':'Miei clienti'}</div><div class="kpi-v">${cl}</div><div class="kpi-d" style="color:var(--text3)">Database live</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">${isDir()?'Trattative':'Mie trattative'}</div><div class="kpi-v">${tr}</div><div class="kpi-d" style="color:var(--text3)">Pipeline attivo</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Margine contratti</div><div class="kpi-v">€ ${totMargine.toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">${totPezzi} pezzi totali</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Veicoli in flotta</div><div class="kpi-v">${vei}</div><div class="kpi-d" style="color:var(--text3)">Gestiti dal team</div></div>
   </div>
   <div class="row2">
     <div class="card">
-      <div class="card-head"><span class="card-title">Fonti acquisizione</span></div>
+      <div class="card-head"><span class="card-title">Fonti acquisizione clienti</span></div>
       <div style="padding:15px 17px">
-        ${[['Sito petraroloeco.com',34,'var(--orange)'],['Referral',28,'var(--navy)'],['Walk-in Corato',18,'var(--green)'],['Social media',12,'var(--gold)'],['Telefono inbound',8,'var(--text3)']].map(([l,p,c])=>`
-        <div class="rb-row"><span class="rb-label" style="width:170px">${l}</span><div class="prog" style="flex:1"><div class="prog-fill" style="width:${p}%;background:${c}"></div></div><span class="rb-val">${p}%</span></div>`).join('')}
+        ${fontiSorted.length===0
+          ?'<div style="padding:20px;text-align:center;color:var(--text3)">Nessun dato — inserisci i primi clienti</div>'
+          :fontiSorted.map(([l,n])=>`<div class="rb-row"><span class="rb-label" style="width:200px">${l}</span><div class="prog" style="flex:1"><div class="prog-fill" style="width:${Math.round(n/totFonti*100)}%;background:var(--orange)"></div></div><span class="rb-val">${n}</span></div>`).join('')}
       </div>
     </div>
     <div class="card">
       <div class="card-head"><span class="card-title">Pipeline per fase</span></div>
       <div style="padding:15px 17px">
-        ${[['Contatto',18,100],['Proposta',13,72],['Test drive',8,44],['In chiusura',6,33],['Chiuso',2,11]].map(([l,n,p])=>`
-        <div class="rb-row"><span class="rb-label">${l}</span><div class="prog" style="flex:1"><div class="prog-fill" style="width:${p}%;background:${p>70?'var(--navy)':'var(--orange)'}"></div></div><span class="rb-val">${n}</span></div>`).join('')}
+        ${Object.values(fasi).every(v=>v===0)
+          ?'<div style="padding:20px;text-align:center;color:var(--text3)">Nessuna trattativa — inizia ad inserire dati</div>'
+          :Object.entries(fasi).map(([l,n])=>`<div class="rb-row"><span class="rb-label">${l}</span><div class="prog" style="flex:1"><div class="prog-fill" style="width:${Math.round(n/maxFase*100)}%;background:${n===Math.max(...Object.values(fasi))?'var(--navy)':'var(--orange)'}"></div></div><span class="rb-val">${n}</span></div>`).join('')}
       </div>
     </div>
-  </div>`;
-}
+  </div>`;}
 
-// ═══════════════════════════════════════════
-// GESTIONE UTENTI (solo admin/direzione)
-// ═══════════════════════════════════════════
-async function rUtenti(){
-  if(CU.ruolo!=='direzione'&&CU.ruolo!=='admin'){document.getElementById('content').innerHTML='<div style="padding:30px;text-align:center;color:var(--red)">Accesso riservato alla Direzione.</div>';return;}
-  let data=[];
-  try{const r=await sb.from('crm_utenti').select('id,nome,email,ruolo,attivo,created_at').order('created_at',{ascending:true});data=r.data||[];}catch(e){}
-  const roleColors={direzione:'bg-go',cfo:'bg-go',venditore:'bg-n',admin:'bg-r'};
-  const roleLbl={direzione:'Direzione',cfo:'CFO — Amm.',venditore:'Venditore',admin:'Admin'};
-  document.getElementById('content').innerHTML=`
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
-    <div style="font-size:13px;color:var(--text2)">Gestisci gli account del team. Tu sei l'unico che può creare, modificare e disabilitare utenti.</div>
-    <button class="btn btn-orange" onclick="openModal('modal-utente')"><i class="ti ti-user-plus"></i> Nuovo utente</button>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:10px">
-    ${data.map(u=>`
-    <div class="user-card" style="opacity:${u.attivo?1:.55}">
-      <div class="uav" style="width:44px;height:44px;font-size:14px;background:${u.ruolo==='direzione'?'var(--gold)':u.ruolo==='admin'?'var(--red)':'var(--navy)'}">${u.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)}</div>
-      <div style="flex:1;min-width:0">
-        <div class="uc-name">${u.nome} ${u.id===CU.id?'<span style="font-size:10px;background:var(--orange-light);color:var(--orange);padding:1px 7px;border-radius:99px;font-weight:600">Tu</span>':''}</div>
-        <div class="uc-email">${u.email}</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-          <span class="badge ${roleColors[u.ruolo]||'bg-gr'}">${roleLbl[u.ruolo]||u.ruolo}</span>
-          ${!u.attivo?'<span class="badge bg-r">Disabilitato</span>':'<span class="badge bg-g">Attivo</span>'}
-        </div>
-      </div>
-      <div class="uc-actions">
-        ${u.id!==CU.id?`
-        <button class="btn btn-sm" onclick="inviaResetEmail(${u.id},'${u.nome}','${u.email}')" title="Invia link reset password via email"><i class="ti ti-mail-forward"></i> Reset via email</button>
-        <button class="btn btn-sm" onclick="cambiaPassword(${u.id},'${u.nome}')"><i class="ti ti-key"></i> Cambia</button>
-        <button class="btn btn-sm ${u.attivo?'btn-red':''}" onclick="toggleUtente(${u.id},${u.attivo},'${u.nome}')">${u.attivo?'<i class="ti ti-user-off"></i> Disabilita':'<i class="ti ti-user-check"></i> Abilita'}</button>`:'<span style="font-size:11px;color:var(--text3)">Account corrente</span>'}
-      </div>
-    </div>`).join('')}
-  </div>
-  <div style="background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:4px">
-    <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px"><i class="ti ti-info-circle" style="margin-right:5px"></i>Come condividere le credenziali con i colleghi</div>
-    <div style="font-size:12px;color:var(--text2);line-height:1.6">1. Crea l'utente con il pulsante "Nuovo utente" — scegli tu email e password<br>2. Invia al collega: link del CRM + email + password<br>3. Il collega apre il link, inserisce le credenziali Supabase (una volta sola), poi accede con email e password</div>
-  </div>`;
-}
-
-async function salvaUtente(){
-  const nome=document.getElementById('u-nome').value.trim();
-  const ruolo=document.getElementById('u-ruolo').value;
-  const email=document.getElementById('u-email').value.trim().toLowerCase();
-  const pwd=document.getElementById('u-pwd').value;
-  const pwd2=document.getElementById('u-pwd2').value;
-  const err=document.getElementById('utente-err');
-  const btn=document.getElementById('save-utente-btn');
-  err.style.display='none';
-  if(!nome||!email||!pwd){showErr(err,'Compila tutti i campi obbligatori.');return;}
-  if(pwd!==pwd2){showErr(err,'Le password non coincidono.');return;}
-  if(pwd.length<6){showErr(err,'La password deve avere almeno 6 caratteri.');return;}
-  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Creazione...';
-  try{
-    const hashed=btoa(pwd+'_petrarolo_salt_2024');
-    const{error}=await sb.from('crm_utenti').insert({nome,ruolo,email,password_hash:hashed,attivo:true,note:document.getElementById('u-note').value});
-    if(error)throw error;
-    closeModal('modal-utente');
-    showToast(`Utente "${nome}" creato con successo!`);
-    ['u-nome','u-email','u-pwd','u-pwd2','u-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-    renderSec('utenti');
-  }catch(e){showErr(err,'Errore: '+(e.message||'email già in uso'));}
-  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Crea utente';
-}
-
-async function cambiaPassword(id,nome){
-  const pwd=prompt(`Nuova password per ${nome} (min. 6 caratteri):`);
-  if(!pwd||pwd.length<6){if(pwd!==null)alert('Password troppo corta (min. 6 caratteri)');return;}
-  try{
-    const hashed=btoa(pwd+'_petrarolo_salt_2024');
-    const{error}=await sb.from('crm_utenti').update({password_hash:hashed,must_change_pwd:true}).eq('id',id);
-    if(error)throw error;
-    showToast(`Password di ${nome} aggiornata! Dovrà cambiarla al prossimo accesso.`);
-    renderSec('utenti');
-  }catch(e){showToast('Errore: '+e.message);}
-}
-
-async function inviaResetEmail(id, nome, email) {
-  // Genera token univoco
-  const token = btoa(id + '_' + Date.now() + '_petrarolo_reset').replace(/=/g,'');
-  const expiry = new Date(Date.now() + 24*60*60*1000).toISOString(); // 24 ore
-  
-  try {
-    // Salva token nel db
-    const hashed = token; // il token stesso è il riferimento
-    const {error} = await sb.from('crm_utenti').update({
-      reset_token: token,
-      reset_expiry: expiry,
-      must_change_pwd: true
-    }).eq('id', id);
-    if(error) throw error;
-
-    // Costruisci link reset
-    const baseUrl = window.location.origin + window.location.pathname;
-    const resetLink = `${baseUrl}?reset=${token}&uid=${id}`;
-
-    // Apri client email con messaggio precompilato
-    const subject = encodeURIComponent('CRM Petrarolo & Co. — Reset password');
-    const body = encodeURIComponent(
-`Ciao ${nome},
-
-Clicca il link qui sotto per reimpostare la tua password di accesso al CRM Petrarolo & Co. SRL SB.
-
-Il link è valido per 24 ore:
-${resetLink}
-
-Dopo aver cliccato il link, potrai scegliere una nuova password personale.
-
-Se non hai richiesto il reset, ignora questa email.
-
-— Amministrazione Petrarolo & Co. SRL SB`
-    );
-    
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    showToast(`Email di reset preparata per ${nome}!`);
-  } catch(e) {
-    showToast('Errore: ' + e.message);
-  }
-}
-
-async function toggleUtente(id,attivo,nome){
-  const conf=confirm(`${attivo?'Disabilita':'Abilita'} l'account di ${nome}?`);
-  if(!conf)return;
-  try{
-    const{error}=await sb.from('crm_utenti').update({attivo:!attivo}).eq('id',id);
-    if(error)throw error;
-    showToast(`Account di ${nome} ${attivo?'disabilitato':'abilitato'}!`);
-    renderSec('utenti');
-  }catch(e){showToast('Errore: '+e.message);}
-}
-
-// ═══════════════════════════════════════════
-// AI ASSISTANT
-// ═══════════════════════════════════════════
-function rAI(){
-  document.getElementById('content').innerHTML=`
-  <div class="card" style="flex:1">
-    <div class="card-head" style="background:linear-gradient(135deg,var(--navy),var(--navy2))">
-      <div style="display:flex;align-items:center;gap:11px">
-        <div style="width:38px;height:38px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-sparkles" style="font-size:20px;color:#fff"></i></div>
-        <div><div class="card-title" style="color:#fff">AI Assistant — Petrarolo &amp; Co. SRL SB</div><div style="font-size:10.5px;color:rgba(255,255,255,.45)">Powered by Claude · Consulenza, fleet, email, analisi</div></div>
-      </div>
-    </div>
-    <div class="ai-msgs" id="ai-msgs">${aiMsgs.map(m=>msgH(m)).join('')}</div>
-    <div class="ai-sugg">
-      <div class="ai-chip" data-q="Analizza le trattative in chiusura e suggerisci le azioni prioritarie per questo mese">Trattative prioritarie ↗</div>
-      <div class="ai-chip" data-q="Scrivi una email professionale per un cliente VIP per proporre il rinnovo NLT della flotta aziendale">Email rinnovo NLT ↗</div>
-      <div class="ai-chip" data-q="Suggerisci una strategia per aumentare le conversioni lead nel mese di giugno">Strategia conversioni ↗</div>
-      <div class="ai-chip" data-q="Dammi un executive summary delle performance commerciali di maggio per Petrarolo & Co. SRL SB">Report executive ↗</div>
-    </div>
-    <div class="ai-input-bar">
-      <input class="ai-input" id="ai-in" type="text" placeholder="Chiedi all'AI...">
-      <button class="btn btn-orange" id="ai-send"><i class="ti ti-send"></i> Invia</button>
-    </div>
-  </div>`;
-}
-
-function msgH(m){
-  const init=CU?CU.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2):'U';
-  if(m.role==='ai')return`<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot">${m.text.replace(/\n/g,'<br>')}</div></div>`;
-  return`<div class="ai-msg" style="flex-direction:row-reverse"><div class="ai-av" style="background:var(--navy);color:#fff">${init}</div><div class="ai-bubble usr">${m.text}</div></div>`;
-}
-
-function bindAI(){
-  const send=()=>{const i=document.getElementById('ai-in');if(!i)return;const m=i.value.trim();if(!m)return;i.value='';sendAI(m);};
-  const btn=document.getElementById('ai-send');const inp=document.getElementById('ai-in');
-  if(btn)btn.onclick=send;
-  if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
-  document.querySelectorAll('.ai-chip').forEach(ch=>ch.onclick=()=>sendAI(ch.dataset.q));
-}
-
-async function sendAI(msg){
-  aiMsgs.push({role:'user',text:msg});
-  const box=document.getElementById('ai-msgs');
-  if(box){box.innerHTML=aiMsgs.map(m=>msgH(m)).join('')+`<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div>`;box.scrollTop=box.scrollHeight;}
-  const sys=`Sei l'assistente AI del CRM di Petrarolo & Co. SRL SB — Moving Solutions, Corato (BA). Utente: ${CU?.nome||'Utente'} (${CU?.ruolo||'venditore'}). Rispondi in italiano, professionale e conciso.`;
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:sys,messages:aiMsgs.map(m=>({role:m.role==='ai'?'assistant':'user',content:m.text}))})});
-    const data=await res.json();
-    aiMsgs.push({role:'ai',text:data.content?.[0]?.text||'Risposta non disponibile.'});
-  }catch(e){aiMsgs.push({role:'ai',text:'Errore di connessione.'});}
-  const b2=document.getElementById('ai-msgs');
-  if(b2){b2.innerHTML=aiMsgs.map(m=>msgH(m)).join('');b2.scrollTop=b2.scrollHeight;}
-  bindAI();
-}
-
-function toggleSegnalatore(val){
-  const grp = document.getElementById('segnalatore-group');
-  if(grp) grp.style.display = val === 'LEAD DA SEGNALATORE' ? 'flex' : 'none';
-  if(val !== 'LEAD DA SEGNALATORE'){
-    const s = document.getElementById('f-segnalatore');
-    if(s) s.value = '';
-  }
-}
-function aiAnal(nome){navTo('ai');setTimeout(()=>sendAI(`Analizza il cliente ${nome}: suggerisci azioni commerciali, opportunità NLT e rischi`),200);}
-
-// ═══════════════════════════════════════════
-// AGENDA
-// ═══════════════════════════════════════════
-function rAgenda(){
-  document.getElementById('content').innerHTML=`
-  <div class="row2">
-    <div class="card">
-      <div class="card-head"><span class="card-title"><i class="ti ti-calendar" style="color:var(--orange);margin-right:6px"></i>Oggi — 21 Maggio 2026</span></div>
-      ${[['09:30','Luca Ferretti','Test drive BMW X5','var(--green)','bg-g','Confermato'],['11:00','Anna Conti','Presentazione GLC','var(--navy)','bg-n','In corso'],['14:30','Logistica Sud SpA','Proposta NLT Sprinter','var(--orange)','bg-o','Attesa'],['16:00','G. Esposito','Consegna Transporter','var(--green)','bg-g','Confermato']].map(([t,n,d,c,b,s])=>`
-      <div class="appt-item"><div class="appt-time">${t}</div><div style="width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0"></div><div style="flex:1"><div style="font-size:12.5px;font-weight:600">${n}</div><div style="font-size:11px;color:var(--text3)">${d}</div></div><span class="badge ${b}" style="font-size:10px">${s}</span></div>`).join('')}
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Prossimi 7 giorni</span><button class="btn btn-sm btn-navy"><i class="ti ti-plus"></i> Aggiungi</button></div>
-      ${[['22 Mag','Ferrari Srl','Firma contratto BMW x3','bg-g'],['22 Mag','Logistica Sud','Firma NLT Sprinter x5','bg-go'],['23 Mag','M. Vitale','Demo Fiat E-Ducato','bg-n'],['26 Mag','Nuovo lead','Consulenza fleet','bg-o']].map(([d,n,desc,b])=>`
-      <div class="appt-item"><div style="font-size:10.5px;font-weight:600;color:var(--text2);width:48px;flex-shrink:0">${d}</div><div style="width:7px;height:7px;border-radius:50%;background:${b==='bg-g'?'var(--green)':b==='bg-go'?'var(--gold)':'var(--orange)'};flex-shrink:0"></div><div style="flex:1"><div style="font-size:12.5px;font-weight:600">${n}</div><div style="font-size:11px;color:var(--text3)">${desc}</div></div><span class="badge ${b}" style="font-size:10px">${b==='bg-g'?'Conf.':b==='bg-go'?'VIP':'Prog.'}</span></div>`).join('')}
-    </div>
-  </div>`;
-}
-
-// ═══════════════════════════════════════════
-// ATTIVITÀ
-// ═══════════════════════════════════════════
-async function rAttivita(){
-  let data=[];
-  try{
-    let q=sb.from('attivita').select('*').order('created_at',{ascending:false});
-    if(!isDir())q=q.eq('assegnato_id',CU.id);
-    const r=await q;data=r.data||[];
-  }catch(e){}
-  document.getElementById('content').innerHTML=`
-  <div class="full-card">
-    <div class="card-head"><span class="card-title"><i class="ti ti-checklist" style="color:var(--orange);margin-right:6px"></i>${isDir()?'Attività team':'Le mie attività'} — ${data.length}</span>
-      <button class="btn btn-sm btn-navy"><i class="ti ti-plus"></i> Nuova attività</button>
-    </div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Attività</th><th>Cliente</th><th>Priorità</th><th>Scadenza</th><th>Assegnato</th><th>Stato</th></tr></thead><tbody>
-    ${data.length?data.map(a=>`<tr>
-      <td style="font-weight:600">${a.titolo}</td>
-      <td style="color:var(--text2)">${a.cliente||'—'}</td>
-      <td>${badge(a.priorita||'—',a.priorita==='Alta'?'bg-r':a.priorita==='Media'?'bg-o':'bg-gr')}</td>
-      <td style="color:${a.scadenza==='Oggi'?'#991B1B':'var(--text2)'};font-weight:${a.scadenza==='Oggi'?'700':'400'}">${a.scadenza||'—'}</td>
-      <td style="color:var(--text2)">${a.assegnato||'—'}</td>
-      <td>${badge(a.stato||'—',a.stato==='Completata'?'bg-g':a.stato==='In corso'?'bg-n':'bg-o')}</td>
-    </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text3)">Nessuna attività trovata</td></tr>`}
-    </tbody></table></div>
-  </div>`;
-}
-
-// ═══════════════════════════════════════════
-// IMPOSTAZIONI
-// ═══════════════════════════════════════════
-function rImpostazioni(){
-  const roleLabel = {direzione:'Direzione',cfo:'CFO — Amministrazione',venditore:CU?.ruolo_label||'Venditore',admin:'Amministratore'}[CU?.ruolo]||CU?.ruolo_label||CU?.ruolo;
-  const roleBadge = CU?.ruolo==='direzione'||CU?.ruolo==='cfo'?'bg-go':CU?.ruolo==='admin'?'bg-r':'bg-n';
-  document.getElementById('content').innerHTML=`
-  <div class="row2">
-    <div class="card">
-      <div class="card-head"><span class="card-title"><i class="ti ti-user" style="color:var(--orange);margin-right:6px"></i>Il mio profilo</span></div>
-      <div style="padding:16px 17px">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px 14px;background:var(--gray);border-radius:9px">
-          <div class="uav" style="width:44px;height:44px;font-size:15px">${(CU?.nome||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)}</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">${CU?.nome||'—'}</div>
-            <div style="font-size:12px;color:var(--text2)">${CU?.email||'—'}</div>
-            <div style="margin-top:5px">${badge(roleLabel,roleBadge)}</div>
-          </div>
-        </div>
-        <button class="btn btn-red" style="width:100%;justify-content:center" onclick="doLogout()"><i class="ti ti-logout"></i> Disconnetti</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title"><i class="ti ti-lock" style="color:var(--orange);margin-right:6px"></i>Cambia la tua password</span></div>
-      <div style="padding:16px 17px;display:flex;flex-direction:column;gap:10px">
-        <div style="font-size:12px;color:var(--orange);line-height:1.5;background:var(--orange-light);border-radius:8px;padding:10px 12px;border-left:3px solid var(--orange)">
-          <i class="ti ti-shield-check"></i> Minimo 6 caratteri. Non condividere la password con nessuno.
-        </div>
-        <div class="form-group">
-          <div class="form-label">Password attuale</div>
-          <div style="position:relative">
-            <input id="cp-old" type="password" placeholder="Inserisci la password attuale" style="font-size:12.5px;padding:8px 40px 8px 11px;border:1px solid var(--border2);border-radius:7px;width:100%;outline:none;font-family:inherit">
-            <button class="pw-toggle" style="position:absolute;right:10px;top:50%;transform:translateY(-50%)" onclick="togglePwd('cp-old',this)"><i class="ti ti-eye"></i></button>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="form-label">Nuova password</div>
-          <div style="position:relative">
-            <input id="cp-new1" type="password" placeholder="Minimo 6 caratteri" style="font-size:12.5px;padding:8px 40px 8px 11px;border:1px solid var(--border2);border-radius:7px;width:100%;outline:none;font-family:inherit">
-            <button class="pw-toggle" style="position:absolute;right:10px;top:50%;transform:translateY(-50%)" onclick="togglePwd('cp-new1',this)"><i class="ti ti-eye"></i></button>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="form-label">Conferma nuova password</div>
-          <input id="cp-new2" type="password" placeholder="Ripeti la nuova password" style="font-size:12.5px;padding:8px 11px;border:1px solid var(--border2);border-radius:7px;width:100%;outline:none;font-family:inherit">
-        </div>
-        <div id="cp-self-err" style="display:none;background:var(--red-bg);color:var(--red);border-radius:7px;padding:9px 12px;font-size:12px"></div>
-        <button class="btn btn-orange" style="width:100%;justify-content:center" onclick="selfChangePassword()"><i class="ti ti-lock-check"></i> Aggiorna password</button>
-      </div>
-    </div>
-  </div>
-  <div class="row2">
-    <div class="card">
-      <div class="card-head"><span class="card-title"><i class="ti ti-database" style="color:var(--orange);margin-right:6px"></i>Database connesso</span></div>
-      <div style="padding:16px 17px">
-        <div style="background:var(--green-bg);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:9px;margin-bottom:14px">
-          <i class="ti ti-circle-check" style="color:var(--green);font-size:18px"></i>
-          <div><div style="font-size:12.5px;font-weight:600;color:var(--green)">Supabase connesso</div><div style="font-size:11px;color:var(--green)">${localStorage.getItem('p_url')||'—'}</div></div>
-        </div>
-        <button class="btn" style="width:100%;justify-content:center" onclick="localStorage.removeItem('p_url');localStorage.removeItem('p_key');location.reload()"><i class="ti ti-refresh"></i> Cambia configurazione</button>
-      </div>
-    </div>
-    ${isDir()?`<div class="card"><div class="card-head"><span class="card-title"><i class="ti ti-shield-lock" style="color:var(--orange);margin-right:6px"></i>Gestione utenti</span></div><div style="padding:16px 17px"><button class="btn btn-orange" style="width:100%;justify-content:center" onclick="navTo('utenti')"><i class="ti ti-users"></i> Gestisci utenti e credenziali</button></div></div>`:'<div></div>'}
-  </div>`;
-}
-
-async function handleResetToken(token, uid) {
-  try {
-    const {data, error} = await sb.from('crm_utenti').select('id,nome,email,reset_token,reset_expiry').eq('id', uid).single();
-    if(error || !data) { showToast('Link non valido.'); return; }
-    if(data.reset_token !== token) { showToast('Link non valido o già utilizzato.'); return; }
-    if(new Date(data.reset_expiry) < new Date()) { showToast('Link scaduto. Chiedi un nuovo reset.'); return; }
-    
-    // Mostra form cambio password
-    document.getElementById('setup-screen').style.display='none';
-    document.getElementById('login-screen').style.display='none';
-    
-    // Imposta utente temporaneo per il reset
-    CU = {id: parseInt(uid), nome: data.nome, email: data.email, ruolo: 'venditore', ruolo_label: '', must_change: true};
-    
-    // Mostra schermata cambio password
-    const screen = document.getElementById('change-pwd-screen');
-    screen.style.display='flex';
-    
-    // Aggiorna testo schermata
-    const title = screen.querySelector('.box-title');
-    if(title) title.textContent = `Ciao ${data.nome}, reimposta la tua password`;
-    
-    // Override saveNewPwd per pulire anche il token
-    window._resetMode = {token, uid: parseInt(uid)};
-  } catch(e) {
-    showToast('Errore: ' + e.message);
-  }
-}
 
 // ═══════════════════════════════════════════
 // REPORT CONTRATTI
