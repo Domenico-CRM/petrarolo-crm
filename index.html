@@ -1104,8 +1104,8 @@ async function esportaAgendaExcel(){
     a.importo_preventivo||''
   ].map(esc).join(sep));
   const BOM='﻿';
-  const csv=BOM+[hdrs.map(esc).join(sep),...rows].join('
-');
+  const csv=BOM+[hdrs.map(esc).join(sep),...rows].join('\n');
+
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');
   a.href=url;a.download='Agenda_Attivita_'+(isDir()?'Team':CU.nome.replace(/ /g,'_'))+'_'+new Date().toISOString().slice(0,10)+'.csv';
@@ -2646,8 +2646,8 @@ async function esportaConfronto(formato){
       return[data,d.contratti,d.pezzi,d.margine.toFixed(2),diff].map(esc).join(sep);
     });
     const BOM='﻿';
-    const csv=BOM+[hdrs.map(esc).join(sep),...rows].join('
-');
+    const csv=BOM+[hdrs.map(esc).join(sep),...rows].join('\n');
+
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
     const url=URL.createObjectURL(blob);const a=document.createElement('a');
     a.href=url;a.download='Report_Confronto_Mensile_'+new Date().getFullYear()+'.csv';
