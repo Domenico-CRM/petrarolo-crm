@@ -1081,8 +1081,8 @@ async function salvaLead(){
       citta:document.getElementById('f-citta')?.value||'',
       interesse:document.getElementById('f-modello')?.value||'',
       fonte,stato:'Lead',score:50,
-      venditore_id:(()=>{const sel=document.getElementById('f-venditore-assegna');return sel&&sel.value?parseInt(sel.value):CU.id;})(),
-      venditore_nome:(()=>{const sel=document.getElementById('f-venditore-assegna');if(sel&&sel.value){const opt=sel.options[sel.selectedIndex];return opt?opt.textContent.replace(' (me)',''):CU.nome;}return CU.nome;})(),
+      venditore_id:(()=>{const sv=document.getElementById('f-venditore-assegna');return sv&&sv.value?parseInt(sv.value):CU.id;})(),
+      venditore_nome:(()=>{const sv=document.getElementById('f-venditore-assegna');if(sv&&sv.value){const opt=sv.options[sv.selectedIndex];return opt?opt.textContent.replace(' (me)',''):CU.nome;}return CU.nome;})(),
       assegnato_da:CU.nome,assegnato_da_id:CU.id,data_assegnazione:new Date().toISOString(),
       note:document.getElementById('f-note')?.value||'',
       created_by:CU.nome
@@ -1091,10 +1091,10 @@ async function salvaLead(){
     closeModal('modal-lead');
     showToast('Lead salvato con successo!');
     // Notifica venditore se diverso dall'utente loggato
-    const sel=document.getElementById('f-venditore-assegna');
-    if(sel&&sel.value&&parseInt(sel.value)!==CU.id){
+    const selVend=document.getElementById('f-venditore-assegna');
+    if(selVend&&selVend.value&&parseInt(selVend.value)!==CU.id){
       const nome=`${(document.getElementById('f-nome')?.value||'')} ${(document.getElementById('f-cognome')?.value||'')}`.trim();
-      inviaNotifica(parseInt(sel.value),'lead_assegnata',`Ti è stata assegnata una nuova lead: ${nome}`,null,nome);
+      inviaNotifica(parseInt(selVend.value),'lead_assegnata',`Ti è stata assegnata una nuova lead: ${nome}`,null,nome);
     }
     ['f-nome','f-cognome','f-tel','f-email','f-citta','f-modello','f-note','f-segnalatore'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     const sel=document.getElementById('f-fonte');if(sel)sel.value='';
