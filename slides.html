@@ -1,12 +1,13 @@
-<!DOCTYPE html>
-<!-- saved from url=(0049)file:///C:/Users/Domenico/Downloads/slides_1.html -->
-<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Petrarolo &amp; Co. — Il Tuo CRM Automotive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="./slides_files/css2" rel="stylesheet">
-<link rel="stylesheet" href="./slides_files/all.min.css">
+<title>Petrarolo & Co. — Il Tuo CRM Automotive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -25,30 +26,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .slide.exit-down{opacity:0;transform:translateY(40px)}
 
 /* ═══ NAV ═══ */
-.nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:12px;background:rgba(30,45,61,.08);backdrop-filter:blur(20px);border:1px solid rgba(30,45,61,.15);border-radius:99px;padding:10px 20px}
+.nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border:1px solid rgba(30,45,61,.12);border-radius:99px;padding:10px 20px;box-shadow:0 4px 20px rgba(30,45,61,.12)}
 .nav-btn{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
-.nav-prev{background:rgba(30,45,61,.1);color:var(--navy)}
-.nav-prev:hover{background:rgba(30,45,61,.2)}
+.nav-prev{background:#EBF4FB;color:#1E2D3D}
+.nav-prev:hover{background:#d4eaf7}
 .nav-next{background:var(--orange);color:#fff}
 .nav-next:hover{background:var(--orange2)}
 .nav-dots{display:flex;gap:5px;align-items:center}
-.dot{width:5px;height:5px;border-radius:50%;background:rgba(30,45,61,.2);transition:all .3s;cursor:pointer}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(30,45,61,.15);transition:all .3s;cursor:pointer}
 .dot.active{background:var(--orange);width:18px;border-radius:99px}
 .slide-counter{font-size:11px;color:rgba(30,45,61,.45);font-family:'Syne',sans-serif;letter-spacing:.05em}
 
 /* ═══ PROGRESS ═══ */
-.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .4s ease;z-index:200}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2196D3,#1E2D3D);transition:width .4s ease;z-index:200}
 
 /* ═══ SLIDE 1 — COVER ═══ */
-.s1{background:var(--navy3);overflow:hidden}
-.s1-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% -10%,rgba(33,150,211,.12),transparent),radial-gradient(ellipse 60% 60% at 80% 60%,rgba(30,45,61,.06),transparent);pointer-events:none}
-.s1-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(30,45,61,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(30,45,61,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.s1{background:linear-gradient(160deg,#EBF4FB,#F4F7FA);overflow:hidden}
+.s1-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(33,150,211,.15),transparent),radial-gradient(ellipse 50% 50% at 90% 80%,rgba(30,45,61,.05),transparent);pointer-events:none}
+.s1-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(33,150,211,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(33,150,211,.06) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
 .s1-content{position:relative;z-index:2;text-align:center;padding:20px}
 .s1-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(33,150,211,.12);border:1px solid rgba(33,150,211,.3);border-radius:99px;padding:6px 16px;margin-bottom:24px;animation:fadeUp .6s ease both}
-.s1-badge span{font-size:11px;color:var(--orange);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
-.s1-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,7vw,4.5rem);font-weight:800;color:var(--navy);line-height:1.05;margin-bottom:12px;animation:fadeUp .6s .1s ease both}
+.s1-badge span{font-size:11px;color:#2196D3;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.s1-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,7vw,4.5rem);font-weight:800;color:#1E2D3D;line-height:1.05;margin-bottom:12px;animation:fadeUp .6s .1s ease both}
 .s1-title span{color:var(--orange)}
-.s1-sub{font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(30,45,61,.55);font-weight:300;margin-bottom:36px;animation:fadeUp .6s .2s ease both;max-width:600px}
+.s1-sub{font-size:clamp(1rem,2.5vw,1.35rem);color:#4a6880;font-weight:300;margin-bottom:36px;animation:fadeUp .6s .2s ease both;max-width:600px}
 .s1-logo{width:160px;background:#fff;border-radius:12px;padding:12px 20px;animation:fadeUp .6s .3s ease both}
 .s1-scroll{margin-top:40px;animation:fadeUp .6s .4s ease both;display:flex;flex-direction:column;align-items:center;gap:6px}
 .s1-scroll span{font-size:11px;color:rgba(30,45,61,.3);letter-spacing:.1em;text-transform:uppercase}
@@ -56,38 +57,38 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
 /* ═══ SLIDE 2 — IL PROBLEMA ═══ */
-.s2{background:#f8fafc}
+.s2{background:#F4F7FA}
 .problem-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:680px;width:90%;margin-top:24px}
-.problem-card{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:16px;padding:20px;text-align:center;animation:fadeUp .5s ease both}
+.problem-card{background:#fff;border:1px solid rgba(30,45,61,.12);border-radius:16px;padding:20px;text-align:center;animation:fadeUp .5s ease both;box-shadow:0 2px 12px rgba(30,45,61,.06)}
 .problem-card:nth-child(1){animation-delay:.1s}
 .problem-card:nth-child(2){animation-delay:.2s}
 .problem-card:nth-child(3){animation-delay:.3s}
 .problem-card:nth-child(4){animation-delay:.4s}
 .problem-icon{font-size:2rem;margin-bottom:10px}
-.problem-text{font-size:13px;color:rgba(30,45,61,.6);line-height:1.5}
-.problem-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.problem-text{font-size:13px;color:#3a5068;line-height:1.5}
+.problem-title{font-size:14px;font-weight:700;color:#1E2D3D;margin-bottom:6px}
 
 /* ═══ SLIDE 3 — LA SOLUZIONE ═══ */
-.s3{background:linear-gradient(135deg,#f0f7fc 0%,#e8f3fa 100%)}
-.solution-hero{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,5vw,3.5rem);font-weight:800;color:#fff;text-align:center;line-height:1.1;max-width:700px;padding:0 20px;animation:fadeUp .5s ease both}
-.solution-hero em{font-style:normal;color:var(--orange)}
+.s3{background:#F4F7FA}
+.solution-hero{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,5vw,3.5rem);font-weight:800;color:#1E2D3D;text-align:center;line-height:1.1;max-width:700px;padding:0 20px;animation:fadeUp .5s ease both}
+.solution-hero em{font-style:normal;color:#2196D3}
 .solution-sub{text-align:center;font-size:16px;color:rgba(30,45,61,.55);margin-top:16px;max-width:550px;padding:0 20px;animation:fadeUp .5s .15s ease both}
 .solution-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px;max-width:600px;animation:fadeUp .5s .25s ease both}
-.tag{background:rgba(33,150,211,.1);border:1px solid rgba(33,150,211,.2);border-radius:99px;padding:7px 16px;font-size:13px;color:rgba(255,255,255,.8);font-weight:500}
-.tag i{color:var(--orange);margin-right:6px}
+.tag{background:#2196D3;border:2px solid #1976D2;border-radius:99px;padding:10px 20px;font-size:14px;color:#ffffff;font-weight:700;box-shadow:0 3px 10px rgba(33,150,211,.3)}
+.tag i{color:rgba(255,255,255,.8);margin-right:6px}
 
 /* ═══ SLIDE 4 — FUNZIONALITÀ ═══ */
-.s4{background:#FFFFFF}
+.s4{background:#F4F7FA}
 .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:700px;width:90%;margin-top:20px}
 @media(min-width:600px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
-.feat-card{background:#fff;border:1px solid rgba(30,45,61,.08);border-radius:14px;padding:18px 16px;animation:fadeUp .4s ease both;transition:transform .2s,background .2s}
-.feat-card:hover{background:rgba(232,83,10,.08);transform:translateY(-3px)}
+.feat-card{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:14px;padding:18px 16px;animation:fadeUp .4s ease both;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 10px rgba(30,45,61,.05)}
+.feat-card:hover{box-shadow:0 6px 20px rgba(30,45,61,.12);transform:translateY(-3px)}
 .feat-icon{width:38px;height:38px;border-radius:10px;background:rgba(232,83,10,.15);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px;color:var(--orange)}
-.feat-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.feat-name{font-size:13px;font-weight:700;color:#1E2D3D;margin-bottom:4px}
 .feat-desc{font-size:11px;color:rgba(30,45,61,.45);line-height:1.5}
 
 /* ═══ SLIDE 5 — LEAD MANAGEMENT ═══ */
-.s5{background:linear-gradient(160deg,#0d1820,#1a1a2e)}
+.s5{background:#F4F7FA}
 .flow{display:flex;align-items:center;gap:0;max-width:700px;width:95%;flex-wrap:nowrap;overflow-x:auto;padding:8px 0}
 .flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;animation:fadeUp .4s ease both}
 .flow-step:nth-child(1){animation-delay:.1s}
@@ -96,52 +97,52 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .flow-step:nth-child(7){animation-delay:.4s}
 .flow-step:nth-child(9){animation-delay:.5s}
 .flow-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
-.flow-arrow{color:rgba(30,45,61,.2);font-size:18px;flex-shrink:0;margin:0 6px;padding-bottom:20px}
+.flow-arrow{color:rgba(30,45,61,.35);font-size:18px;flex-shrink:0;margin:0 6px;padding-bottom:20px}
 .flow-label{font-size:10px;color:rgba(30,45,61,.55);text-align:center;max-width:60px;line-height:1.4}
-.flow-c1{background:rgba(232,83,10,.2);color:var(--orange);border:2px solid rgba(232,83,10,.3)}
-.flow-c2{background:rgba(14,68,124,.3);color:#5ba8f5;border:2px solid rgba(14,68,124,.4)}
-.flow-c3{background:rgba(201,146,10,.2);color:var(--gold);border:2px solid rgba(201,146,10,.3)}
-.flow-c4{background:rgba(59,109,17,.2);color:#7dc44e;border:2px solid rgba(59,109,17,.3)}
-.flow-c5{background:rgba(153,27,27,.2);color:#f87171;border:2px solid rgba(153,27,27,.3)}
+.flow-c1{background:#EBF5FC;color:#1a6fa8;border:2px solid #2196D3}
+.flow-c2{background:#E8F4FD;color:#1565C0;border:2px solid #1976D2}
+.flow-c3{background:#FFF8E1;color:#F57F17;border:2px solid #F9A825}
+.flow-c4{background:#E8F5E9;color:#2E7D32;border:2px solid #388E3C}
+.flow-c5{background:#FFEBEE;color:#C62828;border:2px solid #E53935}
 
 /* ═══ SLIDE 6 — KPI ═══ */
-.s6{background:#f8fafc}
+.s6{background:#F4F7FA}
 .kpi-showcase{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:680px;width:90%;margin-top:20px}
 @media(min-width:600px){.kpi-showcase{grid-template-columns:repeat(4,1fr)}}
-.kpi-box{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px 16px;text-align:center;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
+.kpi-box{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:16px;padding:20px 16px;text-align:center;animation:fadeUp .4s ease both;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(30,45,61,.06)}
 .kpi-box::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,83,10,.05),transparent);opacity:0;transition:opacity .3s}
 .kpi-box:hover::before{opacity:1}
 .kpi-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--orange);margin-bottom:4px}
-.kpi-label{font-size:11px;color:rgba(30,45,61,.5);line-height:1.4}
+.kpi-label{font-size:11.5px;color:#4a6880;line-height:1.4}
 
 /* ═══ SLIDE 7 — TEAM ═══ */
-.s7{background:linear-gradient(135deg,#f8fafc,#e8f3fa)}
+.s7{background:#F4F7FA}
 .roles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:680px;width:90%;margin-top:20px}
 @media(min-width:600px){.roles-grid{grid-template-columns:repeat(3,1fr)}}
 .role-card{background:#fff;border:1px solid rgba(30,45,61,.08);border-radius:14px;padding:18px;animation:fadeUp .4s ease both;text-align:center}
 .role-av{width:44px;height:44px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
-.role-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
-.role-label{font-size:11px;color:rgba(30,45,61,.45);margin-bottom:10px}
+.role-name{font-size:14px;font-weight:800;color:#1E2D3D;margin-bottom:4px}
+.role-label{font-size:12px;color:#1E2D3D;font-weight:600;margin-bottom:10px}
 .role-perms{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
-.perm{font-size:9px;background:rgba(232,83,10,.15);color:rgba(30,45,61,.6);padding:2px 7px;border-radius:99px}
+.perm{font-size:10px;background:#1E2D3D;color:#ffffff;padding:3px 9px;border-radius:99px;font-weight:500}
 
 /* ═══ SLIDE 8 — NOTIFICHE ═══ */
-.s8{background:#FFFFFF}
+.s8{background:#F4F7FA}
 .notif-demo{display:flex;flex-direction:column;gap:10px;max-width:500px;width:90%;margin-top:20px}
-.notif-item{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;animation:slideIn .4s ease both}
+.notif-item{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;animation:slideIn .4s ease both;box-shadow:0 2px 10px rgba(30,45,61,.06)}
 .notif-item:nth-child(1){animation-delay:.1s}
 .notif-item:nth-child(2){animation-delay:.25s}
 .notif-item:nth-child(3){animation-delay:.4s}
 .notif-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .notif-body{flex:1}
-.notif-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.notif-title{font-size:13px;font-weight:700;color:#1E2D3D;margin-bottom:3px}
 .notif-text{font-size:11.5px;color:rgba(30,45,61,.55);line-height:1.5}
-.notif-time{font-size:10px;color:rgba(30,45,61,.25);margin-top:4px}
+.notif-time{font-size:10px;color:#6b8aa0;margin-top:4px}
 .notif-badge{background:var(--orange);color:#fff;font-size:9px;padding:2px 7px;border-radius:99px;font-weight:700;margin-left:6px}
 @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 
 /* ═══ SLIDE 9 — REPORT ═══ */
-.s9{background:linear-gradient(160deg,#f0f7fc,#e8f3fa)}
+.s9{background:#F4F7FA}
 .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:680px;width:90%;margin-top:20px}
 .report-card{background:#fff;border:1px solid rgba(30,45,61,.08);border-radius:16px;padding:20px;animation:fadeUp .4s ease both}
 .report-card:nth-child(1){animation-delay:.1s}
@@ -149,11 +150,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .report-card:nth-child(3){animation-delay:.3s}
 .report-card:nth-child(4){animation-delay:.4s}
 .report-icon{font-size:1.8rem;margin-bottom:10px}
-.report-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.report-name{font-size:14px;font-weight:700;color:#1E2D3D;margin-bottom:6px}
 .report-list{font-size:11.5px;color:rgba(30,45,61,.5);line-height:2}
 
 /* ═══ SLIDE 10 — SICUREZZA ═══ */
-.s10{background:#f8fafc}
+.s10{background:#F4F7FA}
 .security-items{display:flex;flex-direction:column;gap:12px;max-width:550px;width:90%;margin-top:24px}
 .sec-item{display:flex;gap:14px;align-items:flex-start;animation:fadeUp .4s ease both}
 .sec-item:nth-child(1){animation-delay:.1s}
@@ -161,11 +162,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .sec-item:nth-child(3){animation-delay:.3s}
 .sec-item:nth-child(4){animation-delay:.4s}
 .sec-icon{width:44px;height:44px;border-radius:12px;background:rgba(59,109,17,.15);border:1px solid rgba(59,109,17,.25);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;color:#7dc44e}
-.sec-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.sec-title{font-size:14px;font-weight:700;color:#1E2D3D;margin-bottom:4px}
 .sec-text{font-size:12px;color:rgba(30,45,61,.5);line-height:1.5}
 
 /* ═══ SLIDE 11 — MOBILE ═══ */
-.s11{background:linear-gradient(135deg,#f8fafc,#e8f3fa)}
+.s11{background:#F4F7FA}
 .phone-mockup{width:180px;height:320px;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:28px;margin:20px auto;position:relative;overflow:hidden;animation:fadeUp .5s .1s ease both;flex-shrink:0}
 .phone-screen{position:absolute;inset:8px;background:#f0f7fc;border-radius:20px;overflow:hidden}
 .phone-topbar{background:var(--navy);padding:8px 12px;display:flex;align-items:center;gap:6px}
@@ -186,10 +187,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .mob-feat:nth-child(3){animation-delay:.4s}
 .mob-feat:nth-child(4){animation-delay:.5s}
 .mob-icon{width:32px;height:32px;border-radius:8px;background:rgba(232,83,10,.15);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--orange);flex-shrink:0}
-.mob-text{font-size:12px;color:rgba(30,45,61,.6);line-height:1.4}
+.mob-text{font-size:12px;color:#3a5068;line-height:1.4}
 
 /* ═══ SLIDE 12 — PERCHÉ SÌ ═══ */
-.s12{background:#FFFFFF}
+.s12{background:#F4F7FA}
 .reasons{display:grid;grid-template-columns:1fr;gap:10px;max-width:580px;width:90%;margin-top:16px}
 @media(min-width:500px){.reasons{grid-template-columns:1fr 1fr}}
 .reason{background:rgba(255,255,255,.04);border-left:3px solid var(--orange);border-radius:0 12px 12px 0;padding:14px 16px;animation:fadeUp .4s ease both}
@@ -199,11 +200,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .reason:nth-child(4){animation-delay:.4s}
 .reason:nth-child(5){animation-delay:.5s}
 .reason:nth-child(6){animation-delay:.6s}
-.reason-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.reason-title{font-size:13px;font-weight:700;color:#1E2D3D;margin-bottom:4px}
 .reason-text{font-size:11.5px;color:rgba(30,45,61,.5);line-height:1.5}
 
 /* ═══ SLIDE 13 — CALL TO ACTION ═══ */
-.s13{background:var(--navy);overflow:hidden}
+.s13{background:linear-gradient(135deg,var(--navy),#2d4a6b);overflow:hidden}
 .s13-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 110%,rgba(232,83,10,.2),transparent),radial-gradient(ellipse 60% 60% at 20% 30%,rgba(201,146,10,.08),transparent)}
 .s13-content{position:relative;z-index:2;text-align:center;padding:24px}
 .s13-emoji{font-size:3rem;animation:pulse 2s infinite;margin-bottom:16px}
@@ -217,10 +218,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 .s13-url span{color:rgba(30,45,61,.6)}
 
 /* ═══ COMMON ═══ */
-.slide-section{font-size:10px;color:var(--orange);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;animation:fadeUp .4s ease both}
-.slide-title{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;color:var(--navy);text-align:center;line-height:1.15;animation:fadeUp .4s .05s ease both;padding:0 16px}
+.slide-section{font-size:11px;color:#2196D3;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;animation:fadeUp .4s ease both}
+.slide-title{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;color:#1E2D3D;text-align:center;line-height:1.15;animation:fadeUp .4s .05s ease both;padding:0 16px}
 .slide-title span{color:var(--orange)}
-.slide-sub{font-size:14px;color:rgba(30,45,61,.5);text-align:center;margin-bottom:4px;animation:fadeUp .4s .1s ease both;padding:0 20px;max-width:600px}
+.slide-sub{font-size:14px;color:#3a5068;text-align:center;margin-bottom:4px;animation:fadeUp .4s .1s ease both;padding:0 20px;max-width:600px}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
@@ -241,7 +242,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 </head>
 <body>
 
-<div class="progress-bar" id="progress" style="width: 7.69231%;"></div>
+<div class="progress-bar" id="progress"></div>
 <div class="touch-hint">← SWIPE →</div>
 
 
@@ -254,11 +255,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
   <div class="s1-content">
     <div class="s1-badge"><i class="fa fa-rocket" style="color:var(--orange)"></i><span>Presentazione progetto</span></div>
     <div class="s1-title">Il CRM che fa<br>guidare il <span>business</span></div>
-    <div class="s1-sub">Un sistema su misura per Petrarolo &amp; Co. SRL SB — Moving Solutions</div>
+    <div class="s1-sub">Un sistema su misura per Petrarolo & Co. SRL SB — Moving Solutions</div>
     
-    <div class="s1-scroll">
+    <div style="margin-top:28px;padding:14px 24px;background:rgba(30,45,61,.05);border:1px solid rgba(30,45,61,.08);border-radius:12px;text-align:center;animation:fadeUp .6s .5s ease both;max-width:480px">
+      <div style="font-size:11px;color:#6b8aa0;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">Progetto realizzato da</div>
+      <div style="font-size:15px;font-weight:700;color:#1E2D3D;font-family:'Syne',sans-serif">Domenico Monopoli</div>
+      <div style="font-size:12px;color:#2196D3;margin-top:3px">Petrarolo & Co. SRL SB — Moving Solutions</div>
+    </div>
+    <div class="s1-scroll" style="margin-top:20px">
       <span style="color:rgba(30,45,61,.4)">Scorri per scoprire</span>
-      <i class="fa fa-chevron-down s1-arrow" style="color:var(--orange);font-size:18px"></i>
+      <i class="fa fa-chevron-down s1-arrow" style="color:#2196D3;font-size:18px"></i>
     </div>
   </div>
 </div>
@@ -280,7 +286,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 <div class="slide s3" data-slide="3">
   <div class="slide-section">La soluzione</div>
   <div class="solution-hero">Un CRM costruito<br><em>su misura</em> per voi 🎯</div>
-  <div class="solution-sub">Niente software generico. Un sistema pensato per il mondo del Fleet &amp; Moving Solutions di Petrarolo.</div>
+  <div class="solution-sub">Niente software generico. Un sistema pensato per il mondo del Fleet & Moving Solutions di Petrarolo.</div>
   <div class="solution-tags">
     <div class="tag"><i class="fa fa-bolt"></i>Sempre online</div>
     <div class="tag"><i class="fa fa-mobile-alt"></i>Funziona su mobile</div>
@@ -301,7 +307,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
     <div class="feat-card" style="animation-delay:.05s"><div class="feat-icon">👥</div><div class="feat-name">Gestione Lead</div><div class="feat-desc">Inserimento, assegnazione e tracking completo di ogni opportunità</div></div>
     <div class="feat-card" style="animation-delay:.1s"><div class="feat-icon">📅</div><div class="feat-name">Timeline Attività</div><div class="feat-desc">Ogni chiamata, visita, preventivo registrato con data e ora</div></div>
     <div class="feat-card" style="animation-delay:.15s"><div class="feat-icon">📄</div><div class="feat-name">Report Contratti</div><div class="feat-desc">Margini, pezzi, partner — tutto calcolato in automatico</div></div>
-    <div class="feat-card" style="animation-delay:.2s"><div class="feat-icon">🚛</div><div class="feat-name">Flotta &amp; Scadenze</div><div class="feat-desc">Alert automatici 4 mesi prima della scadenza NLT</div></div>
+    <div class="feat-card" style="animation-delay:.2s"><div class="feat-icon">🚛</div><div class="feat-name">Flotta & Scadenze</div><div class="feat-desc">Alert automatici 4 mesi prima della scadenza NLT</div></div>
     <div class="feat-card" style="animation-delay:.25s"><div class="feat-icon">📊</div><div class="feat-name">KPI in tempo reale</div><div class="feat-desc">Dashboard personalizzata per ogni venditore</div></div>
     <div class="feat-card" style="animation-delay:.3s"><div class="feat-icon">🤖</div><div class="feat-name">AI Assistant</div><div class="feat-desc">Analisi, email commerciali e suggerimenti strategici con IA</div></div>
     <div class="feat-card" style="animation-delay:.35s"><div class="feat-icon">📅</div><div class="feat-name">Agenda Attività</div><div class="feat-desc">Storico completo di chiamate, visite, preventivi con filtri e export Excel</div></div>
@@ -326,15 +332,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
   </div>
   <div style="max-width:600px;width:90%;margin-top:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
     <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:14px;text-align:center;animation:fadeUp .4s .3s ease both">
-      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:&#39;Syne&#39;,sans-serif">7</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:'Syne',sans-serif">7</div>
       <div style="font-size:11px;color:rgba(30,45,61,.45);margin-top:4px">stati lead tracciabili</div>
     </div>
     <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:14px;text-align:center;animation:fadeUp .4s .4s ease both">
-      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:&#39;Syne&#39;,sans-serif">🔔</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:'Syne',sans-serif">🔔</div>
       <div style="font-size:11px;color:rgba(30,45,61,.45);margin-top:4px">Notifiche automatiche</div>
     </div>
     <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:14px;text-align:center;animation:fadeUp .4s .5s ease both">
-      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:&#39;Syne&#39;,sans-serif">📎</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:'Syne',sans-serif">📎</div>
       <div style="font-size:11px;color:rgba(30,45,61,.45);margin-top:4px">PDF preventivi allegabili</div>
     </div>
   </div>
@@ -381,13 +387,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
     <div class="role-card" style="animation-delay:.25s">
       <div class="role-av" style="background:linear-gradient(135deg,#166534,#22c55e)">DM</div>
       <div class="role-name">Fleet Specialist</div>
-      <div class="role-label">Domenico &amp; Alberto &amp; Loris</div>
+      <div class="role-label">Domenico & Alberto & Loris</div>
       <div class="role-perms"><span class="perm">Proprie lead</span><span class="perm">Timeline</span><span class="perm">Contratti</span></div>
     </div>
     <div class="role-card" style="animation-delay:.3s">
       <div class="role-av" style="background:linear-gradient(135deg,#1d4ed8,#60a5fa)">SC</div>
       <div class="role-name">Sales Consultant</div>
-      <div class="role-label">Riccardo &amp; Michele</div>
+      <div class="role-label">Riccardo & Michele</div>
       <div class="role-perms"><span class="perm">Proprie lead</span><span class="perm">Contratti</span></div>
     </div>
     <div class="role-card" style="animation-delay:.35s">
@@ -433,7 +439,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 
 <!-- ═══ SLIDE 9 — REPORT ═══ -->
 <div class="slide s9" data-slide="9">
-  <div class="slide-section">Report &amp; Analytics</div>
+  <div class="slide-section">Report & Analytics</div>
   <div class="slide-title">Dati chiari,<br><span>decisioni migliori</span></div>
   <div class="report-grid">
     <div class="report-card">
@@ -471,7 +477,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 
 <!-- ═══ SLIDE 10 — SICUREZZA ═══ -->
 <div class="slide s10" data-slide="10">
-  <div class="slide-section">Sicurezza &amp; Privacy</div>
+  <div class="slide-section">Sicurezza & Privacy</div>
   <div class="slide-title">I vostri dati<br><span>sono al sicuro</span> 🔒</div>
   <div class="security-items">
     <div class="sec-item"><div class="sec-icon"><i class="fa fa-lock"></i></div><div><div class="sec-title">Password cifrate</div><div class="sec-text">Ogni password è salvata con hash — nessuno può leggerla, nemmeno noi</div></div></div>
@@ -521,7 +527,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
     <div class="reason"><div class="reason-title">📱 Ovunque tu sia</div><div class="reason-text">In ufficio, in trasferta, dal cellulare — il CRM ti segue</div></div>
     <div class="reason"><div class="reason-title">🤖 Intelligenza artificiale</div><div class="reason-text">L'AI Assistant aiuta con email commerciali, analisi lead e strategie di vendita</div></div>
     <div class="reason"><div class="reason-title">⏱️ Tempi monitorati</div><div class="reason-text">Semaforo verde/arancione/rosso sui giorni di gestione — la direzione vede subito chi è lento</div></div>
-    <div class="reason"><div class="reason-title">💪 Fatto su misura</div><div class="reason-text">Non un software generico — costruito apposta per Petrarolo &amp; Co. SRL SB</div></div>
+    <div class="reason"><div class="reason-title">💪 Fatto su misura</div><div class="reason-text">Non un software generico — costruito apposta per Petrarolo & Co. SRL SB</div></div>
   </div>
 </div>
 
@@ -546,7 +552,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 <!-- ═══ NAV ═══ -->
 <div class="nav">
   <button class="nav-btn nav-prev" id="prevBtn" onclick="changeSlide(-1)"><i class="fa fa-arrow-left"></i></button>
-  <div class="nav-dots" id="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div class="nav-dots" id="dots"></div>
   <button class="nav-btn nav-next" id="nextBtn" onclick="changeSlide(1)"><i class="fa fa-arrow-right"></i></button>
   <div class="slide-counter" id="counter">1 / 13</div>
 </div>
@@ -632,5 +638,51 @@ function animateKPIs(){
 updateUI();
 </script>
 
+<!-- AUDIO PLAYER -->
+<audio id="bg-audio" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
 
-</body></html>
+<button id="audio-btn" onclick="toggleAudio()" title="Musica" style="
+  position:fixed;top:14px;right:16px;z-index:200;
+  width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.9);box-shadow:0 2px 10px rgba(30,45,61,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .2s;color:#1E2D3D
+">🔇</button>
+
+<script>
+const audio = document.getElementById('bg-audio');
+const btn = document.getElementById('audio-btn');
+let playing = false;
+
+audio.volume = 0.25;
+
+function toggleAudio(){
+  if(playing){
+    audio.pause();
+    btn.textContent = '🔇';
+    btn.style.background = 'rgba(255,255,255,.9)';
+  } else {
+    audio.play().then(()=>{
+      btn.textContent = '🎵';
+      btn.style.background = 'rgba(33,150,211,.15)';
+    }).catch(()=>{});
+  }
+  playing = !playing;
+}
+
+// Auto-start on first interaction
+document.addEventListener('click', function startAudio(){
+  if(!playing){
+    audio.play().then(()=>{
+      playing = true;
+      btn.textContent = '🎵';
+      btn.style.background = 'rgba(33,150,211,.15)';
+    }).catch(()=>{});
+  }
+  document.removeEventListener('click', startAudio);
+}, {once: true});
+</script>
+</body>
+</html>
