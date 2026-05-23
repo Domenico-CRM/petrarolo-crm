@@ -1032,6 +1032,23 @@ async function sendAI(msg){
 function aiAnal(nome){navTo('ai');setTimeout(()=>sendAI('Analizza il cliente '+nome+': suggerisci azioni commerciali e opportunità'),200);}
 
 
+function openModal(id){
+  const el=document.getElementById(id);
+  if(el){el.classList.add('open');el.style.display='flex';}
+  if(id==='modal-veicolo')setTimeout(popolaSelectClienti,100);
+}
+function closeModal(id){
+  const el=document.getElementById(id);
+  if(el){el.classList.remove('open');el.style.display='none';}
+}
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.2)';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._to);t._to=setTimeout(()=>{t.style.opacity='0';},3000);
+}
+
+
 function toggleMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.toggle('mobile-open');if(ov)ov.classList.toggle('active');}
 function closeMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.remove('mobile-open');if(ov)ov.classList.remove('active');}
 
