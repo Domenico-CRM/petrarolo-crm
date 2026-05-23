@@ -646,8 +646,8 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
       <div class="form-group"><div class="form-label">Bonus economico riconosciuto (€)</div><input id="c-bonus" type="number" placeholder="es. 200" min="0" step="0.01"></div>
       <div class="form-group"><div class="form-label">Margine segnalazione da dare (€)</div><input id="c-segnalazione" type="number" placeholder="es. 100" min="0" step="0.01"></div>
       <div class="form-group" id="c-segnalatore-group"><div class="form-label">Nome segnalatore</div><input id="c-segnalatore" type="text" placeholder="es. Mario Verdi"></div>
-      <div class="form-group form-full"><div class="form-label">Allega PDF contratto/i (max 20MB per file, opzionale)</div>
-        <input id="c-pdf" type="file" accept=".pdf" multiple style="font-size:12px;padding:6px;border:1px solid var(--border2);border-radius:7px;width:100%">
+      <div class="form-group form-full"><div class="form-label">Allega PDF contratto/i — tieni premuto <strong>Ctrl</strong> per selezionare più file (max 20MB per file)</div>
+        <input id="c-pdf" type="file" accept=".pdf" multiple="multiple" style="font-size:12px;padding:6px;border:1px solid var(--border2);border-radius:7px;width:100%">
         <div style="font-size:11px;color:var(--text3);margin-top:3px">Puoi selezionare più file tenendo premuto Ctrl</div>
       </div>
       <div class="form-group form-full"><div class="form-label">Note aggiuntive</div><textarea id="c-note" placeholder="Note sul contratto..."></textarea></div>
@@ -1567,7 +1567,10 @@ async function rContratti(){
         try{
           const pdfs=c.pdf_urls?JSON.parse(c.pdf_urls):c.pdf_url?[{nome:'PDF',url:c.pdf_url}]:[];
           if(!pdfs.length)return'—';
-          return pdfs.map((p,i)=>`<a href="${p.url}" target="_blank" class="btn btn-sm" style="padding:3px 8px;font-size:10px;margin-bottom:2px"><i class="ti ti-file-type-pdf"></i> PDF ${pdfs.length>1?i+1:''}</a>`).join('');
+          return pdfs.map((p,i)=>`<div style="display:flex;gap:3px;margin-bottom:2px">
+            <a href="${p.url}" target="_blank" class="btn btn-sm" style="padding:3px 8px;font-size:10px"><i class="ti ti-file-type-pdf"></i> PDF ${pdfs.length>1?i+1:''}</a>
+            <button class="btn btn-sm btn-red" style="padding:3px 6px;font-size:10px" onclick="eliminaPdf(${c.id},${i})" title="Elimina PDF"><i class="ti ti-trash"></i></button>
+          </div>`).join('');
         }catch(e){return c.pdf_url?`<a href="${c.pdf_url}" target="_blank" class="btn btn-sm" style="padding:3px 8px;font-size:10px"><i class="ti ti-file-type-pdf"></i> PDF</a>`:'—';}
       })()}</td>
             <td><div style="display:flex;gap:3px">
@@ -1727,6 +1730,15 @@ function toggleProdottoCustom(val){
     if(val!=='altro'){const s=document.getElementById('c-prodotto-custom');if(s)s.value='';}
   }
 }
+function togglePartnerAltro(val){
+  const grp=document.getElementById('c-partner-altro-grp');
+  if(grp){
+    grp.style.display=val==='ALTRO'?'block':'none';
+    if(val!=='ALTRO'){const s=document.getElementById('c-partner-altro');if(s)s.value='';}
+  }
+}
+
+
 function toggleSegnalatoreCont(val){
   const grp=document.getElementById('c-segnalatore-group');
   if(grp){
@@ -1843,6 +1855,34 @@ async function esportaExcel(){
   showToast('Report Excel esportato!');
 }
 
+async function eliminaPdf(contratoId, pdfIndex){
+  if(!confirm('Eliminare questo PDF?'))return;
+  try{
+    const{data,error}=await sb.from('contratti_chiusi').select('pdf_urls').eq('id',contratoId).single();
+    if(error||!data){showToast('Errore caricamento contratto');return;}
+    let pdfs=[];
+    try{pdfs=JSON.parse(data.pdf_urls||'[]');}catch(e){}
+    if(pdfIndex>=0&&pdfIndex<pdfs.length){
+      // Elimina file da Storage
+      const url=pdfs[pdfIndex].url;
+      const fname=url.split('/contratti-pdf/')[1];
+      if(fname){
+        const sbUrl=localStorage.getItem('p_url');
+        const sbKey=localStorage.getItem('p_key');
+        await fetch(`${sbUrl}/storage/v1/object/contratti-pdf/${fname}`,{
+          method:'DELETE',
+          headers:{'Authorization':`Bearer ${sbKey}`,'apikey':sbKey}
+        });
+      }
+      pdfs.splice(pdfIndex,1);
+      const{error:upErr}=await sb.from('contratti_chiusi').update({pdf_urls:pdfs.length>0?JSON.stringify(pdfs):null}).eq('id',contratoId);
+      if(upErr)throw upErr;
+      showToast('PDF eliminato!');
+      renderSec('contratti');
+    }
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
 async function eliminaContratto(id){
   if(!confirm('Eliminare questo contratto?'))return;
   try{
@@ -1897,7 +1937,12 @@ async function salvaContratto(){
       const sbKey=localStorage.getItem('p_key');
       const uploadRes=await fetch(`${sbUrl}/storage/v1/object/contratti-pdf/${fname}`,{
         method:'POST',
-        headers:{'Authorization':`Bearer ${sbKey}`,'Content-Type':'application/pdf'},
+        headers:{
+          'Authorization':`Bearer ${sbKey}`,
+          'apikey':sbKey,
+          'Content-Type':pdfFile.type||'application/octet-stream',
+          'x-upsert':'true'
+        },
         body:pdfFile
       });
       if(!uploadRes.ok){const e=await uploadRes.json().catch(()=>({}));throw new Error(e.message||'Upload fallito');}
