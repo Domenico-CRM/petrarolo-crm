@@ -2047,6 +2047,7 @@ function closeMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getE
 
 function doLogout() {
   localStorage.removeItem('p_sess');
+  // NON rimuovere p_url e p_key - le credenziali Supabase restano salvate
   location.reload();
 }
 
@@ -3322,6 +3323,21 @@ async function salvaContratto(){
   }
   btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';
 }
+
+// ═══════════════════════════════════════════
+// AUTO-INIT CREDENZIALI SUPABASE
+// ═══════════════════════════════════════════
+(function(){
+  const SB_URL = 'https://pptzcldqqznyhevkqiob.supabase.co';
+  const SB_KEY = 'sb_publishable_MLh4USvttp52Dsk8L3n2KQ_dvr_Z7AN';
+  // Imposta sempre le credenziali (sovrascrive quelle mancanti dopo logout)
+  localStorage.setItem('p_url', SB_URL);
+  localStorage.setItem('p_key', SB_KEY);
+  // Avvia subito senza mostrare la schermata di configurazione
+  window.addEventListener('DOMContentLoaded', function(){
+    initSB(SB_URL, SB_KEY);
+  });
+})();
 </script>
 </body>
 </html>
