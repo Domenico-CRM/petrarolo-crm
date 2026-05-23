@@ -582,6 +582,96 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   </div>
 </div>
 
+<!-- MODAL NOTIFICHE -->
+<div class="modal-overlay" id="modal-notifiche" style="align-items:flex-start;padding-top:60px">
+  <div class="modal" style="width:480px;max-height:70vh;display:flex;flex-direction:column">
+    <div class="modal-head">
+      <span class="modal-title"><i class="ti ti-bell" style="color:var(--orange);margin-right:7px"></i>Notifiche</span>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm" onclick="segnaLetteTutte()"><i class="ti ti-checks"></i> Segna tutte lette</button>
+        <button class="modal-close" onclick="closeModal('modal-notifiche')"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div id="notifiche-list" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+  </div>
+</div>
+
+<!-- MODAL ASSEGNA VENDITORE -->
+<div class="modal-overlay" id="modal-assegna">
+  <div class="modal" style="width:420px">
+    <div class="modal-head"><span class="modal-title"><i class="ti ti-user-check" style="color:var(--orange);margin-right:7px"></i>Riassegna lead</span><button class="modal-close" onclick="closeModal('modal-assegna')"><i class="ti ti-x"></i></button></div>
+    <div style="padding:16px">
+      <div class="form-group" style="margin-bottom:14px">
+        <div class="form-label">Seleziona nuovo venditore</div>
+        <select id="assegna-venditore-sel" style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:7px;font-family:inherit;font-size:13px"></select>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <div class="form-label">Motivo riassegnazione (opzionale)</div>
+        <textarea id="assegna-motivo" placeholder="es. Cliente richiede specialista flotte..." style="width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:7px;font-family:inherit;font-size:13px;resize:vertical;min-height:60px"></textarea>
+      </div>
+      <div id="assegna-err" style="display:none;background:var(--red-bg);color:var(--red);border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:10px"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-assegna')">Annulla</button>
+      <button class="btn btn-orange" id="assegna-btn" onclick="confermaAssegna()"><i class="ti ti-check"></i> Riassegna</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TIMELINE LEAD -->
+<div class="modal-overlay" id="modal-timeline">
+  <div class="modal" style="width:680px;max-height:85vh;display:flex;flex-direction:column">
+    <div class="modal-head">
+      <div>
+        <span class="modal-title" id="timeline-title">Timeline lead</span>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px" id="timeline-subtitle"></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-orange" id="timeline-add-btn" onclick="showTimelineForm()" style="display:none"><i class="ti ti-plus"></i> Aggiungi attività</button>
+        <button class="btn btn-sm" id="timeline-assegna-btn" onclick="openAssegna()" style="display:none"><i class="ti ti-user-check"></i> Riassegna</button>
+        <button class="modal-close" onclick="closeModal('modal-timeline')"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div id="timeline-content" style="overflow-y:auto;flex:1;padding:0"></div>
+    <div id="timeline-form" style="display:none;border-top:1px solid var(--border);padding:14px 16px">
+      <div style="font-size:11px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Nuova attività</div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group"><div class="form-label">Tipo attività <span class="form-req">*</span></div>
+          <select id="tl-tipo">
+            <option value="">— Seleziona —</option>
+            <option>Chiamata telefonica</option>
+            <option>Visita cliente</option>
+            <option>Email inviata</option>
+            <option>Preventivo inviato</option>
+            <option>Appuntamento fissato</option>
+            <option>Nota interna</option>
+          </select>
+        </div>
+        <div class="form-group"><div class="form-label">Data e ora</div><input id="tl-data" type="datetime-local"></div>
+        <div class="form-group form-full"><div class="form-label">Descrizione <span class="form-req">*</span></div><textarea id="tl-desc" placeholder="Descrivi cosa hai fatto, cosa ha richiesto il cliente..." style="min-height:60px"></textarea></div>
+        <div class="form-group form-full"><div class="form-label">Risposta / reazione del cliente</div><textarea id="tl-risposta" placeholder="Come ha risposto il cliente?" style="min-height:40px"></textarea></div>
+        <div class="form-group"><div class="form-label">Tipo preventivo (se applicabile)</div>
+          <select id="tl-prev-tipo">
+            <option value="">— Nessun preventivo —</option>
+            <option>NLT — Noleggio Lungo Termine</option>
+            <option>Leasing</option>
+            <option>Acquisto diretto</option>
+            <option>Noleggio Breve Termine</option>
+            <option>Altro</option>
+          </select>
+        </div>
+        <div class="form-group"><div class="form-label">Importo preventivo (€)</div><input id="tl-prev-importo" type="number" placeholder="es. 48678"></div>
+        <div class="form-group form-full"><div class="form-label">Allega PDF preventivo (opzionale)</div><input id="tl-prev-pdf" type="file" accept=".pdf" style="font-size:12px;padding:5px;border:1px solid var(--border2);border-radius:7px;width:100%"></div>
+      </div>
+      <div id="tl-err" style="display:none;background:var(--red-bg);color:var(--red);border-radius:7px;padding:9px 12px;font-size:12px;margin-top:8px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button class="btn" onclick="hideTimelineForm()">Annulla</button>
+        <button class="btn btn-orange" id="tl-save-btn" onclick="salvaAttivitaLead()"><i class="ti ti-check"></i> Salva attività</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL NUOVO CONTRATTO -->
 <div class="modal-overlay" id="modal-contratto">
   <div class="modal" style="width:600px">
@@ -711,8 +801,12 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
       </div>
       <div class="tbl-right">
         <div class="srch"><i class="ti ti-search" style="font-size:13px;color:var(--text3)"></i><input type="text" placeholder="Cerca..."></div>
+        <button class="btn" id="notifiche-btn" onclick="apriNotifiche()" title="Notifiche" style="position:relative">
+          <i class="ti ti-bell"></i>
+          <span id="notifiche-badge" style="display:none;position:absolute;top:-3px;right:-3px;background:#E8530A;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:99px;min-width:14px;text-align:center;line-height:14px">0</span>
+        </button>
         <button class="btn" onclick="renderSec(currentSec)" title="Aggiorna"><i class="ti ti-refresh"></i></button>
-        <button class="btn btn-orange" onclick="openModal('modal-lead')"><i class="ti ti-plus"></i> Nuovo Lead</button>
+        <button class="btn btn-orange" onclick="openModal('modal-lead');if(canAssign()){document.getElementById('f-assegna-grp').style.display='block';setTimeout(popolaVenditoriAssegna,100);}"><i class="ti ti-plus"></i> Nuovo Lead</button>
       </div>
     </div>
     <div class="cnt" id="content"></div>
@@ -987,13 +1081,21 @@ async function salvaLead(){
       citta:document.getElementById('f-citta')?.value||'',
       interesse:document.getElementById('f-modello')?.value||'',
       fonte,stato:'Lead',score:50,
-      venditore_id:CU.id,venditore_nome:CU.nome,
+      venditore_id:(()=>{const sel=document.getElementById('f-venditore-assegna');return sel&&sel.value?parseInt(sel.value):CU.id;})(),
+      venditore_nome:(()=>{const sel=document.getElementById('f-venditore-assegna');if(sel&&sel.value){const opt=sel.options[sel.selectedIndex];return opt?opt.textContent.replace(' (me)',''):CU.nome;}return CU.nome;})(),
+      assegnato_da:CU.nome,assegnato_da_id:CU.id,data_assegnazione:new Date().toISOString(),
       note:document.getElementById('f-note')?.value||'',
       created_by:CU.nome
     });
     if(error)throw error;
     closeModal('modal-lead');
     showToast('Lead salvato con successo!');
+    // Notifica venditore se diverso dall'utente loggato
+    const sel=document.getElementById('f-venditore-assegna');
+    if(sel&&sel.value&&parseInt(sel.value)!==CU.id){
+      const nome=`${(document.getElementById('f-nome')?.value||'')} ${(document.getElementById('f-cognome')?.value||'')}`.trim();
+      inviaNotifica(parseInt(sel.value),'lead_assegnata',`Ti è stata assegnata una nuova lead: ${nome}`,null,nome);
+    }
     ['f-nome','f-cognome','f-tel','f-email','f-citta','f-modello','f-note','f-segnalatore'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     const sel=document.getElementById('f-fonte');if(sel)sel.value='';
     toggleSegnalatore('');
@@ -1050,6 +1152,309 @@ function showToast(msg){
   if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.2)';document.body.appendChild(t);}
   t.textContent=msg;t.style.opacity='1';
   clearTimeout(t._to);t._to=setTimeout(()=>{t.style.opacity='0';},3000);
+}
+
+
+// ═══════════════════════════════════════════
+// NOTIFICHE & GESTIONE LEAD
+// ═══════════════════════════════════════════
+let _assegnaClienteId = null;
+let _assegnaVecchioId = null;
+
+function canAssign(){
+  return CU.ruolo==='direzione' || CU.email==='anita@petraroloeco.com';
+}
+function canViewAll(){
+  return CU.ruolo==='direzione' || CU.ruolo==='cfo' || CU.email==='anita@petraroloeco.com';
+}
+
+async function apriNotifiche(){
+  openModal('modal-notifiche');
+  const list=document.getElementById('notifiche-list');
+  list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3)">Caricamento...</div>';
+  try{
+    const{data}=await sb.from('notifiche').select('*').eq('utente_id',CU.id).order('created_at',{ascending:false}).limit(30);
+    if(!data||!data.length){
+      list.innerHTML='<div style="padding:30px;text-align:center;color:var(--text3)">Nessuna notifica</div>';
+      return;
+    }
+    list.innerHTML=data.map(n=>`
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);background:${n.letta?'transparent':'var(--orange-light)'}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <i class="ti ${n.tipo==='lead_assegnata'?'ti-user-check':'ti-user-off'}" style="color:${n.tipo==='lead_assegnata'?'var(--green)':'var(--red)'}"></i>
+          <span style="font-size:12.5px;font-weight:600">${n.messaggio}</span>
+          ${!n.letta?'<span style="background:var(--orange);color:#fff;font-size:9px;padding:1px 6px;border-radius:99px">Nuova</span>':''}
+        </div>
+        <div style="font-size:11px;color:var(--text3)">${new Date(n.created_at).toLocaleString('it-IT')}</div>
+      </div>`).join('');
+    // Segna come lette
+    await sb.from('notifiche').update({letta:true}).eq('utente_id',CU.id).eq('letta',false);
+    aggiornaContatorNotifiche();
+  }catch(e){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--red)">Errore caricamento</div>';}
+}
+
+async function segnaLetteTutte(){
+  try{
+    await sb.from('notifiche').update({letta:true}).eq('utente_id',CU.id);
+    aggiornaContatorNotifiche();
+    closeModal('modal-notifiche');
+    showToast('Tutte le notifiche segnate come lette');
+  }catch(e){}
+}
+
+async function aggiornaContatorNotifiche(){
+  try{
+    const{data}=await sb.from('notifiche').select('id',{count:'exact'}).eq('utente_id',CU.id).eq('letta',false);
+    const n=data?.length||0;
+    const badge=document.getElementById('notifiche-badge');
+    if(badge){
+      badge.style.display=n>0?'block':'none';
+      badge.textContent=n>9?'9+':n;
+    }
+  }catch(e){}
+}
+
+async function inviaNotifica(utenteId, tipo, messaggio, leadId, leadNome){
+  try{
+    const{data:u}=await sb.from('crm_utenti').select('nome').eq('id',utenteId).single();
+    await sb.from('notifiche').insert({
+      utente_id:utenteId,
+      utente_nome:u?.nome||'',
+      tipo,messaggio,
+      lead_id:leadId,
+      lead_nome:leadNome,
+      letta:false
+    });
+  }catch(e){}
+}
+
+async function openAssegna(){
+  _assegnaClienteId=null;
+  // Get current cliente from timeline
+  const subtitle=document.getElementById('timeline-subtitle');
+  if(!subtitle)return;
+  // Find clienteId from current timeline
+  if(!window._currentTimelineClienteId)return;
+  _assegnaClienteId=window._currentTimelineClienteId;
+  _assegnaVecchioId=window._currentTimelineVenditoreId;
+  
+  // Populate venditori
+  const sel=document.getElementById('assegna-venditore-sel');
+  sel.innerHTML='<option value="">— Seleziona venditore —</option>';
+  try{
+    const{data}=await sb.from('crm_utenti').select('id,nome,ruolo_label').eq('attivo',true).eq('ruolo','venditore').order('nome');
+    if(data)data.forEach(u=>{
+      const o=document.createElement('option');
+      o.value=u.id;o.textContent=u.nome+(u.ruolo_label?` — ${u.ruolo_label}`:'');
+      sel.appendChild(o);
+    });
+  }catch(e){}
+  
+  document.getElementById('assegna-motivo').value='';
+  openModal('modal-assegna');
+}
+
+async function confermaAssegna(){
+  const nuovoId=parseInt(document.getElementById('assegna-venditore-sel').value);
+  const motivo=document.getElementById('assegna-motivo').value.trim();
+  const err=document.getElementById('assegna-err');
+  err.style.display='none';
+  if(!nuovoId){showErr(err,'Seleziona un venditore.');return;}
+  const btn=document.getElementById('assegna-btn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';
+  try{
+    // Recupera dati
+    const{data:nuovoU}=await sb.from('crm_utenti').select('nome').eq('id',nuovoId).single();
+    const{data:cliente}=await sb.from('clienti').select('nome,venditore_id,venditore_nome').eq('id',_assegnaClienteId).single();
+    if(!cliente)throw new Error('Cliente non trovato');
+    
+    const vecchioId=cliente.venditore_id;
+    const nuovoNome=nuovoU?.nome||'';
+    
+    // Aggiorna venditore
+    await sb.from('clienti').update({
+      venditore_id:nuovoId,
+      venditore_nome:nuovoNome,
+      assegnato_da:CU.nome,
+      assegnato_da_id:CU.id,
+      data_assegnazione:new Date().toISOString()
+    }).eq('id',_assegnaClienteId);
+    
+    // Notifica nuovo venditore
+    await inviaNotifica(nuovoId,'lead_assegnata',
+      `Ti è stata assegnata la lead: ${cliente.nome}${motivo?' — '+motivo:''}`,
+      _assegnaClienteId,cliente.nome);
+    
+    // Notifica vecchio venditore (se diverso)
+    if(vecchioId&&vecchioId!==nuovoId){
+      await inviaNotifica(vecchioId,'lead_rimossa',
+        `La lead ${cliente.nome} è stata riassegnata a ${nuovoNome}${motivo?' — '+motivo:''}`,
+        _assegnaClienteId,cliente.nome);
+    }
+    
+    closeModal('modal-assegna');
+    closeModal('modal-timeline');
+    showToast(`Lead riassegnata a ${nuovoNome}!`);
+    renderSec('clienti');
+  }catch(e){showErr(err,'Errore: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Riassegna';
+}
+
+async function openTimeline(clienteId){
+  window._currentTimelineClienteId=clienteId;
+  openModal('modal-timeline');
+  const content=document.getElementById('timeline-content');
+  content.innerHTML='<div style="padding:30px;text-align:center;color:var(--text3)">Caricamento...</div>';
+  
+  try{
+    const[{data:cliente},{data:attivita}]=await Promise.all([
+      sb.from('clienti').select('*').eq('id',clienteId).single(),
+      sb.from('lead_attivita').select('*').eq('cliente_id',clienteId).order('created_at',{ascending:false})
+    ]);
+    if(!cliente)throw new Error('Cliente non trovato');
+    
+    window._currentTimelineVenditoreId=cliente.venditore_id;
+    
+    // Titolo
+    document.getElementById('timeline-title').textContent=cliente.nome;
+    document.getElementById('timeline-subtitle').textContent=`${cliente.citta||''} · Venditore: ${cliente.venditore_nome||'—'} · ${badge(cliente.stato||'Lead','bg-o')}`;
+    
+    // Mostra pulsante aggiungi se è il venditore assegnato o direzione/anita
+    const canAdd=cliente.venditore_id===CU.id||(CU.ruolo==='direzione')||(CU.email==='anita@petraroloeco.com');
+    const addBtn=document.getElementById('timeline-add-btn');
+    if(addBtn)addBtn.style.display=canAdd?'inline-flex':'none';
+    
+    // Mostra pulsante riassegna solo a Biagio e Anita
+    const assBtn=document.getElementById('timeline-assegna-btn');
+    if(assBtn)assBtn.style.display=canAssign()?'inline-flex':'none';
+    
+    const iconMap={
+      'Chiamata telefonica':'ti-phone','Visita cliente':'ti-building','Email inviata':'ti-mail',
+      'Preventivo inviato':'ti-file-invoice','Appuntamento fissato':'ti-calendar','Nota interna':'ti-notes'
+    };
+    const colMap={
+      'Chiamata telefonica':'#E6F1FB','Visita cliente':'#EAF3DE','Email inviata':'#FBEAF0',
+      'Preventivo inviato':'#FAEEDA','Appuntamento fissato':'#E6F1FB','Nota interna':'var(--gray)'
+    };
+    
+    if(!attivita||!attivita.length){
+      content.innerHTML=`<div style="padding:30px;text-align:center;color:var(--text3)">
+        <i class="ti ti-timeline" style="font-size:32px;display:block;margin-bottom:8px"></i>
+        Nessuna attività registrata.<br>
+        ${canAdd?'Clicca <strong>"Aggiungi attività"</strong> per iniziare.':''}
+      </div>`;
+      return;
+    }
+    
+    content.innerHTML=`<div style="padding:16px">`+attivita.map(a=>`
+      <div style="display:flex;gap:12px;margin-bottom:16px;position:relative">
+        <div style="width:32px;height:32px;border-radius:50%;background:${colMap[a.tipo]||'var(--gray)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1">
+          <i class="ti ${iconMap[a.tipo]||'ti-notes'}" style="font-size:15px;color:var(--navy)"></i>
+        </div>
+        <div style="flex:1;background:var(--gray);border-radius:9px;padding:11px 14px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px">
+            <span style="font-size:12.5px;font-weight:700">${a.tipo}</span>
+            <span style="font-size:10.5px;color:var(--text3)">${new Date(a.created_at).toLocaleString('it-IT')} · ${a.venditore_nome||'—'}</span>
+          </div>
+          ${a.descrizione?`<div style="font-size:12.5px;color:var(--text);margin-bottom:6px">${a.descrizione}</div>`:''}
+          ${a.risposta_cliente?`<div style="background:#fff;border-radius:7px;padding:8px 11px;border-left:3px solid var(--orange);margin-bottom:6px">
+            <div style="font-size:10px;color:var(--orange);font-weight:600;margin-bottom:3px">RISPOSTA CLIENTE</div>
+            <div style="font-size:12px;color:var(--text2)">${a.risposta_cliente}</div>
+          </div>`:''}
+          ${a.tipo_preventivo?`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            ${badge(a.tipo_preventivo,'bg-go')}
+            ${a.importo_preventivo?`<span style="font-size:12px;font-weight:600;color:var(--orange)">€ ${parseFloat(a.importo_preventivo).toLocaleString('it-IT')}</span>`:''}
+            ${a.pdf_url?`<a href="${a.pdf_url}" target="_blank" class="btn btn-sm" style="padding:3px 8px;font-size:10px"><i class="ti ti-file-type-pdf"></i> Preventivo PDF</a>`:''}
+          </div>`:''}
+        </div>
+      </div>`).join('')+'</div>';
+  }catch(e){
+    content.innerHTML=`<div style="padding:30px;text-align:center;color:var(--red)">Errore: ${e.message}</div>`;
+  }
+}
+
+function showTimelineForm(){
+  const form=document.getElementById('timeline-form');
+  if(form)form.style.display='block';
+  // Set current datetime
+  const now=new Date();
+  now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  const tlData=document.getElementById('tl-data');
+  if(tlData)tlData.value=now.toISOString().slice(0,16);
+}
+
+function hideTimelineForm(){
+  const form=document.getElementById('timeline-form');
+  if(form)form.style.display='none';
+  ['tl-tipo','tl-desc','tl-risposta','tl-prev-tipo','tl-prev-importo'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  const pdf=document.getElementById('tl-prev-pdf');if(pdf)pdf.value='';
+}
+
+async function salvaAttivitaLead(){
+  const tipo=document.getElementById('tl-tipo').value;
+  const desc=document.getElementById('tl-desc').value.trim();
+  const err=document.getElementById('tl-err');
+  err.style.display='none';
+  if(!tipo||!desc){showErr(err,'Compila tipo e descrizione.');return;}
+  const btn=document.getElementById('tl-save-btn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';
+  
+  // Upload PDF preventivo se presente
+  let pdfUrl=null;
+  const pdfFile=document.getElementById('tl-prev-pdf').files[0];
+  if(pdfFile){
+    try{
+      const fname=`${Date.now()}_${pdfFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const sbUrl=localStorage.getItem('p_url');
+      const sbKey=localStorage.getItem('p_key');
+      const uploadRes=await fetch(`${sbUrl}/storage/v1/object/preventivi-pdf/${fname}`,{
+        method:'POST',headers:{'Authorization':`Bearer ${sbKey}`,'apikey':sbKey,'Content-Type':'application/pdf','x-upsert':'true'},body:pdfFile
+      });
+      if(uploadRes.ok)pdfUrl=`${sbUrl}/storage/v1/object/public/preventivi-pdf/${fname}`;
+    }catch(e){}
+  }
+  
+  try{
+    const{error}=await sb.from('lead_attivita').insert({
+      cliente_id:window._currentTimelineClienteId,
+      tipo,
+      descrizione:desc,
+      risposta_cliente:document.getElementById('tl-risposta').value.trim()||null,
+      tipo_preventivo:document.getElementById('tl-prev-tipo').value||null,
+      importo_preventivo:parseFloat(document.getElementById('tl-prev-importo').value)||null,
+      pdf_url:pdfUrl,
+      venditore_id:CU.id,
+      venditore_nome:CU.nome,
+      cliente_nome:window._currentTimelineNome||''
+    });
+    if(error)throw error;
+    hideTimelineForm();
+    showToast('Attività salvata!');
+    openTimeline(window._currentTimelineClienteId);
+  }catch(e){showErr(err,'Errore: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva attività';
+}
+
+async function popolaVenditoriAssegna(){
+  const sel=document.getElementById('f-venditore-assegna');
+  if(!sel)return;
+  sel.innerHTML='<option value="">— Seleziona venditore —</option>';
+  try{
+    const{data}=await sb.from('crm_utenti').select('id,nome,ruolo_label').eq('attivo',true).eq('ruolo','venditore').order('nome');
+    if(data){
+      // Aggiungi anche se stessi come opzione
+      const meOpt=document.createElement('option');
+      meOpt.value=CU.id;meOpt.textContent=CU.nome+' (me)';
+      sel.appendChild(meOpt);
+      data.filter(u=>u.id!==CU.id).forEach(u=>{
+        const o=document.createElement('option');
+        o.value=u.id;o.textContent=u.nome+(u.ruolo_label?` — ${u.ruolo_label}`:'');
+        sel.appendChild(o);
+      });
+    }
+  }catch(e){}
 }
 
 
@@ -1725,6 +2130,7 @@ async function rFlotta(){
         <td>${stBadge(c.stato||'Lead')}</td>
         <td><div style="display:flex;gap:5px">
           ${c.stato==='Lead'?`<button class="btn btn-sm" style="background:var(--green-bg);color:var(--green);border-color:#9FE1CB" onclick="event.stopPropagation();convertiCliente(${c.id})"><i class="ti ti-user-check"></i> Converti</button>`:''}
+          <button class="btn btn-sm" onclick="event.stopPropagation();window._currentTimelineNome='${c.nome}';openTimeline(${c.id})" title="Vedi timeline attività"><i class="ti ti-timeline"></i></button>
           <button class="btn btn-sm" onclick="event.stopPropagation();openClient(${c.id})"><i class="ti ti-edit"></i></button>
         </div></td>
       </tr>`;
