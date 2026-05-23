@@ -818,6 +818,221 @@ async function saveNewPwd(){
   }catch(e){showErr(err,'Errore: '+e.message);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva nuova password';
 }
+function rAI(){
+  document.getElementById('content').innerHTML=`
+  <div class="card" style="flex:1">
+    <div class="card-head" style="background:linear-gradient(135deg,var(--navy),var(--navy2))">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:38px;height:38px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-sparkles" style="font-size:20px;color:#fff"></i></div>
+        <div><div class="card-title" style="color:#fff">AI Assistant</div><div style="font-size:10.5px;color:rgba(255,255,255,.45)">Powered by Claude</div></div>
+      </div>
+    </div>
+    <div class="ai-msgs" id="ai-msgs">${aiMsgs.map(m=>msgH(m)).join('')}</div>
+    <div class="ai-sugg">
+      <div class="ai-chip" data-q="Analizza le trattative in chiusura e suggerisci le azioni prioritarie">Trattative prioritarie ↗</div>
+      <div class="ai-chip" data-q="Scrivi una email per proporre il rinnovo NLT della flotta aziendale">Email rinnovo NLT ↗</div>
+      <div class="ai-chip" data-q="Suggerisci una strategia per aumentare le conversioni lead">Strategia conversioni ↗</div>
+    </div>
+    <div class="ai-input-bar">
+      <input class="ai-input" id="ai-in" type="text" placeholder="Chiedi all'AI...">
+      <button class="btn btn-orange" id="ai-send"><i class="ti ti-send"></i> Invia</button>
+    </div>
+  </div>`;
+  setTimeout(bindAI,100);
+}
+
+function rAgenda(){
+  document.getElementById('content').innerHTML=`
+  <div class="row2">
+    <div class="card"><div class="card-head"><span class="card-title"><i class="ti ti-calendar" style="color:var(--orange);margin-right:6px"></i>Oggi</span></div>
+      <div style="padding:30px;text-align:center;color:var(--text3)">Nessun appuntamento per oggi.</div>
+    </div>
+    <div class="card"><div class="card-head"><span class="card-title">Prossimi 7 giorni</span></div>
+      <div style="padding:30px;text-align:center;color:var(--text3)">Nessun appuntamento pianificato.</div>
+    </div>
+  </div>`;}
+
+async function rAttivita(){
+  let data=[];
+  try{let q=sb.from('attivita').select('*').order('created_at',{ascending:false});if(!isDir())q=q.eq('assegnato_id',CU.id);const r=await q;data=r.data||[];}catch(e){}
+  document.getElementById('content').innerHTML=`
+  <div class="full-card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-checklist" style="color:var(--orange);margin-right:6px"></i>${isDir()?'Attività team':'Le mie attività'} — ${data.length}</span></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Attività</th><th>Cliente</th><th>Priorità</th><th>Scadenza</th><th>Assegnato</th><th>Stato</th></tr></thead><tbody>
+    ${data.length?data.map(a=>`<tr><td style="font-weight:600">${a.titolo||'—'}</td><td>${a.cliente||'—'}</td>
+      <td>${badge(a.priorita||'—',a.priorita==='Alta'?'bg-r':a.priorita==='Media'?'bg-o':'bg-gr')}</td>
+      <td>${a.scadenza||'—'}</td><td>${a.assegnato||'—'}</td>
+      <td>${badge(a.stato||'—',a.stato==='Completata'?'bg-g':a.stato==='In corso'?'bg-n':'bg-o')}</td>
+    </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text3)">Nessuna attività</td></tr>`}
+    </tbody></table></div>
+  </div>`;}
+
+async function rUtenti(){
+  if(CU.ruolo!=='direzione'&&CU.ruolo!=='admin'){document.getElementById('content').innerHTML='<div style="padding:30px;text-align:center;color:var(--red)">Accesso riservato alla Direzione.</div>';return;}
+  let data=[];
+  try{const r=await sb.from('crm_utenti').select('id,nome,email,ruolo,ruolo_label,attivo,created_at').order('created_at',{ascending:true});data=r.data||[];}catch(e){}
+  const roleColors={direzione:'bg-go',cfo:'bg-go',venditore:'bg-n',admin:'bg-r'};
+  const roleLbl={direzione:'Direzione',cfo:'CFO',venditore:'Venditore',admin:'Admin'};
+  document.getElementById('content').innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+    <button class="btn btn-orange" onclick="openModal('modal-utente')"><i class="ti ti-user-plus"></i> Nuovo utente</button>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    ${data.map(u=>`<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:15px 17px;display:flex;align-items:center;gap:12px;opacity:${u.attivo?1:.55}">
+      <div class="uav" style="width:42px;height:42px;font-size:13px;background:${u.ruolo==='direzione'?'var(--gold)':u.ruolo==='admin'?'var(--red)':'var(--navy)'}">${(u.nome||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:700">${u.nome}</div><div style="font-size:11.5px;color:var(--text2)">${u.email}</div>
+        <div style="margin-top:4px;display:flex;gap:5px">${badge(u.ruolo_label||roleLbl[u.ruolo]||u.ruolo,roleColors[u.ruolo]||'bg-gr')} ${u.attivo?badge('Attivo','bg-g'):badge('Disabilitato','bg-r')}</div>
+      </div>
+      <div style="display:flex;gap:5px">
+        ${u.id!==CU.id?`<button class="btn btn-sm" onclick="inviaResetEmail(${u.id},'${u.nome}','${u.email}')"><i class="ti ti-mail-forward"></i> Reset</button>
+        <button class="btn btn-sm" onclick="cambiaPassword(${u.id},'${u.nome}')"><i class="ti ti-key"></i></button>
+        <button class="btn btn-sm ${u.attivo?'btn-red':''}" onclick="toggleUtente(${u.id},${u.attivo},'${u.nome}')">${u.attivo?'Disabilita':'Abilita'}</button>`:'<span style="font-size:11px;color:var(--text3)">Tu</span>'}
+      </div>
+    </div>`).join('')}
+  </div>`;}
+
+function rImpostazioni(){
+  const roleLabel={direzione:'Direzione',cfo:'CFO — Amministrazione',venditore:CU?.ruolo_label||'Venditore',admin:'Amministratore'}[CU?.ruolo]||CU?.ruolo_label||CU?.ruolo;
+  const roleBadge=CU?.ruolo==='direzione'||CU?.ruolo==='cfo'?'bg-go':CU?.ruolo==='admin'?'bg-r':'bg-n';
+  document.getElementById('content').innerHTML=`
+  <div class="row2">
+    <div class="card">
+      <div class="card-head"><span class="card-title"><i class="ti ti-user" style="color:var(--orange);margin-right:6px"></i>Il mio profilo</span></div>
+      <div style="padding:16px 17px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px 14px;background:var(--gray);border-radius:9px">
+          <div class="uav" style="width:44px;height:44px;font-size:15px">${(CU?.nome||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)}</div>
+          <div><div style="font-size:14px;font-weight:700">${CU?.nome||'—'}</div><div style="font-size:12px;color:var(--text2)">${CU?.email||'—'}</div>
+          <div style="margin-top:5px">${badge(roleLabel,roleBadge)}</div></div>
+        </div>
+        <button class="btn btn-red" style="width:100%;justify-content:center" onclick="doLogout()"><i class="ti ti-logout"></i> Disconnetti</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title"><i class="ti ti-lock" style="color:var(--orange);margin-right:6px"></i>Cambia la tua password</span></div>
+      <div style="padding:16px 17px;display:flex;flex-direction:column;gap:10px">
+        <div class="form-group"><div class="form-label">Password attuale</div>
+          <input id="cp-old" type="password" placeholder="Inserisci la password attuale" style="font-size:12.5px;padding:8px 11px;border:1px solid var(--border2);border-radius:7px;width:100%;outline:none;font-family:inherit">
+        </div>
+        <div class="form-group"><div class="form-label">Nuova password</div>
+          <input id="cp-new1" type="password" placeholder="Minimo 6 caratteri" style="font-size:12.5px;padding:8px 11px;border:1px solid var(--border2);border-radius:7px;width:100%;outline:none;font-family:inherit">
+        </div>
+        <div class="form-group"><div class="form-label">Conferma nuova password</div>
+          <input id="cp-new2" type="password" placeholder="Ripeti la nuova password" style="font-size:12.5px;padding:8px 11px;border:1px solid var(--border2);border-radius:7px;width:100%;outline:none;font-family:inherit">
+        </div>
+        <div id="cp-self-err" style="display:none;background:var(--red-bg);color:var(--red);border-radius:7px;padding:9px 12px;font-size:12px"></div>
+        <button class="btn btn-orange" style="width:100%;justify-content:center" onclick="selfChangePassword()"><i class="ti ti-lock-check"></i> Aggiorna password</button>
+      </div>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="card-head"><span class="card-title"><i class="ti ti-database" style="color:var(--orange);margin-right:6px"></i>Database connesso</span></div>
+      <div style="padding:16px 17px">
+        <div style="background:var(--green-bg);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:9px;margin-bottom:14px">
+          <i class="ti ti-circle-check" style="color:var(--green);font-size:18px"></i>
+          <div><div style="font-size:12.5px;font-weight:600;color:var(--green)">Supabase connesso</div><div style="font-size:11px;color:var(--green)">${localStorage.getItem('p_url')||'—'}</div></div>
+        </div>
+        <button class="btn" style="width:100%;justify-content:center" onclick="localStorage.removeItem('p_url');localStorage.removeItem('p_key');location.reload()"><i class="ti ti-refresh"></i> Cambia configurazione</button>
+      </div>
+    </div>
+    ${isDir()?`<div class="card"><div class="card-head"><span class="card-title"><i class="ti ti-shield-lock" style="color:var(--orange);margin-right:6px"></i>Gestione utenti</span></div><div style="padding:16px 17px"><button class="btn btn-orange" style="width:100%;justify-content:center" onclick="navTo('utenti')"><i class="ti ti-users"></i> Gestisci utenti</button></div></div>`:'<div></div>'}
+  </div>`;}
+
+async function updatePresence(){
+  if(!sb||!CU)return;
+  try{await sb.from('utenti_online').upsert({nome:CU.nome,ruolo:CU.ruolo,last_seen:new Date().toISOString()},{onConflict:'nome'});await refreshOnlineCount();}catch(e){}
+}
+
+async function refreshOnlineCount(){
+  if(!sb)return;
+  try{
+    const cutoff=new Date(Date.now()-2*60*1000).toISOString();
+    const{data}=await sb.from('utenti_online').select('nome').gte('last_seen',cutoff);
+    const n=data?data.length:1;
+    const el=document.getElementById('online-count');
+    if(el)el.textContent=n+(n===1?' online':' online');
+    const elV=document.getElementById('kpi-vei');
+    const elC=document.getElementById('kpi-contratti-dash');
+    if(elV||elC){
+      const[rv,rc]=await Promise.all([sb.from('flotta_veicoli').select('id',{count:'exact'}),sb.from('contratti_chiusi').select('id',{count:'exact'})]);
+      if(elV)elV.textContent=rv.count||0;
+      if(elC)elC.textContent=rc.count||0;
+    }
+  }catch(e){}
+}
+
+async function salvaLead(){
+  const btn=document.getElementById('lead-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';}
+  const err=document.getElementById('lead-err');
+  if(err)err.style.display='none';
+  const nome=(document.getElementById('f-nome')?.value||'').trim();
+  const cog=(document.getElementById('f-cognome')?.value||'').trim();
+  const tel=(document.getElementById('f-tel')?.value||'').trim();
+  const fonteVal=document.getElementById('f-fonte')?.value||'';
+  if(!nome||!cog||!tel){if(err){showErr(err,'Compila i campi obbligatori: Nome, Cognome, Telefono');}if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva lead';}return;}
+  if(!fonteVal){if(err)showErr(err,'Seleziona la provenienza del lead');if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva lead';}return;}
+  if(fonteVal==='LEAD DA SEGNALATORE'&&!document.getElementById('f-segnalatore')?.value.trim()){if(err)showErr(err,'Inserisci il nome del segnalatore');if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva lead';}return;}
+  let fonte=fonteVal;
+  if(fonteVal==='LEAD DA SEGNALATORE'){const s=(document.getElementById('f-segnalatore')?.value||'').trim();fonte=s?`LEAD DA SEGNALATORE — ${s}`:'LEAD DA SEGNALATORE';}
+  try{
+    const{error}=await sb.from('clienti').insert({
+      nome:`${nome} ${cog}`.trim(),
+      tipo:document.getElementById('f-tipo')?.value||'Privato',
+      tel,email:document.getElementById('f-email')?.value||'',
+      citta:document.getElementById('f-citta')?.value||'',
+      interesse:document.getElementById('f-modello')?.value||'',
+      fonte,stato:'Lead',score:50,
+      venditore_id:CU.id,venditore_nome:CU.nome,
+      note:document.getElementById('f-note')?.value||'',
+      created_by:CU.nome
+    });
+    if(error)throw error;
+    closeModal('modal-lead');
+    showToast('Lead salvato con successo!');
+    ['f-nome','f-cognome','f-tel','f-email','f-citta','f-modello','f-note','f-segnalatore'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    const sel=document.getElementById('f-fonte');if(sel)sel.value='';
+    toggleSegnalatore('');
+    renderSec('clienti');
+  }catch(e){if(err)showErr(err,'Errore: '+e.message);}
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva lead';}
+}
+
+function msgH(m){
+  const init=CU?CU.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2):'U';
+  if(m.role==='ai')return`<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot">${(m.text||'').replace(/
+/g,'<br>')}</div></div>`;
+  return`<div class="ai-msg" style="flex-direction:row-reverse"><div class="ai-av" style="background:var(--navy);color:#fff">${init}</div><div class="ai-bubble usr">${m.text}</div></div>`;
+}
+
+function bindAI(){
+  const send=()=>{const i=document.getElementById('ai-in');if(!i)return;const m=i.value.trim();if(!m)return;i.value='';sendAI(m);};
+  const btn=document.getElementById('ai-send');const inp=document.getElementById('ai-in');
+  if(btn)btn.onclick=send;
+  if(inp){inp.onkeydown=null;inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});}
+  document.querySelectorAll('.ai-chip').forEach(ch=>ch.onclick=()=>sendAI(ch.dataset.q));
+}
+
+async function sendAI(msg){
+  if(!Array.isArray(aiMsgs))aiMsgs=[];
+  aiMsgs.push({role:'user',text:msg});
+  const render=()=>aiMsgs.map(m=>msgH(m)).join('');
+  const box=document.getElementById('ai-msgs');
+  if(box){box.innerHTML=render()+'<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div>';box.scrollTop=box.scrollHeight;}
+  const sys='Sei l'assistente AI del CRM di Petrarolo & Co. SRL SB — Moving Solutions, Corato (BA). Utente: '+(CU?.nome||'Utente')+' ('+( CU?.ruolo||'venditore')+'). Rispondi in italiano, professionale e conciso.';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:sys,messages:aiMsgs.map(m=>({role:m.role==='ai'?'assistant':'user',content:m.text}))})});
+    const data=await res.json();
+    aiMsgs.push({role:'ai',text:data.content?.[0]?.text||'Risposta non disponibile.'});
+  }catch(e){aiMsgs.push({role:'ai',text:'Errore di connessione.'});}
+  const b2=document.getElementById('ai-msgs');
+  if(b2){b2.innerHTML=render();b2.scrollTop=b2.scrollHeight;}
+  bindAI();
+}
+
+function aiAnal(nome){navTo('ai');setTimeout(()=>sendAI('Analizza il cliente '+nome+': suggerisci azioni commerciali e opportunità'),200);}
+
+
 function toggleMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.toggle('mobile-open');if(ov)ov.classList.toggle('active');}
 function closeMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.remove('mobile-open');if(ov)ov.classList.remove('active');}
 
