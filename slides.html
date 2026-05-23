@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///C:/Users/Domenico/Downloads/slides_1.html -->
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Petrarolo &amp; Co. — Il Tuo CRM Automotive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./slides_files/css2" rel="stylesheet">
+<link rel="stylesheet" href="./slides_files/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#1E2D3D;--blue-accent:#2196D3;--navy2:#162330;--navy3:#0d1820;
+  --orange:#2196D3;--orange2:#1E9FD8;
+  --gold:#C9920A;--white:#fff;--off:#F8F6F1;
+  --gray:#f0ede8;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:'DM Sans',sans-serif}
+
+/* ═══ SLIDE ENGINE ═══ */
+.deck{position:fixed;inset:0;width:100%;height:100%}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease;transform:translateY(40px)}
+.slide.active{opacity:1;pointer-events:all;transform:translateY(0)}
+.slide.exit-up{opacity:0;transform:translateY(-40px)}
+.slide.exit-down{opacity:0;transform:translateY(40px)}
+
+/* ═══ NAV ═══ */
+.nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:12px;background:rgba(30,45,61,.08);backdrop-filter:blur(20px);border:1px solid rgba(30,45,61,.15);border-radius:99px;padding:10px 20px}
+.nav-btn{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.nav-prev{background:rgba(30,45,61,.1);color:var(--navy)}
+.nav-prev:hover{background:rgba(30,45,61,.2)}
+.nav-next{background:var(--orange);color:#fff}
+.nav-next:hover{background:var(--orange2)}
+.nav-dots{display:flex;gap:5px;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(30,45,61,.2);transition:all .3s;cursor:pointer}
+.dot.active{background:var(--orange);width:18px;border-radius:99px}
+.slide-counter{font-size:11px;color:rgba(30,45,61,.45);font-family:'Syne',sans-serif;letter-spacing:.05em}
+
+/* ═══ PROGRESS ═══ */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .4s ease;z-index:200}
+
+/* ═══ SLIDE 1 — COVER ═══ */
+.s1{background:var(--navy3);overflow:hidden}
+.s1-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% -10%,rgba(33,150,211,.12),transparent),radial-gradient(ellipse 60% 60% at 80% 60%,rgba(30,45,61,.06),transparent);pointer-events:none}
+.s1-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(30,45,61,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(30,45,61,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.s1-content{position:relative;z-index:2;text-align:center;padding:20px}
+.s1-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(33,150,211,.12);border:1px solid rgba(33,150,211,.3);border-radius:99px;padding:6px 16px;margin-bottom:24px;animation:fadeUp .6s ease both}
+.s1-badge span{font-size:11px;color:var(--orange);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.s1-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,7vw,4.5rem);font-weight:800;color:var(--navy);line-height:1.05;margin-bottom:12px;animation:fadeUp .6s .1s ease both}
+.s1-title span{color:var(--orange)}
+.s1-sub{font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(30,45,61,.55);font-weight:300;margin-bottom:36px;animation:fadeUp .6s .2s ease both;max-width:600px}
+.s1-logo{width:160px;background:#fff;border-radius:12px;padding:12px 20px;animation:fadeUp .6s .3s ease both}
+.s1-scroll{margin-top:40px;animation:fadeUp .6s .4s ease both;display:flex;flex-direction:column;align-items:center;gap:6px}
+.s1-scroll span{font-size:11px;color:rgba(30,45,61,.3);letter-spacing:.1em;text-transform:uppercase}
+.s1-arrow{animation:bounce 1.5s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ═══ SLIDE 2 — IL PROBLEMA ═══ */
+.s2{background:#f8fafc}
+.problem-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:680px;width:90%;margin-top:24px}
+.problem-card{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:16px;padding:20px;text-align:center;animation:fadeUp .5s ease both}
+.problem-card:nth-child(1){animation-delay:.1s}
+.problem-card:nth-child(2){animation-delay:.2s}
+.problem-card:nth-child(3){animation-delay:.3s}
+.problem-card:nth-child(4){animation-delay:.4s}
+.problem-icon{font-size:2rem;margin-bottom:10px}
+.problem-text{font-size:13px;color:rgba(30,45,61,.6);line-height:1.5}
+.problem-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px}
+
+/* ═══ SLIDE 3 — LA SOLUZIONE ═══ */
+.s3{background:linear-gradient(135deg,#f0f7fc 0%,#e8f3fa 100%)}
+.solution-hero{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,5vw,3.5rem);font-weight:800;color:#fff;text-align:center;line-height:1.1;max-width:700px;padding:0 20px;animation:fadeUp .5s ease both}
+.solution-hero em{font-style:normal;color:var(--orange)}
+.solution-sub{text-align:center;font-size:16px;color:rgba(30,45,61,.55);margin-top:16px;max-width:550px;padding:0 20px;animation:fadeUp .5s .15s ease both}
+.solution-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px;max-width:600px;animation:fadeUp .5s .25s ease both}
+.tag{background:rgba(33,150,211,.1);border:1px solid rgba(33,150,211,.2);border-radius:99px;padding:7px 16px;font-size:13px;color:rgba(255,255,255,.8);font-weight:500}
+.tag i{color:var(--orange);margin-right:6px}
+
+/* ═══ SLIDE 4 — FUNZIONALITÀ ═══ */
+.s4{background:#FFFFFF}
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:700px;width:90%;margin-top:20px}
+@media(min-width:600px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
+.feat-card{background:#fff;border:1px solid rgba(30,45,61,.08);border-radius:14px;padding:18px 16px;animation:fadeUp .4s ease both;transition:transform .2s,background .2s}
+.feat-card:hover{background:rgba(232,83,10,.08);transform:translateY(-3px)}
+.feat-icon{width:38px;height:38px;border-radius:10px;background:rgba(232,83,10,.15);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px;color:var(--orange)}
+.feat-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.feat-desc{font-size:11px;color:rgba(30,45,61,.45);line-height:1.5}
+
+/* ═══ SLIDE 5 — LEAD MANAGEMENT ═══ */
+.s5{background:linear-gradient(160deg,#0d1820,#1a1a2e)}
+.flow{display:flex;align-items:center;gap:0;max-width:700px;width:95%;flex-wrap:nowrap;overflow-x:auto;padding:8px 0}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;animation:fadeUp .4s ease both}
+.flow-step:nth-child(1){animation-delay:.1s}
+.flow-step:nth-child(3){animation-delay:.2s}
+.flow-step:nth-child(5){animation-delay:.3s}
+.flow-step:nth-child(7){animation-delay:.4s}
+.flow-step:nth-child(9){animation-delay:.5s}
+.flow-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.flow-arrow{color:rgba(30,45,61,.2);font-size:18px;flex-shrink:0;margin:0 6px;padding-bottom:20px}
+.flow-label{font-size:10px;color:rgba(30,45,61,.55);text-align:center;max-width:60px;line-height:1.4}
+.flow-c1{background:rgba(232,83,10,.2);color:var(--orange);border:2px solid rgba(232,83,10,.3)}
+.flow-c2{background:rgba(14,68,124,.3);color:#5ba8f5;border:2px solid rgba(14,68,124,.4)}
+.flow-c3{background:rgba(201,146,10,.2);color:var(--gold);border:2px solid rgba(201,146,10,.3)}
+.flow-c4{background:rgba(59,109,17,.2);color:#7dc44e;border:2px solid rgba(59,109,17,.3)}
+.flow-c5{background:rgba(153,27,27,.2);color:#f87171;border:2px solid rgba(153,27,27,.3)}
+
+/* ═══ SLIDE 6 — KPI ═══ */
+.s6{background:#f8fafc}
+.kpi-showcase{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:680px;width:90%;margin-top:20px}
+@media(min-width:600px){.kpi-showcase{grid-template-columns:repeat(4,1fr)}}
+.kpi-box{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px 16px;text-align:center;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
+.kpi-box::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,83,10,.05),transparent);opacity:0;transition:opacity .3s}
+.kpi-box:hover::before{opacity:1}
+.kpi-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--orange);margin-bottom:4px}
+.kpi-label{font-size:11px;color:rgba(30,45,61,.5);line-height:1.4}
+
+/* ═══ SLIDE 7 — TEAM ═══ */
+.s7{background:linear-gradient(135deg,#f8fafc,#e8f3fa)}
+.roles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:680px;width:90%;margin-top:20px}
+@media(min-width:600px){.roles-grid{grid-template-columns:repeat(3,1fr)}}
+.role-card{background:#fff;border:1px solid rgba(30,45,61,.08);border-radius:14px;padding:18px;animation:fadeUp .4s ease both;text-align:center}
+.role-av{width:44px;height:44px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.role-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.role-label{font-size:11px;color:rgba(30,45,61,.45);margin-bottom:10px}
+.role-perms{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.perm{font-size:9px;background:rgba(232,83,10,.15);color:rgba(30,45,61,.6);padding:2px 7px;border-radius:99px}
+
+/* ═══ SLIDE 8 — NOTIFICHE ═══ */
+.s8{background:#FFFFFF}
+.notif-demo{display:flex;flex-direction:column;gap:10px;max-width:500px;width:90%;margin-top:20px}
+.notif-item{background:#fff;border:1px solid rgba(30,45,61,.1);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;animation:slideIn .4s ease both}
+.notif-item:nth-child(1){animation-delay:.1s}
+.notif-item:nth-child(2){animation-delay:.25s}
+.notif-item:nth-child(3){animation-delay:.4s}
+.notif-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.notif-body{flex:1}
+.notif-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.notif-text{font-size:11.5px;color:rgba(30,45,61,.55);line-height:1.5}
+.notif-time{font-size:10px;color:rgba(30,45,61,.25);margin-top:4px}
+.notif-badge{background:var(--orange);color:#fff;font-size:9px;padding:2px 7px;border-radius:99px;font-weight:700;margin-left:6px}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ═══ SLIDE 9 — REPORT ═══ */
+.s9{background:linear-gradient(160deg,#f0f7fc,#e8f3fa)}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:680px;width:90%;margin-top:20px}
+.report-card{background:#fff;border:1px solid rgba(30,45,61,.08);border-radius:16px;padding:20px;animation:fadeUp .4s ease both}
+.report-card:nth-child(1){animation-delay:.1s}
+.report-card:nth-child(2){animation-delay:.2s}
+.report-card:nth-child(3){animation-delay:.3s}
+.report-card:nth-child(4){animation-delay:.4s}
+.report-icon{font-size:1.8rem;margin-bottom:10px}
+.report-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.report-list{font-size:11.5px;color:rgba(30,45,61,.5);line-height:2}
+
+/* ═══ SLIDE 10 — SICUREZZA ═══ */
+.s10{background:#f8fafc}
+.security-items{display:flex;flex-direction:column;gap:12px;max-width:550px;width:90%;margin-top:24px}
+.sec-item{display:flex;gap:14px;align-items:flex-start;animation:fadeUp .4s ease both}
+.sec-item:nth-child(1){animation-delay:.1s}
+.sec-item:nth-child(2){animation-delay:.2s}
+.sec-item:nth-child(3){animation-delay:.3s}
+.sec-item:nth-child(4){animation-delay:.4s}
+.sec-icon{width:44px;height:44px;border-radius:12px;background:rgba(59,109,17,.15);border:1px solid rgba(59,109,17,.25);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;color:#7dc44e}
+.sec-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.sec-text{font-size:12px;color:rgba(30,45,61,.5);line-height:1.5}
+
+/* ═══ SLIDE 11 — MOBILE ═══ */
+.s11{background:linear-gradient(135deg,#f8fafc,#e8f3fa)}
+.phone-mockup{width:180px;height:320px;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:28px;margin:20px auto;position:relative;overflow:hidden;animation:fadeUp .5s .1s ease both;flex-shrink:0}
+.phone-screen{position:absolute;inset:8px;background:#f0f7fc;border-radius:20px;overflow:hidden}
+.phone-topbar{background:var(--navy);padding:8px 12px;display:flex;align-items:center;gap:6px}
+.phone-logo{font-size:9px;font-weight:700;color:var(--orange);font-family:'Syne',sans-serif}
+.phone-content{padding:8px}
+.phone-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.phone-kpi-box{background:rgba(255,255,255,.9);border-radius:8px;padding:8px;text-align:center}
+.phone-kpi-num{font-size:14px;font-weight:700;color:var(--orange);font-family:'Syne',sans-serif}
+.phone-kpi-lbl{font-size:7px;color:rgba(30,45,61,.45)}
+.phone-list-item{background:rgba(255,255,255,.8);border-radius:7px;padding:7px 8px;margin-bottom:5px;display:flex;gap:6px;align-items:center}
+.phone-av{width:22px;height:22px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0}
+.phone-name{font-size:9px;color:rgba(30,45,61,.8)}
+.phone-status{font-size:7px;color:rgba(30,45,61,.4)}
+.mobile-features{display:flex;flex-direction:column;gap:8px;max-width:260px}
+.mob-feat{display:flex;gap:10px;align-items:center;animation:fadeUp .4s ease both}
+.mob-feat:nth-child(1){animation-delay:.2s}
+.mob-feat:nth-child(2){animation-delay:.3s}
+.mob-feat:nth-child(3){animation-delay:.4s}
+.mob-feat:nth-child(4){animation-delay:.5s}
+.mob-icon{width:32px;height:32px;border-radius:8px;background:rgba(232,83,10,.15);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--orange);flex-shrink:0}
+.mob-text{font-size:12px;color:rgba(30,45,61,.6);line-height:1.4}
+
+/* ═══ SLIDE 12 — PERCHÉ SÌ ═══ */
+.s12{background:#FFFFFF}
+.reasons{display:grid;grid-template-columns:1fr;gap:10px;max-width:580px;width:90%;margin-top:16px}
+@media(min-width:500px){.reasons{grid-template-columns:1fr 1fr}}
+.reason{background:rgba(255,255,255,.04);border-left:3px solid var(--orange);border-radius:0 12px 12px 0;padding:14px 16px;animation:fadeUp .4s ease both}
+.reason:nth-child(1){animation-delay:.1s}
+.reason:nth-child(2){animation-delay:.2s}
+.reason:nth-child(3){animation-delay:.3s}
+.reason:nth-child(4){animation-delay:.4s}
+.reason:nth-child(5){animation-delay:.5s}
+.reason:nth-child(6){animation-delay:.6s}
+.reason-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.reason-text{font-size:11.5px;color:rgba(30,45,61,.5);line-height:1.5}
+
+/* ═══ SLIDE 13 — CALL TO ACTION ═══ */
+.s13{background:var(--navy);overflow:hidden}
+.s13-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 110%,rgba(232,83,10,.2),transparent),radial-gradient(ellipse 60% 60% at 20% 30%,rgba(201,146,10,.08),transparent)}
+.s13-content{position:relative;z-index:2;text-align:center;padding:24px}
+.s13-emoji{font-size:3rem;animation:pulse 2s infinite;margin-bottom:16px}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.s13-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,6vw,3.2rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:12px;animation:fadeUp .5s ease both}
+.s13-title span{color:var(--orange)}
+.s13-sub{font-size:16px;color:rgba(30,45,61,.55);max-width:500px;margin:0 auto 32px;line-height:1.6;animation:fadeUp .5s .1s ease both}
+.s13-cta{display:inline-flex;align-items:center;gap:10px;background:var(--orange);color:#fff;padding:16px 32px;border-radius:99px;font-size:15px;font-weight:600;text-decoration:none;animation:fadeUp .5s .2s ease both;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 32px rgba(232,83,10,.35)}
+.s13-cta:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(232,83,10,.5)}
+.s13-url{margin-top:20px;font-family:'Syne',sans-serif;font-size:14px;color:rgba(30,45,61,.3);letter-spacing:.05em;animation:fadeUp .5s .3s ease both}
+.s13-url span{color:rgba(30,45,61,.6)}
+
+/* ═══ COMMON ═══ */
+.slide-section{font-size:10px;color:var(--orange);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;animation:fadeUp .4s ease both}
+.slide-title{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;color:var(--navy);text-align:center;line-height:1.15;animation:fadeUp .4s .05s ease both;padding:0 16px}
+.slide-title span{color:var(--orange)}
+.slide-sub{font-size:14px;color:rgba(30,45,61,.5);text-align:center;margin-bottom:4px;animation:fadeUp .4s .1s ease both;padding:0 20px;max-width:600px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* MOBILE */
+@media(max-width:480px){
+  .problem-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .feat-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi-showcase{grid-template-columns:1fr 1fr;gap:10px}
+  .roles-grid{grid-template-columns:1fr 1fr}
+  .report-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .nav{bottom:16px;padding:8px 14px;gap:8px}
+  .nav-btn{width:34px;height:34px}
+}
+
+/* TOUCH HINT */
+.touch-hint{position:fixed;top:16px;right:16px;font-size:10px;color:rgba(30,45,61,.2);font-family:'Syne',sans-serif;letter-spacing:.05em;z-index:100}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress" style="width: 7.69231%;"></div>
+<div class="touch-hint">← SWIPE →</div>
+
+
+<div class="deck" id="deck">
+
+<!-- ═══ SLIDE 1 — COVER ═══ -->
+<div class="slide s1 active" data-slide="1">
+  <div class="s1-bg"></div>
+  <div class="s1-grid"></div>
+  <div class="s1-content">
+    <div class="s1-badge"><i class="fa fa-rocket" style="color:var(--orange)"></i><span>Presentazione progetto</span></div>
+    <div class="s1-title">Il CRM che fa<br>guidare il <span>business</span></div>
+    <div class="s1-sub">Un sistema su misura per Petrarolo &amp; Co. SRL SB — Moving Solutions</div>
+    
+    <div class="s1-scroll">
+      <span style="color:rgba(30,45,61,.4)">Scorri per scoprire</span>
+      <i class="fa fa-chevron-down s1-arrow" style="color:var(--orange);font-size:18px"></i>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 2 — IL PROBLEMA ═══ -->
+<div class="slide s2" data-slide="2">
+  <div class="slide-section">Il problema</div>
+  <div class="slide-title">Senza un CRM,<br><span>si naviga a vista</span></div>
+  <div class="slide-sub" style="margin-top:8px">Quante opportunità perdiamo ogni giorno?</div>
+  <div class="problem-grid">
+    <div class="problem-card"><div class="problem-icon">📋</div><div class="problem-title">Lead sparse</div><div class="problem-text">Contatti su carta, WhatsApp, email — impossibile tracciarle</div></div>
+    <div class="problem-card"><div class="problem-icon">⏰</div><div class="problem-title">Tempi morti</div><div class="problem-text">Lead dimenticate, clienti non ricontattati, opportunità perse</div></div>
+    <div class="problem-card"><div class="problem-icon">📊</div><div class="problem-title">Zero visibilità</div><div class="problem-text">Nessun dato su conversioni, margini e performance del team</div></div>
+    <div class="problem-card"><div class="problem-icon">🤷</div><div class="problem-title">Chi fa cosa?</div><div class="problem-text">Nessun controllo su chi gestisce quale cliente e come</div></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 3 — LA SOLUZIONE ═══ -->
+<div class="slide s3" data-slide="3">
+  <div class="slide-section">La soluzione</div>
+  <div class="solution-hero">Un CRM costruito<br><em>su misura</em> per voi 🎯</div>
+  <div class="solution-sub">Niente software generico. Un sistema pensato per il mondo del Fleet &amp; Moving Solutions di Petrarolo.</div>
+  <div class="solution-tags">
+    <div class="tag"><i class="fa fa-bolt"></i>Sempre online</div>
+    <div class="tag"><i class="fa fa-mobile-alt"></i>Funziona su mobile</div>
+    <div class="tag"><i class="fa fa-lock"></i>Dati protetti</div>
+    <div class="tag"><i class="fa fa-users"></i>Multi-utente</div>
+    <div class="tag"><i class="fa fa-chart-line"></i>Report in tempo reale</div>
+    <div class="tag"><i class="fa fa-euro-sign"></i>Zero canoni mensili</div>
+    <div class="tag"><i class="fa fa-bell"></i>Alert automatici</div>
+    <div class="tag"><i class="fa fa-clock"></i>Giorni gestione tracciati</div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 4 — FUNZIONALITÀ ═══ -->
+<div class="slide s4" data-slide="4">
+  <div class="slide-section">Funzionalità</div>
+  <div class="slide-title">Tutto quello che serve,<br><span>niente di superfluo</span></div>
+  <div class="feat-grid">
+    <div class="feat-card" style="animation-delay:.05s"><div class="feat-icon">👥</div><div class="feat-name">Gestione Lead</div><div class="feat-desc">Inserimento, assegnazione e tracking completo di ogni opportunità</div></div>
+    <div class="feat-card" style="animation-delay:.1s"><div class="feat-icon">📅</div><div class="feat-name">Timeline Attività</div><div class="feat-desc">Ogni chiamata, visita, preventivo registrato con data e ora</div></div>
+    <div class="feat-card" style="animation-delay:.15s"><div class="feat-icon">📄</div><div class="feat-name">Report Contratti</div><div class="feat-desc">Margini, pezzi, partner — tutto calcolato in automatico</div></div>
+    <div class="feat-card" style="animation-delay:.2s"><div class="feat-icon">🚛</div><div class="feat-name">Flotta &amp; Scadenze</div><div class="feat-desc">Alert automatici 4 mesi prima della scadenza NLT</div></div>
+    <div class="feat-card" style="animation-delay:.25s"><div class="feat-icon">📊</div><div class="feat-name">KPI in tempo reale</div><div class="feat-desc">Dashboard personalizzata per ogni venditore</div></div>
+    <div class="feat-card" style="animation-delay:.3s"><div class="feat-icon">🤖</div><div class="feat-name">AI Assistant</div><div class="feat-desc">Analisi, email commerciali e suggerimenti strategici con IA</div></div>
+    <div class="feat-card" style="animation-delay:.35s"><div class="feat-icon">📅</div><div class="feat-name">Agenda Attività</div><div class="feat-desc">Storico completo di chiamate, visite, preventivi con filtri e export Excel</div></div>
+    <div class="feat-card" style="animation-delay:.4s"><div class="feat-icon">🗑️</div><div class="feat-name">Gestione Lead</div><div class="feat-desc">Elimina lead errate (solo Biagio e Anita) con conferma obbligatoria</div></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 5 — LEAD FLOW ═══ -->
+<div class="slide s5" data-slide="5">
+  <div class="slide-section">Pipeline lead</div>
+  <div class="slide-title">Dal primo contatto<br>al <span>contratto firmato</span></div>
+  <div class="flow" style="margin-top:28px;padding:0 20px">
+    <div class="flow-step"><div class="flow-circle flow-c1"><i class="fa fa-user-plus"></i></div><div class="flow-label">Nuova lead</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="flow-circle flow-c2"><i class="fa fa-phone"></i></div><div class="flow-label">In lavorazione</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="flow-circle flow-c3"><i class="fa fa-file-invoice"></i></div><div class="flow-label">Preventivo inviato</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="flow-circle flow-c4"><i class="fa fa-trophy"></i></div><div class="flow-label">Vinta! 🎉</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="flow-circle flow-c5"><i class="fa fa-pause"></i></div><div class="flow-label">In pausa / Persa</div></div>
+  </div>
+  <div style="max-width:600px;width:90%;margin-top:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+    <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:14px;text-align:center;animation:fadeUp .4s .3s ease both">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:&#39;Syne&#39;,sans-serif">7</div>
+      <div style="font-size:11px;color:rgba(30,45,61,.45);margin-top:4px">stati lead tracciabili</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:14px;text-align:center;animation:fadeUp .4s .4s ease both">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:&#39;Syne&#39;,sans-serif">🔔</div>
+      <div style="font-size:11px;color:rgba(30,45,61,.45);margin-top:4px">Notifiche automatiche</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:14px;text-align:center;animation:fadeUp .4s .5s ease both">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--orange);font-family:&#39;Syne&#39;,sans-serif">📎</div>
+      <div style="font-size:11px;color:rgba(30,45,61,.45);margin-top:4px">PDF preventivi allegabili</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 6 — KPI ═══ -->
+<div class="slide s6" data-slide="6">
+  <div class="slide-section">Vista direzione</div>
+  <div class="slide-title">I numeri che<br><span>contano davvero</span></div>
+  <div class="kpi-showcase" style="margin-top:24px">
+    <div class="kpi-box" style="animation-delay:.05s"><div class="kpi-num" id="kpi1">0</div><div class="kpi-label">Lead gestite<br>questo mese</div></div>
+    <div class="kpi-box" style="animation-delay:.1s"><div class="kpi-num" id="kpi2">0%</div><div class="kpi-label">Tasso di<br>conversione</div></div>
+    <div class="kpi-box" style="animation-delay:.15s"><div class="kpi-num" id="kpi3">0</div><div class="kpi-label">Pezzi<br>sottoscritti</div></div>
+    <div class="kpi-box" style="animation-delay:.2s"><div class="kpi-num" id="kpi4">€0</div><div class="kpi-label">Margine<br>mese corrente</div></div>
+  </div>
+  <div style="margin-top:20px;font-size:12px;color:rgba(30,45,61,.3);text-align:center;animation:fadeUp .4s .3s ease both">
+    ↑ Dati simulativi — nel CRM reale vedi i tuoi dati in tempo reale
+  </div>
+</div>
+
+<!-- ═══ SLIDE 7 — TEAM ═══ -->
+<div class="slide s7" data-slide="7">
+  <div class="slide-section">Il team</div>
+  <div class="slide-title">Ruoli chiari,<br><span>responsabilità definite</span></div>
+  <div class="roles-grid" style="margin-top:16px">
+    <div class="role-card" style="animation-delay:.1s">
+      <div class="role-av" style="background:linear-gradient(135deg,#C9920A,#2196D3)">BP</div>
+      <div class="role-name">Biagio Petrarolo</div>
+      <div class="role-label">Direzione</div>
+      <div class="role-perms"><span class="perm">Tutto</span><span class="perm">Assegna lead</span><span class="perm">Vista team</span></div>
+    </div>
+    <div class="role-card" style="animation-delay:.15s">
+      <div class="role-av" style="background:linear-gradient(135deg,#1E2D3D,#2d4a6b)">VP</div>
+      <div class="role-name">Vincenzo Perrucci</div>
+      <div class="role-label">CFO</div>
+      <div class="role-perms"><span class="perm">Solo lettura</span><span class="perm">Report</span><span class="perm">Margini</span></div>
+    </div>
+    <div class="role-card" style="animation-delay:.2s">
+      <div class="role-av" style="background:linear-gradient(135deg,#E8530A,#ff8c42)">AP</div>
+      <div class="role-name">Anita Petrarolo</div>
+      <div class="role-label">BDC Operator</div>
+      <div class="role-perms"><span class="perm">Gestisce lead</span><span class="perm">Assegna</span></div>
+    </div>
+    <div class="role-card" style="animation-delay:.25s">
+      <div class="role-av" style="background:linear-gradient(135deg,#166534,#22c55e)">DM</div>
+      <div class="role-name">Fleet Specialist</div>
+      <div class="role-label">Domenico &amp; Alberto &amp; Loris</div>
+      <div class="role-perms"><span class="perm">Proprie lead</span><span class="perm">Timeline</span><span class="perm">Contratti</span></div>
+    </div>
+    <div class="role-card" style="animation-delay:.3s">
+      <div class="role-av" style="background:linear-gradient(135deg,#1d4ed8,#60a5fa)">SC</div>
+      <div class="role-name">Sales Consultant</div>
+      <div class="role-label">Riccardo &amp; Michele</div>
+      <div class="role-perms"><span class="perm">Proprie lead</span><span class="perm">Contratti</span></div>
+    </div>
+    <div class="role-card" style="animation-delay:.35s">
+      <div class="role-av" style="background:linear-gradient(135deg,#6d28d9,#a78bfa)">GM</div>
+      <div class="role-name">Back Office</div>
+      <div class="role-label">Giuseppe Monopoli</div>
+      <div class="role-perms"><span class="perm">Supporto</span><span class="perm">Dati</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 8 — NOTIFICHE ═══ -->
+<div class="slide s8" data-slide="8">
+  <div class="slide-section">Sistema notifiche</div>
+  <div class="slide-title">Il CRM che<br><span>ti avvisa lui</span> 🔔</div>
+  <div class="notif-demo">
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(232,83,10,.15)"><i class="fa fa-user-check" style="color:var(--orange)"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">Nuova lead assegnata <span class="notif-badge">NUOVO</span></div>
+        <div class="notif-text">Ti è stata assegnata la lead: <strong>3 Zeta Trasporti SRL</strong> — da Biagio Petrarolo</div>
+        <div class="notif-time">Oggi alle 09:15</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(201,146,10,.15)"><i class="fa fa-clock" style="color:var(--gold)"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">⏰ Promemoria lead in pausa</div>
+        <div class="notif-text">La lead <strong>Mario Rossi SRL</strong> è in pausa da 30 giorni. È il momento di ricontattare!</div>
+        <div class="notif-time">Ieri alle 08:00</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(239,68,68,.15)"><i class="fa fa-user-minus" style="color:#f87171"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">Lead riassegnata</div>
+        <div class="notif-text">La lead <strong>Trasporti Bari SRL</strong> è stata riassegnata ad Alberto Garbetta</div>
+        <div class="notif-time">2 giorni fa</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 9 — REPORT ═══ -->
+<div class="slide s9" data-slide="9">
+  <div class="slide-section">Report &amp; Analytics</div>
+  <div class="slide-title">Dati chiari,<br><span>decisioni migliori</span></div>
+  <div class="report-grid">
+    <div class="report-card">
+      <div class="report-icon">📈</div>
+      <div class="report-name">Report Lead</div>
+      <div class="report-list">✓ Pipeline per stato<br>✓ Tasso conversione<br>✓ Performance venditore<br>✓ Export Excel + PDF</div>
+    </div>
+    <div class="report-card">
+      <div class="report-icon">💰</div>
+      <div class="report-name">Report Contratti</div>
+      <div class="report-list">✓ Margine × pezzi<br>✓ 14 partner configurati<br>✓ PDF allegabili<br>✓ Scaricabile Excel</div>
+    </div>
+    <div class="report-card">
+      <div class="report-icon">📊</div>
+      <div class="report-name">Confronto Mensile</div>
+      <div class="report-list">✓ Grafico 6 mesi<br>✓ vs mese precedente<br>✓ Top venditore<br>✓ Media annuale</div>
+    </div>
+    <div class="report-card">
+      <div class="report-icon">👁️</div>
+      <div class="report-name">Vista Direzione</div>
+      <div class="report-list">✓ Team in tempo reale<br>✓ Giorni medi gestione lead<br>✓ Alert lead fredde 7+gg<br>✓ Ultimi 20 contratti team</div>
+    </div>
+    <div class="report-card">
+      <div class="report-icon">📅</div>
+      <div class="report-name">Agenda Attività</div>
+      <div class="report-list">✓ Chiamate, visite, email<br>✓ Preventivi con importo<br>✓ Filtri per tipo e periodo<br>✓ Export Excel editabile</div>
+    </div>
+    <div class="report-card">
+      <div class="report-icon">📊</div>
+      <div class="report-name">Confronto Mensile</div>
+      <div class="report-list">✓ Grafico barre 6 mesi<br>✓ % vs mese precedente<br>✓ Top venditore del mese<br>✓ Export Excel + PDF</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 10 — SICUREZZA ═══ -->
+<div class="slide s10" data-slide="10">
+  <div class="slide-section">Sicurezza &amp; Privacy</div>
+  <div class="slide-title">I vostri dati<br><span>sono al sicuro</span> 🔒</div>
+  <div class="security-items">
+    <div class="sec-item"><div class="sec-icon"><i class="fa fa-lock"></i></div><div><div class="sec-title">Password cifrate</div><div class="sec-text">Ogni password è salvata con hash — nessuno può leggerla, nemmeno noi</div></div></div>
+    <div class="sec-item"><div class="sec-icon"><i class="fa fa-server"></i></div><div><div class="sec-title">Database su server europei</div><div class="sec-text">Supabase, infrastruttura AWS EU — dati in Europa, crittografia SSL</div></div></div>
+    <div class="sec-item"><div class="sec-icon"><i class="fa fa-user-shield"></i></div><div><div class="sec-title">Accesso basato su ruoli</div><div class="sec-text">Ogni utente vede solo i propri dati — nessuna sovrapposizione</div></div></div>
+    <div class="sec-item"><div class="sec-icon"><i class="fa fa-eye-slash"></i></div><div><div class="sec-title">Nessuna pubblicità</div><div class="sec-text">I vostri dati non vengono mai condivisi o venduti a terzi</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 11 — MOBILE ═══ -->
+<div class="slide s11" data-slide="11">
+  <div class="slide-section">Mobile first</div>
+  <div class="slide-title">Funziona su ogni<br><span>dispositivo</span> 📱</div>
+  <div style="display:flex;gap:32px;align-items:center;margin-top:12px;flex-wrap:wrap;justify-content:center">
+    <div class="phone-mockup">
+      <div class="phone-screen">
+        <div class="phone-topbar"><div class="phone-logo">PETRAROLO CRM</div><div style="margin-left:auto;width:16px;height:16px;border-radius:50%;background:var(--orange);font-size:8px;display:flex;align-items:center;justify-content:center;color:#fff">BP</div></div>
+        <div class="phone-content">
+          <div class="phone-kpi">
+            <div class="phone-kpi-box"><div class="phone-kpi-num">16</div><div class="phone-kpi-lbl">Pezzi mese</div></div>
+            <div class="phone-kpi-box"><div class="phone-kpi-num" style="color:#7dc44e">32%</div><div class="phone-kpi-lbl">Conversione</div></div>
+          </div>
+          <div style="font-size:8px;color:rgba(30,45,61,.3);margin-bottom:5px">Lead da lavorare</div>
+          <div class="phone-list-item"><div class="phone-av">3Z</div><div><div class="phone-name">3 Zeta Trasporti</div><div class="phone-status">In lavorazione · 3gg</div></div></div>
+          <div class="phone-list-item"><div class="phone-av" style="background:#1d4ed8">MR</div><div><div class="phone-name">Mario Rossi SRL</div><div class="phone-status">Preventivo inviato · 7gg</div></div></div>
+          <div class="phone-list-item"><div class="phone-av" style="background:#166534">TB</div><div><div class="phone-name">Trasporti Bari</div><div class="phone-status">Nuova · oggi</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-features">
+      <div class="mob-feat"><div class="mob-icon"><i class="fa fa-wifi"></i></div><div class="mob-text"><strong style="color:#fff">Nessuna installazione</strong><br>Si apre dal browser, sempre</div></div>
+      <div class="mob-feat"><div class="mob-icon"><i class="fa fa-touch"></i></div><div class="mob-text"><strong style="color:#fff">Touch ottimizzato</strong><br>Menu hamburger, layout fluido</div></div>
+      <div class="mob-feat"><div class="mob-icon"><i class="fa fa-share-alt"></i></div><div class="mob-text"><strong style="color:#fff">Condivisibile su WhatsApp</strong><br>Un link e sei dentro</div></div>
+      <div class="mob-feat"><div class="mob-icon"><i class="fa fa-sync"></i></div><div class="mob-text"><strong style="color:#fff">Aggiornamenti automatici</strong><br>Sempre l'ultima versione</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 12 — PERCHÉ SÌ ═══ -->
+<div class="slide s12" data-slide="12">
+  <div class="slide-section">Perché usarlo</div>
+  <div class="slide-title">6 buoni motivi per<br><span>non tornare indietro</span></div>
+  <div class="reasons">
+    <div class="reason"><div class="reason-title">🎯 Zero lead perse</div><div class="reason-text">Ogni opportunità è tracciata, assegnata e monitorata fino alla chiusura</div></div>
+    <div class="reason"><div class="reason-title">⚡ Risparmio di tempo</div><div class="reason-text">Report automatici, KPI in un clic — fine dei fogli Excel manuali</div></div>
+    <div class="reason"><div class="reason-title">👀 Controllo totale</div><div class="reason-text">La direzione vede tutto il team in tempo reale, sempre</div></div>
+    <div class="reason"><div class="reason-title">📱 Ovunque tu sia</div><div class="reason-text">In ufficio, in trasferta, dal cellulare — il CRM ti segue</div></div>
+    <div class="reason"><div class="reason-title">🤖 Intelligenza artificiale</div><div class="reason-text">L'AI Assistant aiuta con email commerciali, analisi lead e strategie di vendita</div></div>
+    <div class="reason"><div class="reason-title">⏱️ Tempi monitorati</div><div class="reason-text">Semaforo verde/arancione/rosso sui giorni di gestione — la direzione vede subito chi è lento</div></div>
+    <div class="reason"><div class="reason-title">💪 Fatto su misura</div><div class="reason-text">Non un software generico — costruito apposta per Petrarolo &amp; Co. SRL SB</div></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 13 — CTA ═══ -->
+<div class="slide s13" data-slide="13">
+  <div class="s13-bg"></div>
+  <div class="s13-content">
+    <div class="s13-emoji">🚀</div>
+    <div class="s13-title">Pronti a guidare<br>il <span>futuro</span>?</div>
+    <div class="s13-sub">Il CRM è già online, configurato e pronto per il team. Bastano le credenziali per iniziare.</div>
+    <a href="https://petrarolo-crm.github.io/petrarolo-crm/" target="_blank" class="s13-cta">
+      <i class="fa fa-external-link-alt"></i>
+      Accedi al CRM ora
+    </a>
+    <div class="s13-url"><span>petrarolo-crm.github.io/petrarolo-crm</span></div>
+
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<!-- ═══ NAV ═══ -->
+<div class="nav">
+  <button class="nav-btn nav-prev" id="prevBtn" onclick="changeSlide(-1)"><i class="fa fa-arrow-left"></i></button>
+  <div class="nav-dots" id="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <button class="nav-btn nav-next" id="nextBtn" onclick="changeSlide(1)"><i class="fa fa-arrow-right"></i></button>
+  <div class="slide-counter" id="counter">1 / 13</div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+let animating = false;
+
+// Build dots
+const dotsEl = document.getElementById('dots');
+for(let i=0;i<total;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+}
+
+function updateUI(){
+  document.getElementById('counter').textContent=(current+1)+' / '+total;
+  document.getElementById('progress').style.width=((current+1)/total*100)+'%';
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));
+  // Trigger animations for active slide
+  const activeSlide=slides[current];
+  activeSlide.querySelectorAll('[style*="animation-delay"]').forEach(el=>{
+    el.style.animationPlayState='running';
+  });
+}
+
+function goTo(idx){
+  if(animating||idx===current)return;
+  animating=true;
+  const dir=idx>current?1:-1;
+  slides[current].classList.remove('active');
+  slides[current].classList.add(dir>0?'exit-up':'exit-down');
+  setTimeout(()=>{
+    slides[current].classList.remove('exit-up','exit-down');
+    current=idx;
+    slides[current].classList.add('active');
+    updateUI();
+    if(current===5)animateKPIs();
+    setTimeout(()=>{animating=false;},500);
+  },300);
+}
+
+function changeSlide(dir){
+  const next=Math.max(0,Math.min(total-1,current+dir));
+  goTo(next);
+}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')changeSlide(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')changeSlide(-1);
+});
+
+// Touch/Swipe
+let touchStartX=0,touchStartY=0;
+document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  const dy=e.changedTouches[0].clientY-touchStartY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){changeSlide(dx<0?1:-1);}
+  else if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>40){changeSlide(dy<0?1:-1);}
+},{passive:true});
+
+// KPI counter animation
+function animateKPIs(){
+  const targets=[{el:'kpi1',target:24,suffix:'',prefix:''},{el:'kpi2',target:34,suffix:'%',prefix:''},{el:'kpi3',target:16,suffix:'',prefix:''},{el:'kpi4',target:36,suffix:'k',prefix:'€'}];
+  targets.forEach(({el,target,suffix,prefix})=>{
+    const elem=document.getElementById(el);
+    if(!elem)return;
+    let start=0;const dur=1500;const step=16;
+    const timer=setInterval(()=>{
+      start+=Math.ceil(target/(dur/step));
+      if(start>=target){start=target;clearInterval(timer);}
+      elem.textContent=prefix+start+suffix;
+    },step);
+  });
+}
+
+updateUI();
+</script>
+
+
+</body></html>
