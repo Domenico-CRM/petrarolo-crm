@@ -440,6 +440,12 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
         <div class="form-label">Nome segnalatore <span class="form-req">*</span></div>
         <input id="f-segnalatore" type="text" placeholder="Nome e cognome del segnalatore">
       </div>
+      <div class="form-group form-full" id="f-assegna-grp" style="display:none">
+        <div class="form-label"><i class="ti ti-user-check" style="color:var(--orange)"></i> Assegna a venditore</div>
+        <select id="f-venditore-assegna" style="font-size:13px;padding:8px 10px;border:1px solid var(--border2);border-radius:7px;width:100%">
+          <option value="">— Assegna a me stesso —</option>
+        </select>
+      </div>
       <div class="form-group form-full"><div class="form-label">Note</div><textarea id="f-note" placeholder="Preferenze, permuta, esigenze fleet..."></textarea></div>
     </div>
     <div class="form-actions">
