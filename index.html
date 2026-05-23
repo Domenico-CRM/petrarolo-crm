@@ -1674,8 +1674,8 @@ async function esportaLeadExcel(){
   }catch(e){showToast('Errore');return;}
   if(!leads.length){showToast('Nessuna lead');return;}
   const hdrs=['Data','Cliente','Città','Venditore','Tipo','Telefono','Email','Provenienza','Stato','Motivazione','Concorrente','Note'];
-  const sep=';';const qt='"';const nl='
-';
+  const sep=';';const qt='"';const nl='\n';
+
   const esc=v=>qt+String(v||'').replace(new RegExp(qt,'g'),qt+qt)+qt;
   const rows=leads.map(l=>[
     l.created_at?new Date(l.created_at).toLocaleDateString('it-IT'):'',
