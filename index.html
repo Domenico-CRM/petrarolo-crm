@@ -1018,7 +1018,7 @@ async function sendAI(msg){
   const render=()=>aiMsgs.map(m=>msgH(m)).join('');
   const box=document.getElementById('ai-msgs');
   if(box){box.innerHTML=render()+'<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div>';box.scrollTop=box.scrollHeight;}
-  const sys='Sei l'assistente AI del CRM di Petrarolo & Co. SRL SB — Moving Solutions, Corato (BA). Utente: '+(CU?.nome||'Utente')+' ('+( CU?.ruolo||'venditore')+'). Rispondi in italiano, professionale e conciso.';
+  const sys='Sei l\'assistente AI del CRM di Petrarolo & Co. SRL SB. Utente: '+(CU?.nome||'Utente')+' ('+(CU?.ruolo||'venditore')+'). Rispondi in italiano, professionale e conciso.';
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:sys,messages:aiMsgs.map(m=>({role:m.role==='ai'?'assistant':'user',content:m.text}))})});
     const data=await res.json();
