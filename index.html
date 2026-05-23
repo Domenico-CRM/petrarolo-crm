@@ -1577,7 +1577,10 @@ async function rReportLead(){
       const slabel=sl.split(' — ')[0];
       const lid=l.id;
       const lnome=(l.nome||'').replace(/'/g,"");
-      return`<tr><td style="font-weight:600">${l.nome||'—'}</td><td style="color:var(--text2)">${l.citta||'—'}</td><td style="font-size:11.5px">${l.venditore_nome||'—'}</td><td style="font-size:11px">${(l.fonte||'—').replace('LEAD DA ','')}</td><td><span style="background:${sc};color:${st};padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:500">${slabel}</span></td><td style="font-size:11px;color:var(--text3)">${l.created_at?new Date(l.created_at).toLocaleDateString('it-IT'):'—'}</td><td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="cambiaStatoLead(${lid},this.dataset.s)" data-s="${sl}" title="Cambia stato"><i class="ti ti-tag"></i></button><button class="btn btn-sm" onclick="window._currentTimelineClienteId=${lid};window._currentTimelineNome='${lnome}';openTimeline(${lid})" title="Timeline"><i class="ti ti-timeline"></i></button></div></td></tr>`;
+      return`<tr><td style="font-weight:600">${l.nome||'—'}</td><td style="color:var(--text2)">${l.citta||'—'}</td><td style="font-size:11.5px">${l.venditore_nome||'—'}</td><td style="font-size:11px">${(l.fonte||'—').replace('LEAD DA ','')}</td><td><span style="background:${sc};color:${st};padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:500">${slabel}</span></td><td style="font-size:11px">
+              <div style="color:var(--text3)">${l.created_at?new Date(l.created_at).toLocaleDateString('it-IT'):'—'}</div>
+              ${l.data_assegnazione?`<div style="color:var(--orange);font-weight:600;font-size:10px;margin-top:2px"><i class="ti ti-user-check"></i> ${new Date(l.data_assegnazione).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div style="margin-top:2px">${tempoGestione(l.data_assegnazione)}</div>`:''}
+            </td><td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="cambiaStatoLead(${lid},this.dataset.s)" data-s="${sl}" title="Cambia stato"><i class="ti ti-tag"></i></button><button class="btn btn-sm" onclick="window._currentTimelineClienteId=${lid};window._currentTimelineNome='${lnome}';openTimeline(${lid})" title="Timeline"><i class="ti ti-timeline"></i></button></div></td></tr>`;
     }).join('')}
     </tbody></table></div>
   </div>`;
@@ -1608,7 +1611,10 @@ async function filtroLead(){
     const slabel=sl.split(' — ')[0];
     const lid=l.id;
     const lnome=(l.nome||'').replace(/'/g,'');
-    return`<tr><td style="font-weight:600">${l.nome||'—'}</td><td style="color:var(--text2)">${l.citta||'—'}</td><td style="font-size:11.5px">${l.venditore_nome||'—'}</td><td style="font-size:11px">${(l.fonte||'—').replace('LEAD DA ','')}</td><td><span style="background:${sc};color:${st2};padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:500">${slabel}</span></td><td style="font-size:11px;color:var(--text3)">${l.created_at?new Date(l.created_at).toLocaleDateString('it-IT'):'—'}</td><td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="cambiaStatoLead(${lid},this.dataset.s)" data-s="${sl}" title="Cambia stato"><i class="ti ti-tag"></i></button><button class="btn btn-sm" onclick="window._currentTimelineClienteId=${lid};window._currentTimelineNome='${lnome}';openTimeline(${lid})" title="Timeline"><i class="ti ti-timeline"></i></button></div></td></tr>`;
+    return`<tr><td style="font-weight:600">${l.nome||'—'}</td><td style="color:var(--text2)">${l.citta||'—'}</td><td style="font-size:11.5px">${l.venditore_nome||'—'}</td><td style="font-size:11px">${(l.fonte||'—').replace('LEAD DA ','')}</td><td><span style="background:${sc};color:${st2};padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:500">${slabel}</span></td><td style="font-size:11px">
+              <div style="color:var(--text3)">${l.created_at?new Date(l.created_at).toLocaleDateString('it-IT'):'—'}</div>
+              ${l.data_assegnazione?`<div style="color:var(--orange);font-weight:600;font-size:10px;margin-top:2px"><i class="ti ti-user-check"></i> ${new Date(l.data_assegnazione).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div style="margin-top:2px">${tempoGestione(l.data_assegnazione)}</div>`:''}
+            </td><td><div style="display:flex;gap:4px"><button class="btn btn-sm" onclick="cambiaStatoLead(${lid},this.dataset.s)" data-s="${sl}" title="Cambia stato"><i class="ti ti-tag"></i></button><button class="btn btn-sm" onclick="window._currentTimelineClienteId=${lid};window._currentTimelineNome='${lnome}';openTimeline(${lid})" title="Timeline"><i class="ti ti-timeline"></i></button></div></td></tr>`;
   }).join('')||'<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text3)">Nessuna lead trovata</td></tr>';
 }
 
@@ -1851,6 +1857,24 @@ async function stampaMese(mese){window.print();}
 async function esportaReport(){window.print();}
 
 
+function giorniDa(data){
+  if(!data)return null;
+  const diff=Math.floor((Date.now()-new Date(data).getTime())/(1000*60*60*24));
+  if(diff===0)return 'Oggi';
+  if(diff===1)return '1 giorno fa';
+  if(diff<7)return diff+' giorni fa';
+  if(diff<30)return Math.floor(diff/7)+' settimane fa';
+  return Math.floor(diff/30)+' mesi fa';
+}
+
+function tempoGestione(dataAssegnazione, ultimaAttivita){
+  if(!dataAssegnazione)return '';
+  const giorni=Math.floor((Date.now()-new Date(dataAssegnazione).getTime())/(1000*60*60*24));
+  const color=giorni>30?'var(--red)':giorni>14?'var(--orange)':'var(--green)';
+  return `<span style="color:${color};font-weight:600;font-size:10.5px">${giorni}gg in gestione</span>`;
+}
+
+
 function toggleMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.toggle('mobile-open');if(ov)ov.classList.toggle('active');}
 function closeMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.remove('mobile-open');if(ov)ov.classList.remove('active');}
 
@@ -1997,7 +2021,7 @@ async function rClienti(){
     <div class="card-head"><span class="card-title"><i class="ti ti-users" style="color:var(--orange);margin-right:6px"></i>${isDir()?'Tutti i clienti':'I miei clienti'} — ${data.length}</span>
       <button class="btn btn-sm btn-navy"><i class="ti ti-download"></i> Esporta</button>
     </div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Tipo</th><th>Telefono</th><th>Interesse</th><th>Score</th>${isDir()?'<th>Venditore</th>':''}<th>Stato</th></tr></thead><tbody>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Tipo</th><th>Telefono</th><th>Interesse</th><th>Score</th>${isDir()?'<th>Venditore</th>':''}<th>Stato</th><th>Data lead / Assegnazione</th><th>Azioni</th></tr></thead><tbody>
     ${data.map(c=>`<tr onclick="openClient(${c.id})">
       <td><div style="display:flex;align-items:center;gap:8px">${mav((c.nome||'').slice(0,2).toUpperCase())}<div><div style="font-weight:600">${c.nome}</div><div style="font-size:10.5px;color:var(--text3)">${c.email||''}</div></div></div></td>
       <td>${badge(c.tipo||'Privato',c.tipo==='Azienda'?'bg-n':'bg-gr')}</td>
@@ -2005,7 +2029,15 @@ async function rClienti(){
       <td style="color:var(--text2)">${c.interesse||'—'}</td>
       <td><div style="display:flex;align-items:center;gap:6px">${prog(c.score||0,'var(--orange)')}<span style="font-size:11px;font-weight:700;color:${(c.score||0)>80?'var(--navy)':'var(--orange)'}">${c.score||0}</span></div></td>
       ${isDir()?`<td><span style="font-size:11.5px;font-weight:600;color:var(--navy)">${c.venditore_nome||'—'}</span></td>`:''}
-      <td>${stBadge(c.stato||'Lead')}</td>
+      <td>${stBadge(c.stato_lead||c.stato||'Nuova')}</td>
+      <td style="font-size:11px">
+        <div style="color:var(--text3)">${c.created_at?new Date(c.created_at).toLocaleDateString('it-IT'):'—'}</div>
+        ${c.data_assegnazione?`<div style="color:var(--orange);font-weight:600;margin-top:2px"><i class="ti ti-user-check"></i> ${new Date(c.data_assegnazione).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div style="font-size:10px;color:var(--text3)">da ${c.assegnato_da||'—'}</div><div style="margin-top:3px">${tempoGestione(c.data_assegnazione)}</div>`:'<div style="color:var(--text3);font-size:10px">—</div>'}
+      </td>
+      <td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">
+        <button class="btn btn-sm" onclick="window._currentTimelineClienteId=${c.id};window._currentTimelineNome='${(c.nome||'').replace(/'/g,'')}';openTimeline(${c.id})" title="Timeline attività"><i class="ti ti-timeline"></i></button>
+        ${canAssign()?`<button class="btn btn-sm" onclick="window._currentTimelineClienteId=${c.id};window._currentTimelineVenditoreId=${c.venditore_id};openAssegna()" title="Riassegna"><i class="ti ti-user-check"></i></button>`:''}
+      </div></td>
     </tr>`).join('')}
     </tbody></table></div>
   </div>`;
@@ -2143,6 +2175,12 @@ async function rDirOverview(){
     margine_mese:contratti.filter(c=>c.venditore_id===u.id&&c.mese===meseCorrente).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0),
     contratti_tot:contratti.filter(c=>c.venditore_id===u.id).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0),
     margine_tot:contratti.filter(c=>c.venditore_id===u.id).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0),
+    avg_giorni:(()=>{
+      const leads_ass=clienti.filter(c=>c.venditore_id===u.id&&c.data_assegnazione);
+      if(!leads_ass.length)return 0;
+      const avg=leads_ass.reduce((s,c)=>s+Math.floor((Date.now()-new Date(c.data_assegnazione).getTime())/(1000*60*60*24)),0)/leads_ass.length;
+      return Math.round(avg);
+    })(),
   }));
 
   // KPI totali
@@ -2166,7 +2204,7 @@ async function rDirOverview(){
     </div>
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr>
-        <th>Venditore</th><th>Ruolo</th><th>Clienti</th><th>Lead</th><th>Trattative</th><th>In chiusura</th><th>Pezzi mese</th><th>Margine mese</th><th>Pezzi totali</th><th>Margine totale</th>
+        <th>Venditore</th><th>Ruolo</th><th>Clienti</th><th>Lead</th><th>Trattative</th><th>In chiusura</th><th>Pezzi mese</th><th>Margine mese</th><th>Pezzi totali</th><th>Margine totale</th><th>Avg giorni lead</th>
       </tr></thead>
       <tbody>
       ${stats.sort((a,b)=>b.margine_mese-a.margine_mese).map(u=>`<tr>
@@ -2177,6 +2215,7 @@ async function rDirOverview(){
         <td style="text-align:center">${u.trattative}</td>
         <td style="text-align:center;color:${u.chiusura>0?'var(--green)':'var(--text3)'};font-weight:${u.chiusura>0?'700':'400'}">${u.chiusura}</td>
         <td style="text-align:center;font-weight:700;color:var(--navy)">${u.contratti_mese}</td>
+        <td style="text-align:center;font-size:11px;color:${u.avg_giorni>30?'var(--red)':u.avg_giorni>14?'var(--orange)':'var(--green)'}">${u.avg_giorni>0?u.avg_giorni+'gg':'—'}</td>
         <td style="font-weight:700;color:var(--orange)">€ ${u.margine_mese.toLocaleString('it-IT')}</td>
         <td style="text-align:center;color:var(--text2)">${u.contratti_tot}</td>
         <td style="color:var(--text2)">€ ${u.margine_tot.toLocaleString('it-IT')}</td>
