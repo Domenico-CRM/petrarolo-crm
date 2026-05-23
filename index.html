@@ -2025,6 +2025,23 @@ async function controllLeadInPausa(){
 }
 
 
+async function eliminaCliente(id, nome){
+  if(!confirm(`Sei sicuro di voler eliminare la lead "${nome}"?\n\nQuesta azione è irreversibile e cancellerà anche tutte le attività associate.`))return;
+  try{
+    // Elimina prima le attività associate
+    await sb.from('lead_attivita').delete().eq('cliente_id',id);
+    // Elimina le notifiche associate
+    await sb.from('notifiche').delete().eq('lead_id',id);
+    // Elimina il cliente
+    const{error}=await sb.from('clienti').delete().eq('id',id);
+    if(error)throw error;
+    showToast('Lead eliminata con successo!');
+    // Se siamo nella scheda, torna alla lista
+    if(currentSec==='scheda'){activeClient=null;navTo('clienti');}
+    else renderSec('clienti');
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
 function toggleMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.toggle('mobile-open');if(ov)ov.classList.toggle('active');}
 function closeMobileMenu(){var sb=document.querySelector('.sb'),ov=document.getElementById('mobile-overlay');if(sb)sb.classList.remove('mobile-open');if(ov)ov.classList.remove('active');}
 
@@ -2244,6 +2261,7 @@ async function rClienti(){
       <td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">
         <button class="btn btn-sm" onclick="window._currentTimelineClienteId=${c.id};window._currentTimelineNome='${(c.nome||'').replace(/'/g,'')}';openTimeline(${c.id})" title="Timeline attività"><i class="ti ti-timeline"></i></button>
         ${canAssign()?`<button class="btn btn-sm" onclick="window._currentTimelineClienteId=${c.id};window._currentTimelineVenditoreId=${c.venditore_id};openAssegna()" title="Riassegna"><i class="ti ti-user-check"></i></button>`:''}
+        ${canAssign()?`<button class="btn btn-sm btn-red" onclick="event.stopPropagation();eliminaCliente(${c.id},'${(c.nome||'').replace(/'/g,'')}')" title="Elimina lead"><i class="ti ti-trash"></i></button>`:''}
       </div></td>
     </tr>`).join('')}
     </tbody></table></div>
@@ -2314,6 +2332,7 @@ async function rScheda(){
           ${!isReadOnly&&canEdit?`<button class="btn btn-sm" onclick="cambiaStatoLead(${c.id},'${sc.replace(/'/g,'')}')"><i class="ti ti-tag"></i> Cambia stato</button>`:''}
           ${!isReadOnly&&canAssignLead?`<button class="btn btn-sm" onclick="window._currentTimelineClienteId=${c.id};window._currentTimelineVenditoreId=${c.venditore_id};openAssegna()"><i class="ti ti-user-check"></i> Riassegna</button>`:''}
           ${isReadOnly?`<span style="font-size:11px;color:var(--text3);align-self:center"><i class="ti ti-eye"></i> Vista sola lettura</span>`:''}
+          ${canAssign()?`<button class="btn btn-sm btn-red" onclick="eliminaCliente(${c.id},'${(c.nome||'').replace(/'/g,'')}')"><i class="ti ti-trash"></i> Elimina lead</button>`:''}
         </div>
       </div>
     </div>
