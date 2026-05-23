@@ -3287,22 +3287,24 @@ async function salvaContratto(){
         // Cerca se esiste già
         const{data:existing}=await sb.from('clienti').select('id').eq('nome',clienteNome).eq('venditore_id',CU.id).single();
         if(!existing){
-          // Crea nuovo cliente
+          // Crea nuovo cliente — già contrattualizzato, stato Vinta
           await sb.from('clienti').insert({
             nome:clienteNome,
             citta:payload.citta||null,
             tipo:'Azienda',
             stato:'Attivo',
+            stato_lead:'Vinta',
             fonte:payload.provenienza||'Contratto diretto',
             interesse:payload.prodotto||null,
             venditore_id:CU.id,
             venditore_nome:CU.nome,
-            score:80,
+            score:100,
+            note:'Cliente acquisito — contratto chiuso',
             created_by:CU.nome
           });
         } else {
-          // Aggiorna stato a Attivo se era Lead
-          await sb.from('clienti').update({stato:'Attivo'}).eq('id',existing.id).eq('stato','Lead');
+          // Aggiorna stato a Vinta se era Lead
+          await sb.from('clienti').update({stato:'Attivo',stato_lead:'Vinta',score:100}).eq('id',existing.id);
         }
       }catch(e){console.log('Auto-cliente:', e.message);}
     }
