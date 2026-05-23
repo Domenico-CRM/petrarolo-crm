@@ -1412,7 +1412,7 @@ async function rReport(){
     contratti=r4.data||[];
   }catch(e){}
 
-  const totMargine=contratti.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
+  const totMargine=contratti.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
   const totPezzi=contratti.reduce((s,c)=>s+(parseInt(c.pezzi)||0),0);
 
   let fasi={Contatto:0,Proposta:0,'Test drive':0,'In chiusura':0,Chiuso:0};
@@ -1468,9 +1468,10 @@ async function rContratti(){
   const mesePrecedente=new Date(new Date().setMonth(new Date().getMonth()-1)).toISOString().slice(0,7);
   const thisMonth=contratti.filter(c=>c.mese===meseCorrente);
   const lastMonth=contratti.filter(c=>c.mese===mesePrecedente);
-  const totMargine=thisMonth.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
-  const totMarginePrec=lastMonth.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
+  const totMargine=thisMonth.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
+  const totMarginePrec=lastMonth.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
   const diffContratti=thisMonth.length-lastMonth.length;
+  const diffPezzi=thisMonth.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0)-lastMonth.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0);
   const diffMargine=totMargine-totMarginePrec;
 
   // Raggruppa per mese per il venditore corrente
@@ -1490,10 +1491,10 @@ async function rContratti(){
 
   document.getElementById('content').innerHTML=`
   <div class="kpi-g">
-    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Contratti mese corrente</div><div class="kpi-v">${thisMonth.length}</div><div class="kpi-d ${diffContratti>=0?'du':'dd'}">${diffContratti>=0?'↑':'↓'} ${Math.abs(diffContratti)} vs mese prec.</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Contratti mese corrente</div><div class="kpi-v">${thisMonth.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0)}</div><div class="kpi-d ${diffContratti>=0?'du':'dd'}">${diffContratti>=0?'↑':'↓'} ${Math.abs(diffContratti)} contratti vs prec.</div></div>
     <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Margine mese corrente</div><div class="kpi-v">€ ${totMargine.toLocaleString('it-IT',{minimumFractionDigits:0})}</div><div class="kpi-d ${diffMargine>=0?'du':'dd'}">${diffMargine>=0?'↑':'↓'} € ${Math.abs(diffMargine).toLocaleString('it-IT')} vs prec.</div></div>
-    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Contratti totali</div><div class="kpi-v">${contratti.length}</div><div class="kpi-d" style="color:var(--text3)">Tutti i periodi</div></div>
-    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine totale</div><div class="kpi-v">€ ${contratti.reduce((s,c)=>s+(parseFloat(c.margine)||0),0).toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Storico completo</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Contratti totali</div><div class="kpi-v">${contratti.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0)}</div><div class="kpi-d" style="color:var(--text3)">Pezzi totali</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine totale</div><div class="kpi-v">€ ${contratti.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0).toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Storico completo</div></div>
   </div>
 
   <div class="full-card">
@@ -1834,7 +1835,7 @@ async function esportaExcel(){
   ]);
 
   // Aggiungi riga totali
-  const totMargine=contratti.reduce((s,c)=>s+(parseFloat(c.margine)||0),0);
+  const totMargine=contratti.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
   const totMargTot=contratti.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
   const totPezzi=contratti.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0);
   const totBonus=contratti.reduce((s,c)=>s+(parseFloat(c.bonus)||0),0);
