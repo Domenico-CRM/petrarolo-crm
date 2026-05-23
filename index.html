@@ -1000,8 +1000,7 @@ async function salvaLead(){
 
 function msgH(m){
   const init=CU?CU.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2):'U';
-  if(m.role==='ai')return`<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot">${(m.text||'').replace(/
-/g,'<br>')}</div></div>`;
+  if(m.role==='ai'){var txt=(m.text||'').split('\n').join('<br>');return`<div class="ai-msg"><div class="ai-av" style="background:var(--orange);color:#fff">AI</div><div class="ai-bubble bot">${txt}</div></div>`;}
   return`<div class="ai-msg" style="flex-direction:row-reverse"><div class="ai-av" style="background:var(--navy);color:#fff">${init}</div><div class="ai-bubble usr">${m.text}</div></div>`;
 }
 
