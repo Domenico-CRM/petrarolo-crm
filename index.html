@@ -1312,93 +1312,100 @@ async function rTrattative(){
 // VISTA DIREZIONE (solo dir/admin)
 // ═══════════════════════════════════════════
 async function rDirOverview(){
-  if(CU.ruolo!=='direzione'&&CU.ruolo!=='admin'){document.getElementById('content').innerHTML='<div style="padding:30px;text-align:center;color:var(--red)">Accesso riservato alla Direzione.</div>';return;}
-  let utenti=[],clienti=[],trattative=[];
+  if(!isDir()){document.getElementById('content').innerHTML='<div style="padding:30px;text-align:center;color:var(--red)">Accesso riservato.</div>';return;}
+  let utenti=[],clienti=[],trattative=[],contratti=[];
   try{
-    const[r1,r2,r3]=await Promise.all([
-      sb.from('crm_utenti').select('*').eq('ruolo','venditore'),
+    const[r1,r2,r3,r4]=await Promise.all([
+      sb.from('crm_utenti').select('*').eq('attivo',true),
       sb.from('clienti').select('*'),
-      sb.from('trattative').select('*')
+      sb.from('trattative').select('*'),
+      sb.from('contratti_chiusi').select('*').order('created_at',{ascending:false})
     ]);
-    utenti=r1.data||[];clienti=r2.data||[];trattative=r3.data||[];
+    utenti=r1.data||[];clienti=r2.data||[];trattative=r3.data||[];contratti=r4.data||[];
   }catch(e){}
 
-  const stats=utenti.map(u=>({
-    nome:u.nome,init:u.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2),
+  // Filtra solo i venditori
+  const venditori=utenti.filter(u=>u.ruolo==='venditore');
+  
+  const meseCorrente=new Date().toISOString().slice(0,7);
+  
+  const stats=venditori.map(u=>({
+    nome:u.nome,
+    ruolo_label:u.ruolo_label||'Venditore',
+    init:u.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2),
     clienti:clienti.filter(c=>c.venditore_id===u.id).length,
+    lead:clienti.filter(c=>c.venditore_id===u.id&&c.stato==='Lead').length,
     trattative:trattative.filter(t=>t.venditore_id===u.id).length,
     chiusura:trattative.filter(t=>t.venditore_id===u.id&&t.fase==='In chiusura').length,
-    score:Math.round(trattative.filter(t=>t.venditore_id===u.id).reduce((s,t)=>s+(t.probabilita||0),0)/(trattative.filter(t=>t.venditore_id===u.id).length||1))
+    contratti_mese:contratti.filter(c=>c.venditore_id===u.id&&c.mese===meseCorrente).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0),
+    margine_mese:contratti.filter(c=>c.venditore_id===u.id&&c.mese===meseCorrente).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0),
+    contratti_tot:contratti.filter(c=>c.venditore_id===u.id).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0),
+    margine_tot:contratti.filter(c=>c.venditore_id===u.id).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0),
   }));
 
-  document.getElementById('content').innerHTML=`
-  <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px;margin-bottom:2px">
-    <i class="ti ti-eye" style="font-size:28px;color:var(--orange)"></i>
-    <div>
-      <div style="font-size:16px;font-weight:700;color:#fff">Vista Direzione — Petrarolo &amp; Co. SRL SB</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.5)">Panoramica completa di tutti i venditori e le performance del team</div>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:10px">
-      <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:#fff">${utenti.length}</div><div style="font-size:10px;color:rgba(255,255,255,.5)">VENDITORI</div></div>
-      <div style="width:1px;background:rgba(255,255,255,.1)"></div>
-      <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--orange)">${clienti.length}</div><div style="font-size:10px;color:rgba(255,255,255,.5)">CLIENTI TOT.</div></div>
-      <div style="width:1px;background:rgba(255,255,255,.1)"></div>
-      <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:#4ade80">${trattative.length}</div><div style="font-size:10px;color:rgba(255,255,255,.5)">TRATTATIVE</div></div>
-    </div>
-  </div>
+  // KPI totali
+  const totClienti=clienti.length;
+  const totTrattative=trattative.length;
+  const totContratti=contratti.filter(c=>c.mese===meseCorrente).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0);
+  const totMargine=contratti.filter(c=>c.mese===meseCorrente).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
 
-  <div class="row2">
-    ${stats.map(s=>`
-    <div class="card" style="border-top:3px solid var(--orange)">
-      <div class="card-head">
-        <div style="display:flex;align-items:center;gap:10px">
-          ${mav(s.init)}
-          <div><div class="card-title">${s.nome}</div><div style="font-size:11px;color:var(--text3)">Venditore</div></div>
-        </div>
-        <button class="btn btn-sm" onclick="filterByVenditore(${JSON.stringify(s.nome)})"><i class="ti ti-filter"></i> Filtra</button>
-      </div>
-      <div style="padding:14px 17px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div style="text-align:center;padding:10px;background:var(--gray);border-radius:8px">
-          <div style="font-size:20px;font-weight:700;color:var(--navy)">${s.clienti}</div>
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">Clienti</div>
-        </div>
-        <div style="text-align:center;padding:10px;background:var(--gray);border-radius:8px">
-          <div style="font-size:20px;font-weight:700;color:var(--orange)">${s.trattative}</div>
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">Trattative</div>
-        </div>
-        <div style="text-align:center;padding:10px;background:var(--gray);border-radius:8px">
-          <div style="font-size:20px;font-weight:700;color:var(--green)">${s.chiusura}</div>
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">Chiusura</div>
-        </div>
-      </div>
-      <div style="padding:0 17px 14px">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">Score medio pipeline</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="prog6" style="flex:1"><div class="prog6-fill" style="width:${s.score}%;background:${s.score>70?'var(--navy)':'var(--orange)'}"></div></div>
-          <span style="font-size:12px;font-weight:700;color:${s.score>70?'var(--navy)':'var(--orange)'}">${s.score}%</span>
-        </div>
-      </div>
-    </div>`).join('')}
+  document.getElementById('content').innerHTML=`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Clienti totali</div><div class="kpi-v">${totClienti}</div><div class="kpi-d" style="color:var(--text3)">Tutti i venditori</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Trattative attive</div><div class="kpi-v">${totTrattative}</div><div class="kpi-d" style="color:var(--text3)">Pipeline totale</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Pezzi mese corrente</div><div class="kpi-v">${totContratti}</div><div class="kpi-d" style="color:var(--text3)">${new Date().toLocaleString('it-IT',{month:'long',year:'numeric'})}</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine mese corrente</div><div class="kpi-v">€ ${totMargine.toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Totale team</div></div>
   </div>
 
   <div class="full-card">
-    <div class="card-head"><span class="card-title"><i class="ti ti-users" style="color:var(--orange);margin-right:6px"></i>Tutti i clienti — vista direzione</span></div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Tipo</th><th>Interesse</th><th>Venditore</th><th>Score</th><th>Stato</th></tr></thead><tbody>
-    ${clienti.slice(0,15).map(c=>`<tr onclick="openClient(${c.id})">
-      <td><div style="display:flex;align-items:center;gap:8px">${mav((c.nome||'').slice(0,2).toUpperCase())}<div><div style="font-weight:600">${c.nome}</div><div style="font-size:10.5px;color:var(--text3)">${c.email||''}</div></div></div></td>
-      <td>${badge(c.tipo||'—',c.tipo==='Azienda'?'bg-n':'bg-gr')}</td>
-      <td style="color:var(--text2)">${c.interesse||'—'}</td>
-      <td><span style="font-weight:600;color:var(--navy)">${c.venditore_nome||'—'}</span></td>
-      <td><div style="display:flex;align-items:center;gap:5px">${prog(c.score||0,'var(--orange)')}<span style="font-size:11px;font-weight:700">${c.score||0}</span></div></td>
-      <td>${stBadge(c.stato||'Lead')}</td>
-    </tr>`).join('')}
-    </tbody></table></div>
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-users" style="color:var(--orange);margin-right:6px"></i>Performance team — aggiornamento in tempo reale</span>
+      <button class="btn btn-sm" onclick="renderSec('dir-overview')"><i class="ti ti-refresh"></i> Aggiorna</button>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr>
+        <th>Venditore</th><th>Ruolo</th><th>Clienti</th><th>Lead</th><th>Trattative</th><th>In chiusura</th><th>Pezzi mese</th><th>Margine mese</th><th>Pezzi totali</th><th>Margine totale</th>
+      </tr></thead>
+      <tbody>
+      ${stats.sort((a,b)=>b.margine_mese-a.margine_mese).map(u=>`<tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="uav" style="width:32px;height:32px;font-size:11px">${u.init}</div><strong>${u.nome}</strong></div></td>
+        <td style="font-size:11px;color:var(--text2)">${u.ruolo_label}</td>
+        <td style="text-align:center">${u.clienti}</td>
+        <td style="text-align:center;color:var(--orange)">${u.lead}</td>
+        <td style="text-align:center">${u.trattative}</td>
+        <td style="text-align:center;color:${u.chiusura>0?'var(--green)':'var(--text3)'};font-weight:${u.chiusura>0?'700':'400'}">${u.chiusura}</td>
+        <td style="text-align:center;font-weight:700;color:var(--navy)">${u.contratti_mese}</td>
+        <td style="font-weight:700;color:var(--orange)">€ ${u.margine_mese.toLocaleString('it-IT')}</td>
+        <td style="text-align:center;color:var(--text2)">${u.contratti_tot}</td>
+        <td style="color:var(--text2)">€ ${u.margine_tot.toLocaleString('it-IT')}</td>
+      </tr>`).join('')}
+      ${stats.length===0?'<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text3)">Nessun venditore trovato</td></tr>':''}
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="full-card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-file-invoice" style="color:var(--orange);margin-right:6px"></i>Ultimi contratti inseriti — tutti i venditori</span></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Data</th><th>Venditore</th><th>Cliente</th><th>Prodotto</th><th>Pezzi</th><th>Margine unit.</th><th>Totale</th><th>Partner</th></tr></thead>
+      <tbody>
+      ${contratti.slice(0,20).map(c=>`<tr>
+        <td style="color:var(--text2);font-size:11px">${new Date(c.created_at).toLocaleDateString('it-IT')}</td>
+        <td style="font-weight:600;font-size:11.5px">${c.venditore_nome||'—'}</td>
+        <td>${c.cliente||'—'}</td>
+        <td style="font-size:11px;color:var(--text2)">${c.prodotto||'—'}</td>
+        <td style="text-align:center;font-weight:700">${c.pezzi||1}</td>
+        <td style="color:var(--orange)">€ ${(parseFloat(c.margine)||0).toLocaleString('it-IT')}</td>
+        <td style="font-weight:700;color:var(--orange)">€ ${((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)).toLocaleString('it-IT')}</td>
+        <td style="font-size:11px;color:var(--text2)">${c.partner||'—'}</td>
+      </tr>`).join('')}
+      ${contratti.length===0?'<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3)">Nessun contratto inserito</td></tr>':''}
+      </tbody>
+    </table></div>
   </div>`;
 }
 
-// ═══════════════════════════════════════════
-// REPORT
-// ═══════════════════════════════════════════
+
 async function rReport(){
   let cl=0,tr=0,vei=0,contratti=[];
   try{
@@ -1505,7 +1512,7 @@ async function rContratti(){
           <option value="">Tutti i mesi</option>
           ${mesiDisp.map(m=>`<option value="${m}">${formatMese(m)}</option>`).join('')}
         </select>
-        ${isDir()?`<select id="filtro-venditore" class="btn btn-sm" style="cursor:pointer" onchange="filtraContratti()"><option value="">Tutti i venditori</option></select>`:''}
+        ${isDir()?`<select id="filtro-venditore" class="btn btn-sm" style="cursor:pointer" onchange="aggiornaFiltroContratti()"><option value="">Tutti i venditori</option></select>`:''}
         <button class="btn btn-sm" onclick="esportaExcel()"><i class="ti ti-file-spreadsheet"></i> Scarica Excel</button>
         <button class="btn btn-sm btn-orange" onclick="openModal('modal-contratto')"><i class="ti ti-plus"></i> Nuovo contratto</button>
       </div>
@@ -1756,7 +1763,53 @@ function formatMese(m){
   return `${nomi[parseInt(mo)]} ${y}`;
 }
 
-function filtraContratti(){
+async function aggiornaFiltroContratti(){
+  const filtroMese=document.getElementById('filtro-mese')?.value||'';
+  const filtroVend=document.getElementById('filtro-venditore')?.value||'';
+  let contratti=[];
+  try{
+    let q=sb.from('contratti_chiusi').select('*').order('created_at',{ascending:false});
+    if(filtroMese)q=q.eq('mese',filtroMese);
+    if(filtroVend)q=q.eq('venditore_id',parseInt(filtroVend));
+    const r=await q;contratti=r.data||[];
+  }catch(e){}
+  // Aggiorna la vista mantenendo i filtri
+  renderSec('contratti');
+  // Popola select venditori per Direzione/CFO
+  if(isDir()){
+    setTimeout(async()=>{
+      const sel=document.getElementById('filtro-venditore');
+      if(!sel)return;
+      // Rimuovi opzioni esistenti tranne "Tutti"
+      while(sel.options.length>1)sel.remove(1);
+      try{
+        const{data}=await sb.from('crm_utenti').select('id,nome').eq('attivo',true).order('nome');
+        if(data)data.forEach(u=>{
+          if(u.ruolo==='venditore'){
+            const o=document.createElement('option');
+            o.value=u.id;o.textContent=u.nome;
+            sel.appendChild(o);
+          }
+        });
+      }catch(e){}
+    },200);
+  }
+}
+
+async function filtraContratti(){
+  // Non ricaricare tutto, applica solo il filtro visivo
+  const filtroMese = document.getElementById('filtro-mese')?.value || '';
+  const filtroVend = document.getElementById('filtro-venditore')?.value || '';
+  
+  let contratti = [];
+  try{
+    let q = sb.from('contratti_chiusi').select('*').order('created_at',{ascending:false});
+    if(!isDir()) q = q.eq('venditore_id', CU.id);
+    if(filtroMese) q = q.eq('mese', filtroMese);
+    if(filtroVend) q = q.eq('venditore_id', parseInt(filtroVend));
+    const r = await q;
+    contratti = r.data || [];
+  }catch(e){}
   renderSec('contratti');
 }
 
