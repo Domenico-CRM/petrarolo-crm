@@ -571,7 +571,7 @@ let animating = false;
 function updateUI(){
   const c=document.getElementById('counter');if(c)c.textContent=(current+1)+' / '+total;
   const cs=document.getElementById('counter-show');if(cs)cs.textContent=(current+1)+' / '+total;
-  document.getElementById('progress').style.width=((current+1)/total*100)+'%';
+  const pb=document.getElementById('progress');if(pb)pb.style.width=((current+1)/total*100)+'%';
   
   // Trigger animations for active slide
   const activeSlide=slides[current];
