@@ -538,10 +538,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
     <div class="s13-emoji">🚀</div>
     <div class="s13-title">Pronti a guidare<br>il <span>futuro</span>?</div>
     <div class="s13-sub">Il CRM è già online, configurato e pronto per il team. Bastano le credenziali per iniziare.</div>
-    <a href="https://petrarolo-crm.github.io/petrarolo-crm/" target="_blank" class="s13-cta">
-      <i class="fa fa-external-link-alt"></i>
-      Accedi al CRM ora
-    </a>
+    
     <div class="s13-url"><span>petrarolo-crm.github.io/petrarolo-crm</span></div>
 
   </div>
@@ -549,13 +546,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#FFFFFF;font-family:
 
 </div><!-- end deck -->
 
-<!-- ═══ NAV ═══ -->
-<div class="nav">
-  <button class="nav-btn nav-prev" id="prevBtn" onclick="changeSlide(-1)"><i class="fa fa-arrow-left"></i></button>
-  <div class="nav-dots" id="dots"></div>
-  <button class="nav-btn nav-next" id="nextBtn" onclick="changeSlide(1)"><i class="fa fa-arrow-right"></i></button>
-  <div class="slide-counter" id="counter">1 / 13</div>
-</div>
+
 
 <script>
 const slides = document.querySelectorAll('.slide');
@@ -563,19 +554,12 @@ const total = slides.length;
 let current = 0;
 let animating = false;
 
-// Build dots
-const dotsEl = document.getElementById('dots');
-for(let i=0;i<total;i++){
-  const d=document.createElement('div');
-  d.className='dot'+(i===0?' active':'');
-  d.onclick=()=>goTo(i);
-  dotsEl.appendChild(d);
-}
+// Dots removed
 
 function updateUI(){
   document.getElementById('counter').textContent=(current+1)+' / '+total;
   document.getElementById('progress').style.width=((current+1)/total*100)+'%';
-  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));
+  
   // Trigger animations for active slide
   const activeSlide=slides[current];
   activeSlide.querySelectorAll('[style*="animation-delay"]').forEach(el=>{
