@@ -341,31 +341,69 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 ::-webkit-scrollbar-thumb{background:var(--gray2);border-radius:3px}
 
 ::-webkit-scrollbar{width:6px;height:6px}
+/* ── BOTTOM NAV ── */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;height:62px;background:#fff;border-top:1px solid var(--border);z-index:500;display:none;align-items:center;justify-content:space-around;padding:0 4px;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:10px;cursor:pointer;min-width:52px;transition:background .15s;border:none;background:none;font-family:inherit}
+.bnav-item.active{background:rgba(232,83,10,.08)}
+.bnav-item i{font-size:20px;color:var(--text3)}
+.bnav-item.active i{color:var(--orange)}
+.bnav-item span{font-size:9px;color:var(--text3);font-weight:500}
+.bnav-item.active span{color:var(--orange)}
+/* ── FAB ── */
+#fab-btn{position:fixed;bottom:74px;right:16px;width:52px;height:52px;border-radius:50%;background:var(--orange);color:#fff;border:none;cursor:pointer;font-size:24px;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,83,10,.4);z-index:501;transition:transform .2s}
+#fab-btn:active{transform:scale(.93)}
 ::-webkit-scrollbar-track{background:var(--gray)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
 @media(max-width:768px){
-  .sb{position:fixed;left:-220px;top:0;height:100vh;z-index:1000;transition:left .25s ease;box-shadow:4px 0 20px rgba(0,0,0,.3)}
+  /* ── LAYOUT BASE ── */
+  .sb{position:fixed;left:-240px;top:0;height:100vh;z-index:1000;transition:left .25s ease;box-shadow:4px 0 20px rgba(0,0,0,.3);width:240px}
   .sb.mobile-open{left:0}
   .main{margin-left:0!important}
   .search-box{display:none}
-  #mobile-menu-btn{display:flex!important;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text);font-size:20px;flex-shrink:0}
   #mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999}
   #mobile-overlay.active{display:block}
+
+  /* ── TOPBAR MOBILE ── */
+  .topbar{padding:0 10px;height:48px}
+  #mobile-menu-btn{display:flex!important;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text);font-size:22px;flex-shrink:0}
+
+  /* ── BOTTOM NAV ── */
+  #bottom-nav{display:flex!important}
+
+  /* ── CONTENT ── */
+  #content{padding:10px 8px 80px 8px}
+
+  /* ── GRID ── */
   .kpi-g{grid-template-columns:1fr 1fr;gap:8px}
   .row2{grid-template-columns:1fr}
   .form-grid{grid-template-columns:1fr}
   .form-full{grid-column:1}
-  .modal{width:95vw!important;max-height:90vh;overflow-y:auto}
-  .tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:500px;-webkit-overflow-scrolling:touch}
-  .tbl{font-size:11px}
-  .tbl th,.tbl td{padding:7px 8px}
+
+  /* ── MODAL ── */
+  .modal{width:100vw!important;max-width:100vw!important;max-height:92vh;overflow-y:auto;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;margin:0}
+  .modal-overlay{align-items:flex-end!important;padding:0!important}
+
+  /* ── TABELLE → CARD ── */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl{font-size:11.5px;min-width:600px}
+  .tbl th,.tbl td{padding:8px 10px}
   .card-head{flex-wrap:wrap;gap:8px}
-  #content{padding:10px}
-  .topbar{padding:0 10px}
-  .box{width:90vw!important;max-width:400px}
+
+  /* ── KPI ── */
+  .kpi{padding:12px 14px}
+  .kpi-v{font-size:1.6rem}
+
+  /* ── FULL CARD ── */
+  .full-card{border-radius:10px}
+
+  /* ── BOX LOGIN ── */
+  .box{width:92vw!important;max-width:420px;padding:24px 20px}
+
+  /* ── FAB ── */
+  #fab-btn{display:flex!important}
 }
-@media(min-width:769px){#mobile-menu-btn{display:none!important}}
+@media(min-width:769px){#mobile-menu-btn{display:none!important}#bottom-nav{display:none!important}#fab-btn{display:none!important}}
 </style>
 </head>
 <body>
@@ -847,7 +885,31 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
       </div>
     </div>
     <div class="cnt" id="content"></div>
+  </div><!-- end .main -->
+
+  <!-- BOTTOM NAV MOBILE -->
+  <div id="bottom-nav">
+    <button class="bnav-item" onclick="navTo('dashboard')" id="bnav-dashboard">
+      <i class="ti ti-layout-dashboard"></i><span>Home</span>
+    </button>
+    <button class="bnav-item" onclick="navTo('clienti')" id="bnav-clienti">
+      <i class="ti ti-users"></i><span>Clienti</span>
+    </button>
+    <button class="bnav-item" onclick="navTo('contratti')" id="bnav-contratti">
+      <i class="ti ti-file-invoice"></i><span>Contratti</span>
+    </button>
+    <button class="bnav-item" onclick="navTo('report-lead')" id="bnav-report-lead">
+      <i class="ti ti-chart-pie"></i><span>Lead</span>
+    </button>
+    <button class="bnav-item" onclick="toggleMobileMenu()" id="bnav-altro">
+      <i class="ti ti-dots"></i><span>Altro</span>
+    </button>
   </div>
+
+  <!-- FAB - Nuovo Lead -->
+  <button id="fab-btn" onclick="openModal('modal-lead');if(canAssign()){document.getElementById('f-assegna-grp').style.display='block';setTimeout(popolaVenditoriAssegna,100);}" title="Nuova Lead">
+    <i class="ti ti-plus"></i>
+  </button>
 </div>
 
 <script>
