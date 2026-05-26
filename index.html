@@ -1790,6 +1790,8 @@ async function rReportLead(){
     const sel=document.getElementById('rl-venditore');if(!sel)return;
     try{const{data}=await sb.from('crm_utenti').select('id,nome').eq('attivo',true).eq('ruolo','venditore').order('nome');
     if(data)data.forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=u.nome;sel.appendChild(o);});}catch(e){}
+    // Render mobile cards dopo che il DOM è pronto
+    renderLeadCards(leads);
   },200);
 }
 
