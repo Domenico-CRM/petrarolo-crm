@@ -706,12 +706,27 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 
 <!-- MODAL NUOVO CONTRATTO -->
 <div class="modal-overlay" id="modal-contratto">
-  <div class="modal" style="width:600px">
+  <div class="modal" style="width:680px">
     <div class="modal-head"><span class="modal-title"><i class="ti ti-file-invoice" style="color:var(--orange);margin-right:7px"></i>Nuovo contratto chiuso</span><button class="modal-close" onclick="closeModal('modal-contratto')"><i class="ti ti-x"></i></button></div>
+    <div style="padding:8px 17px 0;background:var(--gray);border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;padding:6px 0">📋 Dati principali</div>
+    </div>
     <div class="form-grid">
       <div class="form-group"><div class="form-label">Mese di riferimento <span class="form-req">*</span></div><input id="c-mese" type="month" value="2026-05"></div>
-      <div class="form-group"><div class="form-label">Cliente / Contratto <span class="form-req">*</span></div><input id="c-cliente" type="text" placeholder="es. Rossi Mario"></div>
-      <div class="form-group"><div class="form-label">Città / Luogo cliente</div><input id="c-citta" type="text" placeholder="es. Bari, Corato, Andria..."></div>
+      <div class="form-group"><div class="form-label">Data contratto firmato <span class="form-req">*</span></div><input id="c-data-firma" type="date"></div>
+      <div class="form-group"><div class="form-label">N° BO <span class="form-req">*</span></div><input id="c-nbo" type="text" placeholder="es. BO-2026-001"></div>
+      <div class="form-group"><div class="form-label">Data BO <span class="form-req">*</span></div><input id="c-data-bo" type="date"></div>
+      <div class="form-group"><div class="form-label">Cliente <span class="form-req">*</span></div><input id="c-cliente" type="text" placeholder="es. 3 Zeta Trasporti SRL"></div>
+      <div class="form-group"><div class="form-label">Città <span class="form-req">*</span></div><input id="c-citta" type="text" placeholder="es. Bari, Corato, Andria..."></div>
+      <div class="form-group"><div class="form-label">Provenienza <span class="form-req">*</span></div>
+        <select id="c-provenienza" onchange="toggleSegnalatoreCont(this.value)">
+          <option value="">— Seleziona provenienza —</option>
+          <option value="LEAD DA CONTATTO DIRETTO">LEAD DA CONTATTO DIRETTO</option>
+          <option value="LEAD DA FACILE.IT">LEAD DA FACILE.IT</option>
+          <option value="LEAD DA DIALOGO">LEAD DA DIALOGO</option>
+          <option value="LEAD DA SEGNALATORE">LEAD DA SEGNALATORE</option>
+        </select>
+      </div>
       <div class="form-group"><div class="form-label">Tipo prodotto <span class="form-req">*</span></div>
         <select id="c-prodotto-tipo" onchange="toggleProdottoCustom(this.value)">
           <option value="">— Seleziona tipo prodotto —</option>
@@ -724,10 +739,36 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
         </select>
       </div>
       <div class="form-group" id="c-prodotto-custom-grp" style="display:none"><div class="form-label">Specifica prodotto</div><input id="c-prodotto-custom" type="text" placeholder="Descrivi il tipo di prodotto..."></div>
-      <div class="form-group form-full"><div class="form-label">Veicolo / Descrizione contratto <span class="form-req">*</span></div><input id="c-veicolo" type="text" placeholder="es. BMW X5 xDrive30d, Sprinter 319 x3, Flotta mista..."></div>
-      <div class="form-group"><div class="form-label">Partner Petrarolo</div>
+    </div>
+    <div style="padding:8px 17px 0;background:var(--gray);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;padding:6px 0">🚗 Veicolo & Contratto</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group form-full"><div class="form-label">Veicolo / Descrizione contratto <span class="form-req">*</span></div><input id="c-veicolo" type="text" placeholder="es. Ford Transit 350, BMW X5, Sprinter 319..."></div>
+      <div class="form-group"><div class="form-label">Tipo veicolo <span class="form-req">*</span></div>
+        <select id="c-tipo-veicolo" onchange="toggleTipoVeicoloCustom(this.value)">
+          <option value="">— Seleziona tipo —</option>
+          <option value="Auto / SUV">Auto / SUV</option>
+          <option value="Veicolo Commerciale">Veicolo Commerciale</option>
+          <option value="Truck / Industriale">Truck / Industriale</option>
+          <option value="Semirimorchio">Semirimorchio</option>
+          <option value="E-Mobility">E-Mobility</option>
+          <option value="altro">Altro (specifica)</option>
+        </select>
+      </div>
+      <div class="form-group" id="c-tipo-veicolo-custom-grp" style="display:none"><div class="form-label">Specifica tipo veicolo</div><input id="c-tipo-veicolo-custom" type="text" placeholder="es. Minibus, Autocaravan..."></div>
+      <div class="form-group"><div class="form-label">Durata noleggio (mesi) <span class="form-req">*</span></div><input id="c-durata" type="number" placeholder="es. 36" min="1" step="1"></div>
+      <div class="form-group"><div class="form-label">Data inizio <span class="form-req">*</span></div><input id="c-data-inizio" type="date"></div>
+      <div class="form-group"><div class="form-label">Data fine <span class="form-req">*</span></div><input id="c-data-fine" type="date"></div>
+      <div class="form-group"><div class="form-label">N° pezzi <span class="form-req">*</span></div><input id="c-pezzi" type="number" placeholder="es. 1" min="1" step="1" value="1" oninput="calcolaMargini()"></div>
+    </div>
+    <div style="padding:8px 17px 0;background:var(--gray);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;padding:6px 0">💰 Partner & Margini</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><div class="form-label">Partner di fatturazione <span class="form-req">*</span></div>
         <select id="c-partner" onchange="togglePartnerAltro(this.value)">
-          <option value="">— Nessun partner —</option>
+          <option value="">— Seleziona partner —</option>
           <option value="VRENT SPA">VRENT SPA</option>
           <option value="FORD TRUCKS ITALIA">FORD TRUCKS ITALIA</option>
           <option value="TIP">TIP</option>
@@ -752,31 +793,66 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
         <div class="form-label">Specifica partner <span class="form-req">*</span></div>
         <input id="c-partner-altro" type="text" placeholder="Nome del partner...">
       </div>
-      <div class="form-group"><div class="form-label">Provenienza lead</div>
-        <select id="c-provenienza" onchange="toggleSegnalatoreCont(this.value)">
-          <option value="">— Nessuna / Contatto diretto —</option>
-          <option value="LEAD DA CONTATTO DIRETTO">LEAD DA CONTATTO DIRETTO</option>
-          <option value="LEAD DA FACILE.IT">LEAD DA FACILE.IT</option>
-          <option value="LEAD DA DIALOGO">LEAD DA DIALOGO</option>
-          <option value="LEAD DA SEGNALATORE">LEAD DA SEGNALATORE</option>
+      <div class="form-group"><div class="form-label">Società di noleggio <span class="form-req">*</span></div>
+        <select id="c-societa-noleggio">
+          <option value="">— Seleziona società —</option>
+          <option value="VRENT SPA">VRENT SPA</option>
+          <option value="FORD TRUCKS ITALIA">FORD TRUCKS ITALIA</option>
+          <option value="TIP">TIP</option>
+          <option value="ARVAL">ARVAL</option>
+          <option value="AYVENS">AYVENS</option>
+          <option value="VOLKSWAGEN LEASING SCARABEL">VOLKSWAGEN LEASING SCARABEL</option>
+          <option value="DRIVALIA">DRIVALIA</option>
+          <option value="LEASYS">LEASYS</option>
+          <option value="ALPHABET">ALPHABET</option>
+          <option value="RENT2GO">RENT2GO</option>
+          <option value="SANTANDER RENTING">SANTANDER RENTING</option>
+          <option value="ITALRENT">ITALRENT</option>
+          <option value="ROLFO ICE">ROLFO ICE</option>
+          <option value="GERVASI INDUSTRIAL">GERVASI INDUSTRIAL</option>
         </select>
       </div>
-      <div class="form-group"><div class="form-label">Collega collaboratore</div>
+      <div class="form-group"><div class="form-label">Margine unitario (€) <span class="form-req">*</span></div><input id="c-margine" type="number" placeholder="es. 2250" min="0" step="0.01" oninput="calcolaMargini()"></div>
+      <div class="form-group"><div class="form-label">Bonus (€) <span class="form-req">*</span></div><input id="c-bonus" type="number" placeholder="0 se non presente" min="0" step="0.01" value="0" oninput="calcolaMargini()"></div>
+      <!-- CALCOLO AUTOMATICO -->
+      <div class="form-group form-full">
+        <div style="background:linear-gradient(135deg,var(--navy-light),#EBF5FC);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Margine Totale Lordo</div>
+            <div id="c-calc-lordo" style="font-size:18px;font-weight:800;color:var(--orange)">€ 0,00</div>
+            <div style="font-size:10px;color:var(--text3)">(Marg.unit. × Pezzi) + (Bonus × Pezzi)</div>
+          </div>
+          <div style="text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border);padding:0 12px">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Provvigioni consulente</div>
+            <div id="c-calc-provv" style="font-size:18px;font-weight:800;color:var(--red)">- € 0,00</div>
+            <div style="font-size:10px;color:var(--text3)">50% del Margine Lordo</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Margine Netto</div>
+            <div id="c-calc-netto" style="font-size:18px;font-weight:800;color:var(--green)">€ 0,00</div>
+            <div style="font-size:10px;color:var(--text3)">Lordo - Segnalaz. - Altri costi - Provv.</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Nominativo segnalatore</div><input id="c-segnalatore" type="text" placeholder="Nome e cognome segnalatore"></div>
+      <div class="form-group"><div class="form-label">Costo segnalazione (€) <span style="color:var(--text3);font-size:10px">inserire con segno negativo</span></div><input id="c-segnalazione" type="number" placeholder="es. -100" step="0.01" oninput="calcolaMargini()"></div>
+      <div class="form-group"><div class="form-label">Altri costi (€) <span style="color:var(--text3);font-size:10px">inserire con segno negativo</span></div><input id="c-altri-costi" type="number" placeholder="es. -50" step="0.01" oninput="calcolaMargini()"></div>
+      <div class="form-group"><div class="form-label">Provvigioni consulente (€) <span style="color:var(--text3);font-size:10px">calcolato automaticamente al 50%</span></div><input id="c-provvigioni" type="number" placeholder="Calcolato automaticamente" step="0.01" style="background:var(--gray)" readonly oninput="calcolaMargini()"></div>
+    </div>
+    <div style="padding:8px 17px 0;background:var(--gray);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;padding:6px 0">👥 Collaboratori & Note</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><div class="form-label">Collega in tandem</div>
         <select id="c-collega">
           <option value="">— Nessun collega —</option>
-          <option>Anita Petrarolo</option><option>Domenico Monopoli</option><option>Giuseppe Monopoli</option><option>Alberto Garbetta</option><option>Loris De Gioia</option><option>Riccardo Regano</option><option>Michele Merra</option>
+          <option>Anita Petrarolo</option><option>Domenico Monopoli</option><option>Giuseppe Monopoli</option><option>Alberto Garbetta</option><option>Loris De Gioia</option><option>Riccardo Regano</option><option>Michele Merra</option><option>Paolo Campregher</option>
         </select>
       </div>
-      <div class="form-group"><div class="form-label">N° pezzi sottoscritti <span class="form-req">*</span></div><input id="c-pezzi" type="number" placeholder="es. 1" min="1" step="1" value="1"></div>
-      <div class="form-group"><div class="form-label">Margine contrattualizzato (€) <span class="form-req">*</span></div><input id="c-margine" type="number" placeholder="es. 1500" min="0" step="0.01"></div>
-      <div class="form-group"><div class="form-label">Bonus economico riconosciuto (€)</div><input id="c-bonus" type="number" placeholder="es. 200" min="0" step="0.01"></div>
-      <div class="form-group"><div class="form-label">Margine segnalazione da dare (€)</div><input id="c-segnalazione" type="number" placeholder="es. 100" min="0" step="0.01"></div>
-      <div class="form-group" id="c-segnalatore-group"><div class="form-label">Nome segnalatore</div><input id="c-segnalatore" type="text" placeholder="es. Mario Verdi"></div>
-      <div class="form-group form-full"><div class="form-label">Allega PDF contratto/i — tieni premuto <strong>Ctrl</strong> per selezionare più file (max 20MB per file)</div>
+      <div class="form-group form-full"><div class="form-label">Allega PDF contratto/i <span style="color:var(--text3);font-size:10px">tieni Ctrl per più file, max 20MB</span></div>
         <input id="c-pdf" type="file" accept=".pdf" multiple="multiple" style="font-size:12px;padding:6px;border:1px solid var(--border2);border-radius:7px;width:100%">
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">Puoi selezionare più file tenendo premuto Ctrl</div>
       </div>
-      <div class="form-group form-full"><div class="form-label">Note aggiuntive</div><textarea id="c-note" placeholder="Note sul contratto..."></textarea></div>
+      <div class="form-group form-full"><div class="form-label">Note</div><textarea id="c-note" placeholder="Note sul contratto..."></textarea></div>
     </div>
     <div class="err" id="contratto-err"></div>
     <div class="form-actions">
@@ -2343,6 +2419,38 @@ async function rFlotta(){
   </div>`;
 }
 
+function toggleTipoVeicoloCustom(val){
+  const grp=document.getElementById('c-tipo-veicolo-custom-grp');
+  if(grp){grp.style.display=val==='altro'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
+}
+
+function calcolaMargini(){
+  const margine=parseFloat(document.getElementById('c-margine')?.value)||0;
+  const bonus=parseFloat(document.getElementById('c-bonus')?.value)||0;
+  const pezzi=parseInt(document.getElementById('c-pezzi')?.value)||1;
+  const segnalazione=parseFloat(document.getElementById('c-segnalazione')?.value)||0;
+  const altriCosti=parseFloat(document.getElementById('c-altri-costi')?.value)||0;
+  
+  const lordo=(margine*pezzi)+(bonus*pezzi);
+  const provvigioni=-(lordo*0.5);
+  const netto=lordo+segnalazione+altriCosti+provvigioni;
+  
+  const fmt=v=>v.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  
+  const elLordo=document.getElementById('c-calc-lordo');
+  const elProvv=document.getElementById('c-calc-provv');
+  const elNetto=document.getElementById('c-calc-netto');
+  const elProvvInput=document.getElementById('c-provvigioni');
+  
+  if(elLordo)elLordo.textContent='€ '+fmt(lordo);
+  if(elProvv)elProvv.textContent='- € '+fmt(Math.abs(provvigioni));
+  if(elNetto){
+    elNetto.textContent='€ '+fmt(netto);
+    elNetto.style.color=netto>=0?'var(--green)':'var(--red)';
+  }
+  if(elProvvInput)elProvvInput.value=provvigioni.toFixed(2);
+}
+
 function toggleProdottoCustom(val){
   const grp=document.getElementById('c-prodotto-custom-grp');
   if(grp){
@@ -2481,22 +2589,33 @@ async function esportaExcel(){
   if(!contratti.length){showToast('Nessun contratto da esportare');return;}
 
   // Crea CSV
-  const headers=['Mese','Venditore','Cliente','Città','Prodotto','Veicolo','Pezzi','Margine (€)','Margine Totale (€)','Bonus (€)','Margine Segnalazione (€)','Segnalatore','Provenienza','Partner','Collega','Note'];
+  const headers=['Mese','Data Firma','N° BO','Data BO','Consulente','Partner Fatturazione','Società Noleggio','Cliente','Città','Provenienza','Prodotto','Durata (mesi)','Data Inizio','Data Fine','Veicolo','Tipo Veicolo','Pezzi','Margine Unitario (€)','Bonus (€)','Margine Totale Lordo (€)','Nominativo Segnalatore','Costo Segnalazione (€)','Altri Costi (€)','Provvigioni Consulente (€)','Margine Netto (€)','Collega in Tandem','Note'];
   const rows=contratti.map(c=>[
     c.mese||'',
+    c.data_firma||'',
+    c.nbo||'',
+    c.data_bo||'',
     c.venditore_nome||'',
+    c.partner||'',
+    c.societa_noleggio||'',
     c.cliente||'',
     c.citta||'',
+    c.provenienza||'',
     c.prodotto||'',
+    c.durata_noleggio||'',
+    c.data_inizio||'',
+    c.data_fine||'',
     c.veicolo||'',
+    c.tipo_veicolo||'',
     c.pezzi||1,
     (parseFloat(c.margine)||0).toFixed(2),
-    ((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)).toFixed(2),
-    c.bonus?parseFloat(c.bonus).toFixed(2):'',
-    c.margine_segnalazione?parseFloat(c.margine_segnalazione).toFixed(2):'',
+    (parseFloat(c.bonus)||0).toFixed(2),
+    (parseFloat(c.margine_totale_lordo)||((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1))).toFixed(2),
     c.segnalatore||'',
-    c.provenienza||'',
-    c.partner||'',
+    c.margine_segnalazione?(parseFloat(c.margine_segnalazione)||0).toFixed(2):'0.00',
+    c.altri_costi?(parseFloat(c.altri_costi)||0).toFixed(2):'0.00',
+    c.provvigioni?(parseFloat(c.provvigioni)||0).toFixed(2):'0.00',
+    (parseFloat(c.margine_netto)||0).toFixed(2),
     c.collega||'',
     c.note||''
   ]);
@@ -2581,8 +2700,40 @@ async function salvaContratto(){
   const mese=document.getElementById('c-mese').value;
   const margine=document.getElementById('c-margine').value;
   const pezzi=document.getElementById('c-pezzi').value;
-  if(!cliente||!mese||!margine||!pezzi){
-    showErr(err,'Compila i campi obbligatori: Cliente, Mese, Pezzi, Margine.');
+  const dataFirma=document.getElementById('c-data-firma')?.value||'';
+  const nbo=document.getElementById('c-nbo')?.value.trim()||'';
+  const dataBo=document.getElementById('c-data-bo')?.value||'';
+  const citta=document.getElementById('c-citta')?.value.trim()||'';
+  const provenienza=document.getElementById('c-provenienza')?.value||'';
+  const prodotto_tipo=document.getElementById('c-prodotto-tipo')?.value||'';
+  const partner=document.getElementById('c-partner')?.value||'';
+  const societaNoleggio=document.getElementById('c-societa-noleggio')?.value||'';
+  const tipoVeicolo=document.getElementById('c-tipo-veicolo')?.value||'';
+  const durata=document.getElementById('c-durata')?.value||'';
+  const dataInizio=document.getElementById('c-data-inizio')?.value||'';
+  const dataFine=document.getElementById('c-data-fine')?.value||'';
+  
+  // Validazione campi obbligatori
+  const missing=[];
+  if(!mese)missing.push('Mese');
+  if(!dataFirma)missing.push('Data contratto firmato');
+  if(!nbo)missing.push('N° BO');
+  if(!dataBo)missing.push('Data BO');
+  if(!cliente)missing.push('Cliente');
+  if(!citta)missing.push('Città');
+  if(!provenienza)missing.push('Provenienza');
+  if(!prodotto_tipo)missing.push('Tipo prodotto');
+  if(!partner)missing.push('Partner di fatturazione');
+  if(!societaNoleggio)missing.push('Società di noleggio');
+  if(!tipoVeicolo)missing.push('Tipo veicolo');
+  if(!durata)missing.push('Durata noleggio');
+  if(!dataInizio)missing.push('Data inizio');
+  if(!dataFine)missing.push('Data fine');
+  if(!document.getElementById('c-veicolo')?.value.trim())missing.push('Veicolo');
+  if(!pezzi)missing.push('N° pezzi');
+  if(!margine)missing.push('Margine unitario');
+  if(missing.length>0){
+    showErr(err,'⚠️ Campi obbligatori mancanti: '+missing.join(', '));
     btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';return;
   }
   const fonteVal=document.getElementById('c-provenienza').value;
@@ -2637,22 +2788,48 @@ async function salvaContratto(){
 
   const editId=document.getElementById('save-contratto-btn').dataset.editId;
 
+  // Calcola margini
+  const margineNum=parseFloat(margine)||0;
+  const bonusNum=parseFloat(document.getElementById('c-bonus')?.value)||0;
+  const pezziNum=parseInt(pezzi)||1;
+  const segnalazioneNum=parseFloat(document.getElementById('c-segnalazione')?.value)||0;
+  const altriCostiNum=parseFloat(document.getElementById('c-altri-costi')?.value)||0;
+  const lordo=(margineNum*pezziNum)+(bonusNum*pezziNum);
+  const provvigioniNum=-(lordo*0.5);
+  const netto=lordo+segnalazioneNum+altriCostiNum+provvigioniNum;
+  
+  // Tipo veicolo
+  let tipoVeicoloFinal=tipoVeicolo;
+  if(tipoVeicolo==='altro')tipoVeicoloFinal=document.getElementById('c-tipo-veicolo-custom')?.value.trim()||'';
+  
   const payload={
     mese,cliente,
-    citta:document.getElementById('c-citta').value.trim()||null,
+    data_firma:dataFirma||null,
+    nbo:nbo||null,
+    data_bo:dataBo||null,
+    citta:citta||null,
     prodotto:prodotto||null,
-    veicolo:document.getElementById('c-veicolo').value.trim()||null,
+    veicolo:document.getElementById('c-veicolo')?.value.trim()||null,
+    tipo_veicolo:tipoVeicoloFinal||null,
+    durata_noleggio:parseInt(durata)||null,
+    data_inizio:dataInizio||null,
+    data_fine:dataFine||null,
     partner:partner||null,
+    societa_noleggio:societaNoleggio||null,
     provenienza:provenienza||null,
     venditore_id:CU.id,
     venditore_nome:CU.nome,
-    collega:document.getElementById('c-collega').value||null,
-    pezzi:parseInt(pezzi)||1,
-    margine:parseFloat(margine)||0,
-    bonus:parseFloat(document.getElementById('c-bonus').value)||null,
-    margine_segnalazione:parseFloat(document.getElementById('c-segnalazione').value)||null,
-    segnalatore:document.getElementById('c-segnalatore').value.trim()||null,
-    note:document.getElementById('c-note').value.trim()||null,
+    collega:document.getElementById('c-collega')?.value||null,
+    pezzi:pezziNum,
+    margine:margineNum,
+    bonus:bonusNum||null,
+    margine_totale_lordo:lordo,
+    margine_segnalazione:segnalazioneNum||null,
+    altri_costi:altriCostiNum||null,
+    provvigioni:provvigioniNum,
+    margine_netto:netto,
+    segnalatore:document.getElementById('c-segnalatore')?.value.trim()||null,
+    note:document.getElementById('c-note')?.value.trim()||null,
     created_by:CU.nome
   };
 
@@ -2699,7 +2876,10 @@ async function salvaContratto(){
       }catch(e){console.log('Auto-cliente:', e.message);}
     }
     showToast(editId?'Contratto aggiornato!':'Contratto salvato con successo!');
-    ['c-cliente','c-citta','c-veicolo','c-prodotto-custom','c-partner-altro','c-margine','c-pezzi','c-bonus','c-segnalazione','c-segnalatore','c-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['c-cliente','c-citta','c-veicolo','c-prodotto-custom','c-partner-altro','c-margine','c-pezzi','c-bonus','c-segnalazione','c-segnalatore','c-note','c-nbo','c-data-firma','c-data-bo','c-durata','c-data-inizio','c-data-fine','c-altri-costi','c-provvigioni'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['c-calc-lordo','c-calc-provv','c-calc-netto'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='€ 0,00';});
+  document.getElementById('c-societa-noleggio') && (document.getElementById('c-societa-noleggio').value='');
+  document.getElementById('c-tipo-veicolo') && (document.getElementById('c-tipo-veicolo').value='');
     document.getElementById('c-collega').value='';
     document.getElementById('c-provenienza').value='';
     document.getElementById('c-prodotto-tipo').value='';
