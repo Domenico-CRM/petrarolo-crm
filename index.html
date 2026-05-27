@@ -728,7 +728,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
         </select>
       </div>
       <div class="form-group"><div class="form-label">Tipo prodotto <span class="form-req">*</span></div>
-        <select id="c-prodotto-tipo" onchange="toggleProdottoCustom(this.value)">
+        <select id="c-prodotto-tipo" onchange="toggleProdottoCustom(this.value);toggleCampiNoleggio(this.value)">
           <option value="">— Seleziona tipo prodotto —</option>
           <option value="NLT — Noleggio Lungo Termine">NLT — Noleggio Lungo Termine</option>
           <option value="Leasing">Leasing</option>
@@ -757,9 +757,11 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
         </select>
       </div>
       <div class="form-group" id="c-tipo-veicolo-custom-grp" style="display:none"><div class="form-label">Specifica tipo veicolo</div><input id="c-tipo-veicolo-custom" type="text" placeholder="es. Minibus, Autocaravan..."></div>
-      <div class="form-group"><div class="form-label">Durata noleggio (mesi) <span class="form-req">*</span></div><input id="c-durata" type="number" placeholder="es. 36" min="1" step="1"></div>
-      <div class="form-group"><div class="form-label">Data inizio <span class="form-req">*</span></div><input id="c-data-inizio" type="date"></div>
-      <div class="form-group"><div class="form-label">Data fine <span class="form-req">*</span></div><input id="c-data-fine" type="date"></div>
+      <div id="c-noleggio-fields" style="display:contents">
+      <div class="form-group"><div class="form-label">Durata noleggio (mesi) <span class="form-req" id="c-durata-req">*</span></div><input id="c-durata" type="number" placeholder="es. 36" min="1" step="1"></div>
+      <div class="form-group"><div class="form-label">Data inizio <span class="form-req" id="c-data-inizio-req">*</span></div><input id="c-data-inizio" type="date"></div>
+      <div class="form-group"><div class="form-label">Data fine <span class="form-req" id="c-data-fine-req">*</span></div><input id="c-data-fine" type="date"></div>
+      </div>
       <div class="form-group"><div class="form-label">N° pezzi <span class="form-req">*</span></div><input id="c-pezzi" type="number" placeholder="es. 1" min="1" step="1" value="1" oninput="calcolaMargini()"></div>
     </div>
     <div style="padding:8px 17px 0;background:var(--gray);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">
@@ -1258,6 +1260,25 @@ function openModal(id){
       grp.style.display='block';
       setTimeout(popolaVenditoriAssegna,100);
     }
+  }
+  if(id==='modal-contratto'){
+    // Reset evidenziazione rosso su tutti i campi quando si riapre il modal
+    ['c-mese','c-data-firma','c-nbo','c-data-bo','c-cliente','c-citta',
+     'c-provenienza','c-prodotto-tipo','c-partner','c-societa-noleggio',
+     'c-tipo-veicolo','c-durata','c-data-inizio','c-data-fine','c-veicolo',
+     'c-pezzi','c-margine'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){
+        el.style.borderColor='';
+        el.style.boxShadow='';
+        // Reset al focus
+        el.addEventListener('input',function(){this.style.borderColor='';this.style.boxShadow='';},{once:true});
+        el.addEventListener('change',function(){this.style.borderColor='';this.style.boxShadow='';},{once:true});
+      }
+    });
+    // Reset errore
+    const errEl=document.getElementById('contratto-err');
+    if(errEl)errEl.style.display='none';
   }
 }
 function closeModal(id){
@@ -2419,6 +2440,26 @@ async function rFlotta(){
   </div>`;
 }
 
+function toggleCampiNoleggio(val){
+  // Prodotti senza noleggio: Acquisto diretto
+  const isAcquisto = val === 'Acquisto diretto';
+  const ids = ['c-durata','c-data-inizio','c-data-fine'];
+  const reqIds = ['c-durata-req','c-data-inizio-req','c-data-fine-req'];
+  const labels = ['Durata noleggio','Data inizio','Data fine'];
+  
+  ids.forEach((id, i) => {
+    const el = document.getElementById(id);
+    const req = document.getElementById(reqIds[i]);
+    const fg = el ? el.closest('.form-group') : null;
+    if (fg) {
+      fg.style.opacity = isAcquisto ? '0.4' : '1';
+      fg.style.pointerEvents = isAcquisto ? 'none' : '';
+    }
+    if (req) req.style.display = isAcquisto ? 'none' : '';
+    if (el && isAcquisto) { el.value = ''; el.style.borderColor = ''; el.style.boxShadow = ''; }
+  });
+}
+
 function toggleTipoVeicoloCustom(val){
   const grp=document.getElementById('c-tipo-veicolo-custom-grp');
   if(grp){grp.style.display=val==='altro'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
@@ -2726,14 +2767,44 @@ async function salvaContratto(){
   if(!partner)missing.push('Partner di fatturazione');
   if(!societaNoleggio)missing.push('Società di noleggio');
   if(!tipoVeicolo)missing.push('Tipo veicolo');
-  if(!durata)missing.push('Durata noleggio');
-  if(!dataInizio)missing.push('Data inizio');
-  if(!dataFine)missing.push('Data fine');
+  if(prodotto_tipo !== 'Acquisto diretto'){
+    if(!durata)missing.push('Durata noleggio');
+    if(!dataInizio)missing.push('Data inizio');
+    if(!dataFine)missing.push('Data fine');
+  }
   if(!document.getElementById('c-veicolo')?.value.trim())missing.push('Veicolo');
   if(!pezzi)missing.push('N° pezzi');
   if(!margine)missing.push('Margine unitario');
+  // Evidenzia campi mancanti in rosso
+  const isAcquistoDir = prodotto_tipo === 'Acquisto diretto';
+  const fieldMap={
+    'Mese':'c-mese','Data contratto firmato':'c-data-firma','N° BO':'c-nbo',
+    'Data BO':'c-data-bo','Cliente':'c-cliente','Città':'c-citta',
+    'Provenienza':'c-provenienza','Tipo prodotto':'c-prodotto-tipo',
+    'Partner di fatturazione':'c-partner','Società di noleggio':'c-societa-noleggio',
+    'Tipo veicolo':'c-tipo-veicolo',
+    ...(isAcquistoDir ? {} : {'Durata noleggio':'c-durata','Data inizio':'c-data-inizio','Data fine':'c-data-fine'}),
+    'Veicolo':'c-veicolo','N° pezzi':'c-pezzi','Margine unitario':'c-margine'
+  };
+  // Reset tutti i campi
+  Object.values(fieldMap).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.borderColor='';el.style.boxShadow='';}
+  });
+  // Evidenzia quelli mancanti
+  missing.forEach(name=>{
+    const id=fieldMap[name];
+    if(id){
+      const el=document.getElementById(id);
+      if(el){
+        el.style.borderColor='#E53935';
+        el.style.boxShadow='0 0 0 3px rgba(229,57,53,.2)';
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    }
+  });
   if(missing.length>0){
-    showErr(err,'⚠️ Campi obbligatori mancanti: '+missing.join(', '));
+    showErr(err,'⚠️ Compila i campi evidenziati in rosso: '+missing.join(', '));
     btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';return;
   }
   const fonteVal=document.getElementById('c-provenienza').value;
