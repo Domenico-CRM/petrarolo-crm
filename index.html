@@ -2777,14 +2777,15 @@ async function salvaContratto(){
   if(prodotto==='altro')prodotto=document.getElementById('c-prodotto-custom').value.trim();
 
   // Partner
-  let partner=document.getElementById('c-partner').value;
+  // Partner già dichiarato sopra - rileggi il valore
+  partner=document.getElementById('c-partner')?.value||partner;
   if(partner==='ALTRO'){
     const alt=(document.getElementById('c-partner-altro').value||'').trim();
     partner=alt?`ALTRO — ${alt}`:'ALTRO';
   }
 
   // Provenienza con segnalatore
-  let provenienza=document.getElementById('c-provenienza').value;
+  provenienza=document.getElementById('c-provenienza').value;
 
   const editId=document.getElementById('save-contratto-btn').dataset.editId;
 
