@@ -2117,6 +2117,566 @@ async function rVeicoli(){
   </div>`;
 }
 
+
+// ═══════════════════════════════════════════
+// REPORT & KPI
+// ═══════════════════════════════════════════
+async function rReport(){
+  let contratti=[];
+  try{
+    let q=sb.from('contratti_chiusi').select('*').order('mese',{ascending:false});
+    if(!isDir())q=q.eq('venditore_id',CU.id);
+    const{data}=await q;contratti=data||[];
+  }catch(e){}
+  const byMese={};
+  contratti.forEach(c=>{
+    const m=c.mese||'—';
+    if(!byMese[m])byMese[m]={pezzi:0,margine:0,contratti:0,venditori:{}};
+    byMese[m].pezzi+=(parseInt(c.pezzi)||1);
+    byMese[m].margine+=((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1));
+    byMese[m].contratti++;
+    const v=c.venditore_nome||'—';
+    if(!byMese[m].venditori[v])byMese[m].venditori[v]={pezzi:0,margine:0};
+    byMese[m].venditori[v].pezzi+=(parseInt(c.pezzi)||1);
+    byMese[m].venditori[v].margine+=((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1));
+  });
+  const mesi=Object.keys(byMese).sort().reverse();
+  const maxMargine=Math.max(...mesi.map(m=>byMese[m].margine),1);
+  const totaleAnno=contratti.filter(c=>c.mese&&c.mese.startsWith(new Date().getFullYear().toString())).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
+  const pezziAnno=contratti.filter(c=>c.mese&&c.mese.startsWith(new Date().getFullYear().toString())).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0);
+  const ultimi6=mesi.slice(0,6);
+  document.getElementById('content').innerHTML=`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Pezzi anno ${new Date().getFullYear()}</div><div class="kpi-v">${pezziAnno}</div><div class="kpi-d" style="color:var(--text3)">Totale annuo</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine anno ${new Date().getFullYear()}</div><div class="kpi-v">€ ${totaleAnno.toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Totale annuo</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Mesi con contratti</div><div class="kpi-v">${mesi.length}</div><div class="kpi-d" style="color:var(--text3)">Storico</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Media mensile</div><div class="kpi-v">€ ${mesi.length>0?Math.round(totaleAnno/Math.max(mesi.filter(m=>m.startsWith(new Date().getFullYear().toString())).length,1)).toLocaleString('it-IT'):0}</div><div class="kpi-d" style="color:var(--text3)">Margine medio/mese</div></div>
+  </div>
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-chart-bar" style="color:var(--orange);margin-right:6px"></i>Confronto mensile — ultimi 6 mesi</span>
+      <div style="display:flex;gap:7px">
+        <button class="btn btn-sm" onclick="esportaConfronto('excel')"><i class="ti ti-file-spreadsheet"></i> Excel</button>
+        <button class="btn btn-sm" onclick="esportaConfronto('pdf')"><i class="ti ti-file-type-pdf"></i> PDF</button>
+      </div>
+    </div>
+    <div style="padding:16px" id="confronto-table">
+      ${ultimi6.map(m=>{
+        const d=byMese[m];
+        const perc=Math.round(d.margine/maxMargine*100);
+        const data=new Date(m+'-01').toLocaleString('it-IT',{month:'long',year:'numeric'});
+        return\`<div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div><span style="font-size:13px;font-weight:700;text-transform:capitalize">\${data}</span>
+            <span style="font-size:11px;color:var(--text3);margin-left:8px">\${d.pezzi} pezzi · \${d.contratti} contratti</span></div>
+            <span style="font-size:14px;font-weight:700;color:var(--orange)">€ \${d.margine.toLocaleString('it-IT')}</span>
+          </div>
+          <div style="height:10px;background:var(--gray2);border-radius:5px;overflow:hidden">
+            <div style="height:100%;width:\${perc}%;background:linear-gradient(90deg,#1E2D3D,#E8530A);border-radius:5px"></div>
+          </div>
+        </div>\`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+async function esportaConfronto(formato){window.print();}
+
+// ═══════════════════════════════════════════
+// REPORT CONTRATTI
+// ═══════════════════════════════════════════
+function toggleProdottoCustom(val){
+  const grp=document.getElementById('c-prodotto-custom-grp');
+  if(grp){grp.style.display=val==='altro'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
+}
+function togglePartnerAltro(val){
+  const grp=document.getElementById('c-partner-altro-grp');
+  if(grp){grp.style.display=val==='ALTRO'?'block':'none';}
+}
+function toggleSegnalatoreCont(val){
+  const grp=document.getElementById('c-segnalatore-group');
+  if(grp){grp.style.display=val==='LEAD DA SEGNALATORE'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
+}
+function toggleTipoVeicoloCustom(val){
+  const grp=document.getElementById('c-tipo-veicolo-custom-grp');
+  if(grp){grp.style.display=val==='altro'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
+}
+function toggleHorizon(val){
+  const grp=document.getElementById('c-horizon-grp');
+  if(grp){grp.style.display=val==='HORIZON AUTOMOTIVE'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
+  if(val!=='HORIZON AUTOMOTIVE'){const s=document.getElementById('c-horizon-societa');if(s)s.value='';}
+}
+function toggleCampiBO(val){
+  const isNLT=val==='NLT — Noleggio Lungo Termine';
+  ['c-nbo-grp','c-data-bo-grp'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isNLT?'':'none';});
+  if(!isNLT){const n=document.getElementById('c-nbo');const d=document.getElementById('c-data-bo');if(n){n.value='';n.style.borderColor='';n.style.boxShadow='';}if(d){d.value='';d.style.borderColor='';d.style.boxShadow='';}}
+}
+function toggleCampiNoleggio(val){
+  const isAcquisto=val==='Acquisto diretto';
+  ['c-durata','c-data-inizio','c-data-fine'].forEach((id,i)=>{
+    const el=document.getElementById(id);const fg=el?el.closest('.form-group'):null;
+    if(fg)fg.style.display=isAcquisto?'none':'';
+    if(el&&isAcquisto){el.value='';el.style.borderColor='';el.style.boxShadow='';}
+    const req=document.getElementById(['c-durata-req','c-data-inizio-req','c-data-fine-req'][i]);
+    if(req)req.style.display=isAcquisto?'none':'';
+  });
+}
+function calcolaMargini(){
+  const margine=parseFloat(document.getElementById('c-margine')?.value)||0;
+  const bonus=parseFloat(document.getElementById('c-bonus')?.value)||0;
+  const pezzi=parseInt(document.getElementById('c-pezzi')?.value)||1;
+  const segnalazione=parseFloat(document.getElementById('c-segnalazione')?.value)||0;
+  const altriCosti=parseFloat(document.getElementById('c-altri-costi')?.value)||0;
+  const lordo=(margine*pezzi)+(bonus*pezzi);
+  const provvigioni=-(lordo*0.5);
+  const netto=lordo+segnalazione+altriCosti+provvigioni;
+  const fmt=v=>v.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const elLordo=document.getElementById('c-calc-lordo');
+  const elProvv=document.getElementById('c-calc-provv');
+  const elNetto=document.getElementById('c-calc-netto');
+  const elProvvInput=document.getElementById('c-provvigioni');
+  if(elLordo)elLordo.textContent='€ '+fmt(lordo);
+  if(elProvv)elProvv.textContent='- € '+fmt(Math.abs(provvigioni));
+  if(elNetto){elNetto.textContent='€ '+fmt(netto);elNetto.style.color=netto>=0?'var(--green)':'var(--red)';}
+  if(elProvvInput)elProvvInput.value=provvigioni.toFixed(2);
+}
+
+function formatMese(m){
+  if(!m)return'—';
+  const[y,mo]=m.split('-');
+  const nomi=['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  return\`\${nomi[parseInt(mo)]} \${y}\`;
+}
+
+async function rContratti(){
+  let contratti=[];
+  try{
+    let q=sb.from('contratti_chiusi').select('*').order('created_at',{ascending:false});
+    if(!isDir())q=q.eq('venditore_id',CU.id);
+    const r=await q;contratti=r.data||[];
+  }catch(e){}
+  const meseCorrente=new Date().toISOString().slice(0,7);
+  const thisMonth=contratti.filter(c=>c.mese===meseCorrente);
+  const totMargine=thisMonth.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
+  const mesi={};
+  contratti.forEach(c=>{
+    if(!mesi[c.mese])mesi[c.mese]={contratti:[],totPezzi:0,totMargine:0};
+    mesi[c.mese].contratti.push(c);
+    mesi[c.mese].totMargine+=(parseFloat(c.margine)||0);
+    mesi[c.mese].totPezzi+=(parseInt(c.pezzi)||1);
+  });
+  const mesiOrdinati=Object.keys(mesi).sort().reverse();
+  const mesiDisp=[...new Set(contratti.map(c=>c.mese))].sort().reverse();
+  document.getElementById('content').innerHTML=\`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Contratti mese corrente</div><div class="kpi-v">\${thisMonth.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0)}</div><div class="kpi-d" style="color:var(--text3)">Pezzi</div></div>
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Margine mese corrente</div><div class="kpi-v">€ \${totMargine.toLocaleString('it-IT',{minimumFractionDigits:0})}</div><div class="kpi-d" style="color:var(--text3)">Totale</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Contratti totali</div><div class="kpi-v">\${contratti.reduce((s,c)=>s+(parseInt(c.pezzi)||1),0)}</div><div class="kpi-d" style="color:var(--text3)">Storico</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine totale</div><div class="kpi-v">€ \${contratti.reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0).toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Storico</div></div>
+  </div>
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-file-invoice" style="color:var(--orange);margin-right:6px"></i>Contratti chiusi\${isDir()?' — tutti i consulenti':' — '+CU.nome}</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="filtro-mese" class="btn btn-sm" style="cursor:pointer" onchange="filtraContratti()">
+          <option value="">Tutti i mesi</option>
+          \${mesiDisp.map(m=>\`<option value="\${m}">\${formatMese(m)}</option>\`).join('')}
+        </select>
+        \${isDir()?\`<select id="filtro-venditore" class="btn btn-sm" style="cursor:pointer" onchange="filtraContratti()"><option value="">Tutti i consulenti</option></select>\`:''}
+        <button class="btn btn-sm" onclick="esportaExcel()"><i class="ti ti-file-spreadsheet"></i> Scarica Excel</button>
+        <button class="btn btn-sm btn-orange" onclick="openModal('modal-contratto')"><i class="ti ti-plus"></i> Nuovo contratto</button>
+      </div>
+    </div>
+    \${mesiOrdinati.length===0?\`<div style="padding:40px;text-align:center;color:var(--text3)">Nessun contratto. Clicca "+ Nuovo contratto".</div>\`:''}
+    \${mesiOrdinati.map(mese=>{
+      const m=mesi[mese];
+      return \`<div style="border-bottom:2px solid var(--border)">
+        <div style="padding:12px 18px;background:var(--gray);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">\${formatMese(mese)}</div>
+          <div style="display:flex;gap:14px;font-size:12px;flex-wrap:wrap">
+            <span><strong>\${m.contratti.length}</strong> contratti</span>
+            <span><strong>\${m.totPezzi}</strong> pezzi</span>
+            <span>Margine: <strong style="color:var(--orange)">€ \${m.totMargine.toLocaleString('it-IT')}</strong></span>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr>
+            <th>Data firma</th><th>N° BO</th><th>Consulente</th><th>Cliente</th><th>Città</th>
+            <th>Prodotto</th><th>Veicolo</th><th>Tipo Veicolo</th><th>Pezzi</th>
+            <th>Margine Unit.</th><th>Bonus</th><th>Lordo</th><th>Segnalatore</th>
+            <th>Segnal.€</th><th>Altri costi</th><th>Provvig.</th><th>Netto</th>
+            \${isDir()?\`<th>Partner</th>\`:''}
+            <th>PDF</th><th>Azioni</th>
+          </tr></thead>
+          <tbody>
+          \${m.contratti.map(c=>\`<tr>
+            <td style="font-size:11px">\${c.data_firma?new Date(c.data_firma).toLocaleDateString('it-IT'):'—'}</td>
+            <td style="font-size:11px">\${c.nbo||'—'}</td>
+            <td style="font-weight:600;font-size:11.5px">\${c.venditore_nome||'—'}</td>
+            <td style="font-weight:600">\${c.cliente||'—'}</td>
+            <td style="color:var(--text2)">\${c.citta||'—'}</td>
+            <td style="font-size:11px">\${c.prodotto||'—'}</td>
+            <td style="color:var(--text2);font-size:11px">\${c.veicolo||'—'}</td>
+            <td style="font-size:11px">\${c.tipo_veicolo||'—'}</td>
+            <td style="text-align:center;font-weight:700">\${c.pezzi||1}</td>
+            <td style="color:var(--orange)">€ \${(parseFloat(c.margine)||0).toLocaleString('it-IT')}</td>
+            <td>\${c.bonus?\`€ \${parseFloat(c.bonus).toLocaleString('it-IT')}\`:'—'}</td>
+            <td style="font-weight:700;color:var(--navy)">€ \${(parseFloat(c.margine_totale_lordo)||((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1))).toLocaleString('it-IT')}</td>
+            <td style="font-size:11px">\${c.segnalatore||'—'}</td>
+            <td style="color:var(--red)">\${c.margine_segnalazione?\`€ \${parseFloat(c.margine_segnalazione).toLocaleString('it-IT')}\`:'—'}</td>
+            <td style="color:var(--red)">\${c.altri_costi?\`€ \${parseFloat(c.altri_costi).toLocaleString('it-IT')}\`:'—'}</td>
+            <td style="color:var(--red)">\${c.provvigioni?\`€ \${parseFloat(c.provvigioni).toLocaleString('it-IT')}\`:'—'}</td>
+            <td style="font-weight:700;color:\${(parseFloat(c.margine_netto)||0)>=0?'var(--green)':'var(--red)'}">€ \${(parseFloat(c.margine_netto)||0).toLocaleString('it-IT')}</td>
+            \${isDir()?\`<td style="font-size:11px">\${c.partner||'—'}</td>\`:''}
+            <td>\${(()=>{try{const pdfs=c.pdf_urls?JSON.parse(c.pdf_urls):c.pdf_url?[{nome:'PDF',url:c.pdf_url}]:[];if(!pdfs.length)return'—';return pdfs.map((p,i)=>\`<a href="\${p.url}" target="_blank" class="btn btn-sm" style="padding:2px 6px;font-size:10px"><i class="ti ti-file-type-pdf"></i></a>\`).join('');}catch(e){return c.pdf_url?\`<a href="\${c.pdf_url}" target="_blank" class="btn btn-sm" style="padding:2px 6px;font-size:10px"><i class="ti ti-file-type-pdf"></i></a>\`:'—';}})()}</td>
+            <td><div style="display:flex;gap:3px">
+              <button class="btn btn-sm" style="padding:3px 7px;font-size:10px" onclick="modificaContratto(\${c.id})"><i class="ti ti-edit"></i></button>
+              <button class="btn btn-sm btn-red" style="padding:3px 7px;font-size:10px" onclick="eliminaContratto(\${c.id})"><i class="ti ti-trash"></i></button>
+            </div></td>
+          </tr>\`).join('')}
+          </tbody>
+        </table></div>
+      </div>\`;
+    }).join('')}
+  </div>\`;
+  // Popola venditori
+  if(isDir())setTimeout(async()=>{
+    const sel=document.getElementById('filtro-venditore');if(!sel)return;
+    try{const{data}=await sb.from('crm_utenti').select('id,nome').eq('attivo',true).order('nome');
+    if(data)data.filter(u=>u.ruolo==='venditore').forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=u.nome;sel.appendChild(o);});}catch(e){}
+  },200);
+}
+
+async function filtraContratti(){renderSec('contratti');}
+
+async function modificaContratto(id){
+  try{
+    const{data}=await sb.from('contratti_chiusi').select('*').eq('id',id).single();
+    if(!data)return;
+    openModal('modal-contratto');
+    setTimeout(()=>{
+      document.getElementById('c-mese').value=data.mese||'';
+      document.getElementById('c-data-firma').value=data.data_firma||'';
+      document.getElementById('c-nbo').value=data.nbo||'';
+      document.getElementById('c-data-bo').value=data.data_bo||'';
+      document.getElementById('c-cliente').value=data.cliente||'';
+      document.getElementById('c-citta').value=data.citta||'';
+      document.getElementById('c-veicolo').value=data.veicolo||'';
+      document.getElementById('c-pezzi').value=data.pezzi||1;
+      document.getElementById('c-margine').value=data.margine||'';
+      document.getElementById('c-bonus').value=data.bonus||0;
+      document.getElementById('c-segnalazione').value=data.margine_segnalazione||'';
+      document.getElementById('c-altri-costi').value=data.altri_costi||'';
+      document.getElementById('c-segnalatore').value=data.segnalatore||'';
+      document.getElementById('c-note').value=data.note||'';
+      document.getElementById('c-prodotto-tipo').value=data.prodotto||'';
+      document.getElementById('c-provenienza').value=data.provenienza||'';
+      document.getElementById('c-partner').value=data.partner||'';
+      document.getElementById('c-societa-noleggio').value=data.societa_noleggio||'';
+      document.getElementById('c-tipo-veicolo').value=data.tipo_veicolo||'';
+      document.getElementById('c-durata').value=data.durata_noleggio||'';
+      document.getElementById('c-data-inizio').value=data.data_inizio||'';
+      document.getElementById('c-data-fine').value=data.data_fine||'';
+      calcolaMargini();
+      document.getElementById('save-contratto-btn').dataset.editId=id;
+      document.getElementById('save-contratto-btn').innerHTML='<i class="ti ti-check"></i> Aggiorna contratto';
+    },100);
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+async function eliminaContratto(id){
+  if(!confirm('Eliminare questo contratto?'))return;
+  try{await sb.from('contratti_chiusi').delete().eq('id',id);showToast('Contratto eliminato');renderSec('contratti');}
+  catch(e){showToast('Errore: '+e.message);}
+}
+
+async function eliminaPdf(contratoId,pdfIndex){
+  if(!confirm('Eliminare questo PDF?'))return;
+  try{
+    const{data}=await sb.from('contratti_chiusi').select('pdf_urls').eq('id',contratoId).single();
+    let pdfs=[];try{pdfs=JSON.parse(data.pdf_urls||'[]');}catch(e){}
+    pdfs.splice(pdfIndex,1);
+    await sb.from('contratti_chiusi').update({pdf_urls:pdfs.length>0?JSON.stringify(pdfs):null}).eq('id',contratoId);
+    showToast('PDF eliminato!');renderSec('contratti');
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+async function esportaExcel(){
+  let contratti=[];
+  try{
+    let q=sb.from('contratti_chiusi').select('*').order('mese',{ascending:false});
+    if(!isDir())q=q.eq('venditore_id',CU.id);
+    const{data}=await q;contratti=data||[];
+  }catch(e){showToast('Errore');return;}
+  if(!contratti.length){showToast('Nessun contratto');return;}
+  const headers=['Mese','Data contratto firmato','N° BO','Data BO','Consulente','Partner di fatturazione','Società di noleggio','Nominativo Cliente','Città','Provenienza','Prodotto','Durata noleggio in mesi','Data inizio noleggio','Data fine noleggio','Marca e modello Veicolo','Tipo Veicolo','Pezzi','Margine Unitario (€)','Bonus (€)','Margine Totale Lordo (€)','Nominativo Segnalatore','Costo Segnalazione (€)','Altri costi','Provvigioni consulente','Margine netto','Collega in tandem','Note'];
+  const rows=contratti.map(c=>[
+    c.mese||'',c.data_firma||'',c.nbo||'',c.data_bo||'',c.venditore_nome||'',
+    c.partner||'',c.societa_noleggio||'',c.cliente||'',c.citta||'',c.provenienza||'',
+    c.prodotto||'',c.durata_noleggio||'',c.data_inizio||'',c.data_fine||'',
+    c.veicolo||'',c.tipo_veicolo||'',c.pezzi||1,
+    (parseFloat(c.margine)||0).toFixed(2),(parseFloat(c.bonus)||0).toFixed(2),
+    (parseFloat(c.margine_totale_lordo)||((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1))).toFixed(2),
+    c.segnalatore||'',(parseFloat(c.margine_segnalazione)||0).toFixed(2),
+    (parseFloat(c.altri_costi)||0).toFixed(2),(parseFloat(c.provvigioni)||0).toFixed(2),
+    (parseFloat(c.margine_netto)||0).toFixed(2),c.collega||'',c.note||''
+  ]);
+  const sep=';';const qt='"';const esc=v=>qt+String(v||'').replace(/"/g,qt+qt)+qt;
+  const csv='\\uFEFF'+[headers.map(esc).join(sep),...rows.map(r=>r.map(esc).join(sep))].join('\\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=\`Report_Contratti_\${isDir()?'Team':CU.nome.replace(/ /g,'_')}_\${new Date().toISOString().slice(0,10)}.csv\`;
+  a.click();URL.revokeObjectURL(url);showToast('Excel esportato!');
+}
+
+async function salvaContratto(){
+  const btn=document.getElementById('save-contratto-btn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Salvataggio...';
+  const err=document.getElementById('contratto-err');
+  err.style.display='none';
+  const cliente=document.getElementById('c-cliente')?.value.trim();
+  const mese=document.getElementById('c-mese')?.value;
+  const margine=document.getElementById('c-margine')?.value;
+  const pezzi=document.getElementById('c-pezzi')?.value;
+  const dataFirma=document.getElementById('c-data-firma')?.value||'';
+  const nbo=document.getElementById('c-nbo')?.value.trim()||'';
+  const dataBo=document.getElementById('c-data-bo')?.value||'';
+  const provenienza=document.getElementById('c-provenienza')?.value||'';
+  const prodotto_tipo=document.getElementById('c-prodotto-tipo')?.value||'';
+  const partner=document.getElementById('c-partner')?.value||'';
+  const societaNoleggio=document.getElementById('c-societa-noleggio')?.value||'';
+  const tipoVeicolo=document.getElementById('c-tipo-veicolo')?.value||'';
+  const durata=document.getElementById('c-durata')?.value||'';
+  const dataInizio=document.getElementById('c-data-inizio')?.value||'';
+  const dataFine=document.getElementById('c-data-fine')?.value||'';
+  const missing=[];
+  if(!mese)missing.push('Mese');
+  if(!dataFirma)missing.push('Data contratto firmato');
+  if(prodotto_tipo==='NLT — Noleggio Lungo Termine'){if(!nbo)missing.push('N° BO');if(!dataBo)missing.push('Data BO');}
+  if(!cliente)missing.push('Cliente');
+  if(!provenienza)missing.push('Provenienza');
+  if(!prodotto_tipo)missing.push('Tipo prodotto');
+  if(!partner)missing.push('Partner di fatturazione');
+  if(partner==='HORIZON AUTOMOTIVE'){const hSoc=document.getElementById('c-horizon-societa')?.value||'';if(!hSoc)missing.push('Società Horizon');}
+  if(!societaNoleggio)missing.push('Società di noleggio');
+  if(!tipoVeicolo)missing.push('Tipo veicolo');
+  if(prodotto_tipo!=='Acquisto diretto'){if(!durata)missing.push('Durata noleggio');if(!dataInizio)missing.push('Data inizio');if(!dataFine)missing.push('Data fine');}
+  if(!document.getElementById('c-veicolo')?.value.trim())missing.push('Veicolo');
+  if(!pezzi)missing.push('N° pezzi');
+  if(!margine)missing.push('Margine unitario');
+  const isAcquistoDir=prodotto_tipo==='Acquisto diretto';
+  const fieldMap={'Mese':'c-mese','Data contratto firmato':'c-data-firma','N° BO':'c-nbo','Data BO':'c-data-bo','Cliente':'c-cliente','Provenienza':'c-provenienza','Tipo prodotto':'c-prodotto-tipo','Partner di fatturazione':'c-partner','Società Horizon':'c-horizon-societa','Società di noleggio':'c-societa-noleggio','Tipo veicolo':'c-tipo-veicolo',...(isAcquistoDir?{}:{'Durata noleggio':'c-durata','Data inizio':'c-data-inizio','Data fine':'c-data-fine'}),'Veicolo':'c-veicolo','N° pezzi':'c-pezzi','Margine unitario':'c-margine'};
+  Object.values(fieldMap).forEach(id=>{const el=document.getElementById(id);if(el){el.style.borderColor='';el.style.boxShadow='';}});
+  missing.forEach(name=>{const id=fieldMap[name];if(id){const el=document.getElementById(id);if(el){el.style.borderColor='#E53935';el.style.boxShadow='0 0 0 3px rgba(229,57,53,.2)';}}});
+  if(missing.length>0){showErr(err,'⚠️ Campi mancanti: '+missing.join(', '));btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';return;}
+  const margineNum=parseFloat(margine)||0;
+  const bonusNum=parseFloat(document.getElementById('c-bonus')?.value)||0;
+  const pezziNum=parseInt(pezzi)||1;
+  const segnalazioneNum=parseFloat(document.getElementById('c-segnalazione')?.value)||0;
+  const altriCostiNum=parseFloat(document.getElementById('c-altri-costi')?.value)||0;
+  const lordo=(margineNum*pezziNum)+(bonusNum*pezziNum);
+  const provvigioniNum=-(lordo*0.5);
+  const netto=lordo+segnalazioneNum+altriCostiNum+provvigioniNum;
+  let tipoVeicoloFinal=tipoVeicolo;
+  if(tipoVeicolo==='altro')tipoVeicoloFinal=document.getElementById('c-tipo-veicolo-custom')?.value.trim()||'';
+  let prodotto=prodotto_tipo;
+  if(prodotto_tipo==='altro')prodotto=document.getElementById('c-prodotto-custom')?.value.trim();
+  let partnerFinal=partner;
+  if(partner==='HORIZON AUTOMOTIVE'){const soc=document.getElementById('c-horizon-societa')?.value||'';partnerFinal=soc?'HORIZON AUTOMOTIVE — '+soc:'HORIZON AUTOMOTIVE';}
+  else if(partner==='ALTRO'){const alt=document.getElementById('c-partner-altro')?.value.trim()||'';partnerFinal=alt?'ALTRO — '+alt:'ALTRO';}
+  const pdfFiles=Array.from(document.getElementById('c-pdf')?.files||[]);
+  let pdfUrls=[];
+  for(const pdfFile of pdfFiles){
+    if(pdfFile.size>20*1024*1024){showErr(err,pdfFile.name+' supera 20MB.');btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';return;}
+    try{
+      const fname=\`\${Date.now()}_\${Math.random().toString(36).slice(2)}_\${pdfFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}\`;
+      const sbUrl=localStorage.getItem('p_url');const sbKey=localStorage.getItem('p_key');
+      const uploadRes=await fetch(\`\${sbUrl}/storage/v1/object/contratti-pdf/\${fname}\`,{method:'POST',headers:{'Authorization':\`Bearer \${sbKey}\`,'apikey':sbKey,'Content-Type':pdfFile.type||'application/octet-stream','x-upsert':'true'},body:pdfFile});
+      if(!uploadRes.ok)throw new Error('Upload fallito');
+      pdfUrls.push({nome:pdfFile.name,url:\`\${sbUrl}/storage/v1/object/public/contratti-pdf/\${fname}\`});
+    }catch(e){showErr(err,'Errore upload PDF: '+e.message);btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';return;}
+  }
+  const payload={
+    mese,cliente,data_firma:dataFirma||null,nbo:nbo||null,data_bo:dataBo||null,
+    citta:document.getElementById('c-citta')?.value.trim()||null,
+    prodotto:prodotto||null,veicolo:document.getElementById('c-veicolo')?.value.trim()||null,
+    tipo_veicolo:tipoVeicoloFinal||null,durata_noleggio:parseInt(durata)||null,
+    data_inizio:dataInizio||null,data_fine:dataFine||null,
+    partner:partnerFinal||null,societa_noleggio:societaNoleggio||null,
+    provenienza:provenienza||null,venditore_id:CU.id,venditore_nome:CU.nome,
+    collega:document.getElementById('c-collega')?.value||null,
+    pezzi:pezziNum,margine:margineNum,bonus:bonusNum||null,
+    margine_totale_lordo:lordo,margine_segnalazione:segnalazioneNum||null,
+    altri_costi:altriCostiNum||null,provvigioni:provvigioniNum,margine_netto:netto,
+    segnalatore:document.getElementById('c-segnalatore')?.value.trim()||null,
+    note:document.getElementById('c-note')?.value.trim()||null,created_by:CU.nome
+  };
+  if(pdfUrls.length>0)payload.pdf_urls=JSON.stringify(pdfUrls);
+  try{
+    const editId=document.getElementById('save-contratto-btn').dataset.editId;
+    if(editId){const{error}=await sb.from('contratti_chiusi').update(payload).eq('id',parseInt(editId));if(error)throw error;delete document.getElementById('save-contratto-btn').dataset.editId;}
+    else{const{error}=await sb.from('contratti_chiusi').insert(payload);if(error)throw error;}
+    closeModal('modal-contratto');
+    showToast('Contratto salvato!');
+    ['c-cliente','c-citta','c-veicolo','c-margine','c-bonus','c-segnalazione','c-altri-costi','c-segnalatore','c-note','c-nbo','c-data-firma','c-data-bo','c-durata','c-data-inizio','c-data-fine','c-provvigioni'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('save-contratto-btn').innerHTML='<i class="ti ti-check"></i> Salva contratto';
+    renderSec('contratti');
+  }catch(e){showErr(err,'Errore: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Salva contratto';
+}
+
+// ═══════════════════════════════════════════
+// FLOTTA
+// ═══════════════════════════════════════════
+async function rFlotta(){
+  let clienti=[],veicoli=[];
+  try{
+    let qc=sb.from('clienti').select('*').order('nome');
+    if(!isDir())qc=qc.eq('venditore_id',CU.id);
+    clienti=(await qc).data||[];
+    let qv=sb.from('flotta_veicoli').select('*').order('data_scadenza');
+    if(!isDir())qv=qv.eq('venditore_id',CU.id);
+    veicoli=(await qv).data||[];
+  }catch(e){}
+  const oggi=new Date();
+  const tra4mesi=new Date(oggi);tra4mesi.setMonth(tra4mesi.getMonth()+4);
+  function gg(d){return Math.ceil((new Date(d)-oggi)/(1000*60*60*24));}
+  function fData(d){return d?new Date(d).toLocaleDateString('it-IT'):'—';}
+  const scadenze=veicoli.filter(v=>v.data_scadenza&&new Date(v.data_scadenza)<=tra4mesi).sort((a,b)=>new Date(a.data_scadenza)-new Date(b.data_scadenza));
+  const urgenti=scadenze.filter(v=>gg(v.data_scadenza)<=30);
+  document.getElementById('content').innerHTML=\`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--red-bg)"><div class="kpi-l">Urgenti ≤30gg</div><div class="kpi-v" style="color:#991B1B">\${urgenti.length}</div><div class="kpi-d dd">Contattare subito</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Scadenze entro 4 mesi</div><div class="kpi-v">\${scadenze.length}</div><div class="kpi-d du">Da pianificare</div></div>
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Veicoli in flotta</div><div class="kpi-v">\${veicoli.length}</div><div class="kpi-d" style="color:var(--text3)">Totale</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Clienti attivi</div><div class="kpi-v">\${clienti.filter(c=>c.stato==='Attivo'||c.stato==='VIP').length}</div><div class="kpi-d du">Database</div></div>
+  </div>
+  \${urgenti.length>0?\`<div style="background:var(--red-bg);border:1px solid #F09595;border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:10px"><i class="ti ti-alert-triangle" style="font-size:20px;color:#991B1B;flex-shrink:0"></i><div style="font-size:13px;font-weight:600;color:#991B1B">\${urgenti.length} contratt\${urgenti.length===1?'o':'i'} in scadenza entro 30 giorni — contatta subito</div></div>\`:''}
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-calendar-event" style="color:var(--orange);margin-right:6px"></i>Scadenze — prossimi 4 mesi</span>
+      <button class="btn btn-sm btn-orange" onclick="openModal('modal-veicolo')"><i class="ti ti-plus"></i> Aggiungi veicolo</button>
+    </div>
+    \${scadenze.length===0?\`<div style="padding:40px;text-align:center;color:var(--text3)">Nessuna scadenza nei prossimi 4 mesi.</div>\`:''}
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>Cliente</th><th>Modello</th><th>Targa</th><th>Categoria</th><th>Contratto</th><th>Scadenza</th><th>Giorni</th>\${isDir()?'<th>Consulente</th>':''}
+    </tr></thead><tbody>
+    \${scadenze.map(v=>\`<tr>
+      <td style="font-weight:600">\${v.cliente_nome||'—'}</td>
+      <td>\${v.modello||'—'}</td>
+      <td><span style="font-family:monospace;font-size:11px;background:var(--gray);padding:2px 7px;border-radius:4px">\${v.targa||'—'}</span></td>
+      <td>\${badge(v.categoria||'—','bg-n')}</td>
+      <td>\${badge(v.tipo_contratto||'—','bg-gr')}</td>
+      <td style="font-weight:600">\${fData(v.data_scadenza)}</td>
+      <td><span style="color:\${gg(v.data_scadenza)<=30?'#991B1B':gg(v.data_scadenza)<=60?'var(--orange)':'var(--green)'};font-weight:600">\${gg(v.data_scadenza)} gg</span></td>
+      \${isDir()?\`<td style="font-size:11.5px">\${v.venditore_nome||'—'}</td>\`:''}
+    </tr>\`).join('')}
+    </tbody></table></div>
+  </div>
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-users" style="color:var(--orange);margin-right:6px"></i>Clienti & flotta</span>
+      <button class="btn btn-sm btn-navy" onclick="openModal('modal-nuovo-cliente-flotta')"><i class="ti ti-user-plus"></i> Nuovo cliente</button>
+    </div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>Cliente</th><th>Città</th><th>Tipo</th><th>Veicoli</th>\${isDir()?'<th>Consulente</th>':''}<th>Stato</th><th>Azioni</th>
+    </tr></thead><tbody>
+    \${clienti.map(c=>{
+      const cv=veicoli.filter(v=>v.cliente_id===c.id);
+      return\`<tr onclick="openClient(\${c.id})">
+        <td><div style="display:flex;align-items:center;gap:8px">\${mav((c.nome||'').slice(0,2).toUpperCase())}<div style="font-weight:600">\${c.nome}</div></div></td>
+        <td>\${c.citta||'—'}</td>
+        <td>\${badge(c.tipo||'Privato',c.tipo==='Azienda'?'bg-n':'bg-gr')}</td>
+        <td style="font-weight:600">\${cv.length}</td>
+        \${isDir()?\`<td style="font-size:11.5px">\${c.venditore_nome||'—'}</td>\`:''}
+        <td>\${stBadge(c.stato||'Lead')}</td>
+        <td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">
+          <button class="btn btn-sm" onclick="window._currentTimelineClienteId=\${c.id};window._currentTimelineNome='\${(c.nome||'').replace(/'/g,'')}';openTimeline(\${c.id})"><i class="ti ti-timeline"></i></button>
+        </div></td>
+      </tr>\`;
+    }).join('')}
+    </tbody></table></div>
+  </div>\`;
+}
+
+// ═══════════════════════════════════════════
+// VISTA DIREZIONE
+// ═══════════════════════════════════════════
+async function rDirOverview(){
+  if(!isDir()){document.getElementById('content').innerHTML='<div style="padding:30px;text-align:center;color:var(--red)">Accesso riservato.</div>';return;}
+  let utenti=[],clienti=[],contratti=[];
+  try{
+    const[r1,r2,r3]=await Promise.all([
+      sb.from('crm_utenti').select('*').eq('attivo',true),
+      sb.from('clienti').select('*'),
+      sb.from('contratti_chiusi').select('*').order('created_at',{ascending:false})
+    ]);
+    utenti=r1.data||[];clienti=r2.data||[];contratti=r3.data||[];
+  }catch(e){}
+  const venditori=utenti.filter(u=>u.ruolo==='venditore');
+  const meseCorrente=new Date().toISOString().slice(0,7);
+  const stats=venditori.map(u=>({
+    nome:u.nome,ruolo_label:u.ruolo_label||'Consulente',
+    init:u.nome.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2),
+    clienti:clienti.filter(c=>c.venditore_id===u.id).length,
+    lead:clienti.filter(c=>c.venditore_id===u.id&&(c.stato==='Lead'||c.stato_lead==='Nuova'||c.stato_lead==='In lavorazione')).length,
+    contratti_mese:contratti.filter(c=>c.venditore_id===u.id&&c.mese===meseCorrente).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0),
+    margine_mese:contratti.filter(c=>c.venditore_id===u.id&&c.mese===meseCorrente).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0),
+    contratti_tot:contratti.filter(c=>c.venditore_id===u.id).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0),
+    margine_tot:contratti.filter(c=>c.venditore_id===u.id).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0),
+  }));
+  const totContratti=contratti.filter(c=>c.mese===meseCorrente).reduce((s,c)=>s+(parseInt(c.pezzi)||1),0);
+  const totMargine=contratti.filter(c=>c.mese===meseCorrente).reduce((s,c)=>s+((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1)),0);
+  document.getElementById('content').innerHTML=\`
+  <div class="kpi-g">
+    <div class="kpi" style="border-top-color:var(--navy)"><div class="kpi-l">Clienti totali</div><div class="kpi-v">\${clienti.length}</div><div class="kpi-d" style="color:var(--text3)">Team completo</div></div>
+    <div class="kpi" style="border-top-color:var(--orange)"><div class="kpi-l">Consulenti attivi</div><div class="kpi-v">\${venditori.length}</div><div class="kpi-d" style="color:var(--text3)">In organico</div></div>
+    <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-l">Pezzi mese corrente</div><div class="kpi-v">\${totContratti}</div><div class="kpi-d" style="color:var(--text3)">\${new Date().toLocaleString('it-IT',{month:'long',year:'numeric'})}</div></div>
+    <div class="kpi" style="border-top-color:var(--gold)"><div class="kpi-l">Margine mese corrente</div><div class="kpi-v">€ \${totMargine.toLocaleString('it-IT')}</div><div class="kpi-d" style="color:var(--text3)">Team totale</div></div>
+  </div>
+  <div class="full-card">
+    <div class="card-head">
+      <span class="card-title"><i class="ti ti-users" style="color:var(--orange);margin-right:6px"></i>Performance team — real time</span>
+      <button class="btn btn-sm" onclick="renderSec('dir-overview')"><i class="ti ti-refresh"></i> Aggiorna</button>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Consulente</th><th>Ruolo</th><th>Clienti</th><th>Lead attive</th><th>Pezzi mese</th><th>Margine mese</th><th>Pezzi totali</th><th>Margine totale</th></tr></thead>
+      <tbody>
+      \${stats.sort((a,b)=>b.margine_mese-a.margine_mese).map(u=>\`<tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="uav" style="width:32px;height:32px;font-size:11px">\${u.init}</div><strong>\${u.nome}</strong></div></td>
+        <td style="font-size:11px;color:var(--text2)">\${u.ruolo_label}</td>
+        <td style="text-align:center">\${u.clienti}</td>
+        <td style="text-align:center;color:var(--orange)">\${u.lead}</td>
+        <td style="text-align:center;font-weight:700">\${u.contratti_mese}</td>
+        <td style="font-weight:700;color:var(--orange)">€ \${u.margine_mese.toLocaleString('it-IT')}</td>
+        <td style="text-align:center">\${u.contratti_tot}</td>
+        <td>€ \${u.margine_tot.toLocaleString('it-IT')}</td>
+      </tr>\`).join('')}
+      \${stats.length===0?\`<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3)">Nessun consulente trovato</td></tr>\`:''}
+      </tbody>
+    </table></div>
+  </div>
+  <div class="full-card">
+    <div class="card-head"><span class="card-title"><i class="ti ti-file-invoice" style="color:var(--orange);margin-right:6px"></i>Ultimi contratti — tutto il team</span></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Data</th><th>Consulente</th><th>Cliente</th><th>Prodotto</th><th>Pezzi</th><th>Margine</th><th>Lordo</th><th>Netto</th></tr></thead>
+      <tbody>
+      \${contratti.slice(0,20).map(c=>\`<tr>
+        <td style="font-size:11px">\${c.data_firma?new Date(c.data_firma).toLocaleDateString('it-IT'):c.mese||'—'}</td>
+        <td style="font-weight:600;font-size:11.5px">\${c.venditore_nome||'—'}</td>
+        <td>\${c.cliente||'—'}</td>
+        <td style="font-size:11px">\${c.prodotto||'—'}</td>
+        <td style="text-align:center;font-weight:700">\${c.pezzi||1}</td>
+        <td style="color:var(--orange)">€ \${(parseFloat(c.margine)||0).toLocaleString('it-IT')}</td>
+        <td style="font-weight:700">€ \${(parseFloat(c.margine_totale_lordo)||((parseFloat(c.margine)||0)*(parseInt(c.pezzi)||1))).toLocaleString('it-IT')}</td>
+        <td style="font-weight:700;color:\${(parseFloat(c.margine_netto)||0)>=0?'var(--green)':'var(--red)'}">€ \${(parseFloat(c.margine_netto)||0).toLocaleString('it-IT')}</td>
+      </tr>\`).join('')}
+      \${contratti.length===0?\`<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3)">Nessun contratto</td></tr>\`:''}
+      </tbody>
+    </table></div>
+  </div>\`;
+}
+
 // ═══════════════════════════════════════════
 // TRATTATIVE
 // ═══════════════════════════════════════════
