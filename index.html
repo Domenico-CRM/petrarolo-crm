@@ -715,8 +715,8 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
       <div class="form-group"><div class="form-label">Mese di riferimento <span class="form-req">*</span></div><input id="c-mese" type="month" value="2026-05"></div>
       <div class="form-group"><div class="form-label">Consulente</div><input id="c-consulente-display" type="text" style="background:var(--gray);color:var(--text2)" readonly placeholder="Caricato dal login..."></div>
       <div class="form-group"><div class="form-label">Data contratto firmato <span class="form-req">*</span></div><input id="c-data-firma" type="date"></div>
-      <div class="form-group"><div class="form-label">N° BO <span class="form-req">*</span></div><input id="c-nbo" type="text" placeholder="es. BO-2026-001"></div>
-      <div class="form-group"><div class="form-label">Data BO <span class="form-req">*</span></div><input id="c-data-bo" type="date"></div>
+      <div class="form-group" id="c-nbo-grp"><div class="form-label">N° BO <span class="form-req" id="c-nbo-req">*</span></div><input id="c-nbo" type="text" placeholder="es. BO-2026-001"></div>
+      <div class="form-group" id="c-data-bo-grp"><div class="form-label">Data BO <span class="form-req" id="c-data-bo-req">*</span></div><input id="c-data-bo" type="date"></div>
       <div class="form-group"><div class="form-label">Cliente <span class="form-req">*</span></div><input id="c-cliente" type="text" placeholder="es. 3 Zeta Trasporti SRL"></div>
       <div class="form-group"><div class="form-label">Città</div><input id="c-citta" type="text" placeholder="es. Bari, Corato, Andria..."></div>
       <div class="form-group"><div class="form-label">Provenienza <span class="form-req">*</span></div>
@@ -729,7 +729,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
         </select>
       </div>
       <div class="form-group"><div class="form-label">Tipo prodotto <span class="form-req">*</span></div>
-        <select id="c-prodotto-tipo" onchange="toggleProdottoCustom(this.value);toggleCampiNoleggio(this.value)">
+        <select id="c-prodotto-tipo" onchange="toggleProdottoCustom(this.value);toggleCampiNoleggio(this.value);toggleCampiBO(this.value)">
           <option value="">— Seleziona tipo prodotto —</option>
           <option value="NLT — Noleggio Lungo Termine">NLT — Noleggio Lungo Termine</option>
           <option value="Leasing">Leasing</option>
@@ -770,17 +770,9 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
     </div>
     <div class="form-grid">
       <div class="form-group"><div class="form-label">Partner di fatturazione <span class="form-req">*</span></div>
-        <select id="c-partner" onchange="togglePartnerAltro(this.value)">
+        <select id="c-partner" onchange="togglePartnerAltro(this.value);toggleHorizon(this.value)">
           <option value="">— Seleziona partner —</option>
-          <optgroup label="HORIZON AUTOMOTIVE">
-            <option value="HORIZON AUTOMOTIVE — ARVAL">↳ ARVAL</option>
-            <option value="HORIZON AUTOMOTIVE — AYVENS">↳ AYVENS</option>
-            <option value="HORIZON AUTOMOTIVE — VOLKSWAGEN LEASING SCARABEL">↳ VOLKSWAGEN LEASING SCARABEL</option>
-            <option value="HORIZON AUTOMOTIVE — DRIVALIA">↳ DRIVALIA</option>
-            <option value="HORIZON AUTOMOTIVE — LEASYS">↳ LEASYS</option>
-            <option value="HORIZON AUTOMOTIVE — ALPHABET">↳ ALPHABET</option>
-            <option value="HORIZON AUTOMOTIVE — RENT2GO">↳ RENT2GO</option>
-          </optgroup>
+          <option value="HORIZON AUTOMOTIVE">HORIZON AUTOMOTIVE</option>
           <option value="VRENT SPA">VRENT SPA</option>
           <option value="FORD TRUCKS ITALIA">FORD TRUCKS ITALIA</option>
           <option value="TIP">TIP</option>
@@ -791,6 +783,20 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
           <option value="GERVASI INDUSTRIAL">GERVASI INDUSTRIAL</option>
           <option value="ALTRO">ALTRO (specifica)</option>
         </select>
+      </div>
+      <div class="form-group" id="c-horizon-grp" style="display:none">
+        <div class="form-label">Società Horizon <span class="form-req">*</span></div>
+        <select id="c-horizon-societa">
+          <option value="">— Seleziona società —</option>
+          <option value="ARVAL">ARVAL</option>
+          <option value="AYVENS">AYVENS</option>
+          <option value="VOLKSWAGEN LEASING SCARABEL">VOLKSWAGEN LEASING SCARABEL</option>
+          <option value="DRIVALIA">DRIVALIA</option>
+          <option value="LEASYS">LEASYS</option>
+          <option value="ALPHABET">ALPHABET</option>
+          <option value="RENT2GO">RENT2GO</option>
+        </select>
+      <div style="display:none">
       </div>
       <div class="form-group" id="c-partner-altro-grp" style="display:none">
         <div class="form-label">Specifica partner <span class="form-req">*</span></div>
@@ -833,7 +839,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
           <div style="text-align:center">
             <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Margine Netto</div>
             <div id="c-calc-netto" style="font-size:18px;font-weight:800;color:var(--green)">€ 0,00</div>
-            <div style="font-size:10px;color:var(--text3)">20% del Margine Totale Lordo</div>
+            <div style="font-size:10px;color:var(--text3)">Lordo - Segnalaz. - Altri costi - Provv.</div>
           </div>
         </div>
       </div>
@@ -2460,6 +2466,35 @@ function toggleCampiNoleggio(val){
   });
 }
 
+function toggleHorizon(val){
+  const grp=document.getElementById('c-horizon-grp');
+  if(grp)grp.style.display=val==='HORIZON AUTOMOTIVE'?'flex':'none';
+  if(grp)grp.style.flexDirection='column';
+  if(grp)grp.style.gap='4px';
+  if(val!=='HORIZON AUTOMOTIVE'){
+    const s=document.getElementById('c-horizon-societa');
+    if(s)s.value='';
+  }
+}
+
+function toggleCampiBO(val){
+  const isNLT = val === 'NLT — Noleggio Lungo Termine';
+  ['c-nbo-grp','c-data-bo-grp'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display = isNLT ? '' : 'none';
+  });
+  ['c-nbo-req','c-data-bo-req'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display = isNLT ? '' : 'none';
+  });
+  if(!isNLT){
+    const nbo=document.getElementById('c-nbo');
+    const dbo=document.getElementById('c-data-bo');
+    if(nbo){nbo.value='';nbo.style.borderColor='';nbo.style.boxShadow='';}
+    if(dbo){dbo.value='';dbo.style.borderColor='';dbo.style.boxShadow='';}
+  }
+}
+
 function toggleTipoVeicoloCustom(val){
   const grp=document.getElementById('c-tipo-veicolo-custom-grp');
   if(grp){grp.style.display=val==='altro'?'flex':'none';grp.style.flexDirection='column';grp.style.gap='4px';}
@@ -2474,7 +2509,7 @@ function calcolaMargini(){
   
   const lordo=(margine*pezzi)+(bonus*pezzi);
   const provvigioni=-(lordo*0.5);
-  const netto=lordo*0.20;  // 20% del Margine Totale Lordo
+  const netto=lordo+segnalazione+altriCosti+provvigioni;  // Lordo + tutti i costi negativi
   
   const fmt=v=>v.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   
@@ -2758,8 +2793,15 @@ async function salvaContratto(){
   const missing=[];
   if(!mese)missing.push('Mese');
   if(!dataFirma)missing.push('Data contratto firmato');
-  if(!nbo)missing.push('N° BO');
-  if(!dataBo)missing.push('Data BO');
+  if(prodotto_tipo==='NLT — Noleggio Lungo Termine'){
+    if(!nbo)missing.push('N° BO');
+    if(!dataBo)missing.push('Data BO');
+  }
+  // Se Horizon, verifica società selezionata
+  if(partner==='HORIZON AUTOMOTIVE'){
+    const hSoc=document.getElementById('c-horizon-societa')?.value||'';
+    if(!hSoc)missing.push('Società Horizon');
+  }
   if(!cliente)missing.push('Cliente');
   // Città opzionale
   if(!provenienza)missing.push('Provenienza');
@@ -2781,7 +2823,7 @@ async function salvaContratto(){
     'Mese':'c-mese','Data contratto firmato':'c-data-firma','N° BO':'c-nbo',
     'Data BO':'c-data-bo','Cliente':'c-cliente','Città':'c-citta',
     'Provenienza':'c-provenienza','Tipo prodotto':'c-prodotto-tipo',
-    'Partner di fatturazione':'c-partner','Società di noleggio':'c-societa-noleggio',
+    'Partner di fatturazione':'c-partner','Società Horizon':'c-horizon-societa','Società di noleggio':'c-societa-noleggio',
     'Tipo veicolo':'c-tipo-veicolo',
     ...(isAcquistoDir ? {} : {'Durata noleggio':'c-durata','Data inizio':'c-data-inizio','Data fine':'c-data-fine'}),
     'Veicolo':'c-veicolo','N° pezzi':'c-pezzi','Margine unitario':'c-margine'
@@ -2868,7 +2910,7 @@ async function salvaContratto(){
   const altriCostiNum=parseFloat(document.getElementById('c-altri-costi')?.value)||0;
   const lordo=(margineNum*pezziNum)+(bonusNum*pezziNum);
   const provvigioniNum=-(lordo*0.5);
-  const netto=lordo*0.20;  // Margine netto = 20% del Margine Totale Lordo
+  const netto=lordo+segnalazioneNum+altriCostiNum+provvigioniNum;  // Lordo - tutti i costi
   
   // Tipo veicolo
   let tipoVeicoloFinal=tipoVeicolo;
@@ -2886,7 +2928,13 @@ async function salvaContratto(){
     durata_noleggio:parseInt(durata)||null,
     data_inizio:dataInizio||null,
     data_fine:dataFine||null,
-    partner:partner||null,
+    partner:(()=>{
+      if(partner==='HORIZON AUTOMOTIVE'){
+        const soc=document.getElementById('c-horizon-societa')?.value||'';
+        return soc?'HORIZON AUTOMOTIVE — '+soc:'HORIZON AUTOMOTIVE';
+      }
+      return partner||null;
+    })(),
     societa_noleggio:societaNoleggio||null,
     provenienza:provenienza||null,
     venditore_id:CU.id,
